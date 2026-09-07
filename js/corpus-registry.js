@@ -8,7 +8,7 @@
     'iracema':{scripts:['js/corpus/iracema.js']},
     'os-sertoes':{scripts:['js/corpus/os-sertoes.js','js/corpus/os-sertoes-canonical.js','js/corpus/os-sertoes-tl072.js']},
     'ursula':{scripts:['js/corpus/ursula.js']},
-    'memorias-sargento-milicias':{scripts:['js/corpus/memorias-sargento-milicias.js']},
+    'memorias-sargento-milicias':{scripts:['js/corpus/memorias-sargento-milicias.js','js/corpus/memorias-sargento-tl091.js']},
     'o-ateneu':{scripts:['js/corpus/o-ateneu.js']},
     'macunaima':{scripts:['js/corpus/macunaima.js','js/corpus/macunaima-tl111.js','js/corpus/macunaima-tl112.js']},
     'vidas-secas':{scripts:['js/corpus/vidas-secas.js']}
