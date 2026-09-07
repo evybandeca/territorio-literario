@@ -1,8 +1,11 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-const path='js/corpus-registry.js';
+const path='js/corpus-registry.js',manifestPath='data/rights-provenance.json';
 if(!fs.existsSync(path))throw new Error('corpus-registry.js ausente');
+if(!fs.existsSync(manifestPath))throw new Error('manifest de direitos/proveniência ausente');
+const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+const expected=(manifest.works||[]).filter(w=>w.publication_status==='published').map(w=>w.work_id).sort();
 const appended=[];
 const context={window:{},document:{
   querySelector:()=>null,
@@ -11,10 +14,8 @@ const context={window:{},document:{
 },console,Map,Promise,queueMicrotask};
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(path,'utf8'),context,{filename:path});
-const ids=Object.keys(context.window.CORPUS_REGISTRY||{});
-const expected=['memorias-postumas','dom-casmurro','o-cortico','triste-fim-policarpo-quaresma','o-guarani','iracema','os-sertoes'];
-if(ids.length!==expected.length)throw new Error(`Registry esperado com ${expected.length} obras; recebeu ${ids.length}`);
-for(const id of expected)if(!ids.includes(id))throw new Error(`Obra ausente no registry: ${id}`);
+const ids=Object.keys(context.window.CORPUS_REGISTRY||{}).sort();
+if(JSON.stringify(ids)!==JSON.stringify(expected))throw new Error(`Registry diverge do manifest publicado. Esperado: ${expected.join(', ')}; recebido: ${ids.join(', ')}`);
 for(const [id,entry] of Object.entries(context.window.CORPUS_REGISTRY)){
   if(!Array.isArray(entry.scripts)||!entry.scripts.length)throw new Error(`${id}: scripts ausentes`);
   for(const file of entry.scripts)if(!fs.existsSync(file))throw new Error(`${id}: arquivo registrado não existe: ${file}`);
@@ -26,4 +27,4 @@ if(!corpus||corpus.id!=='o-cortico')throw new Error('Loader não retornou corpus
 const before=appended.length;
 await context.window.loadCorpusById('o-cortico');
 if(appended.length!==before)throw new Error('Loader não é idempotente');
-console.log(`Corpus registry OK: ${ids.length} obras; lazy loader idempotente.`);
+console.log(`Corpus registry OK: ${ids.length} obras publicadas derivadas do manifest; lazy loader idempotente.`);
