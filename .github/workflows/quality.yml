@@ -24,6 +24,8 @@ jobs:
         run: node scripts/test-corpus-registry.mjs
       - name: Validar todos os corpora
         run: node scripts/validate-corpora.mjs
+      - name: Validar direitos e proveniência
+        run: node scripts/validate-rights-provenance.mjs
       - name: Auditar evidências
         run: node scripts/audit-evidence-links.mjs
       - name: Verificar JavaScript
