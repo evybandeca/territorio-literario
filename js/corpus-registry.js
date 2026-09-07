@@ -10,7 +10,8 @@
     'ursula':{scripts:['js/corpus/ursula.js']},
     'memorias-sargento-milicias':{scripts:['js/corpus/memorias-sargento-milicias.js']},
     'o-ateneu':{scripts:['js/corpus/o-ateneu.js']},
-    'macunaima':{scripts:['js/corpus/macunaima.js']}
+    'macunaima':{scripts:['js/corpus/macunaima.js']},
+    'vidas-secas':{scripts:['js/corpus/vidas-secas.js']}
   });
   const inFlight=new Map();
   function loadScript(src){if(document.querySelector(`script[data-corpus-src="${src}"]`))return Promise.resolve();return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=src;script.async=false;script.dataset.corpusSrc=src;script.onload=()=>resolve();script.onerror=()=>reject(new Error(`Falha ao carregar corpus: ${src}`));document.head.appendChild(script)})}
