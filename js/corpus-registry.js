@@ -5,7 +5,8 @@
     'o-cortico':{scripts:['js/corpus/o-cortico.js']},
     'triste-fim-policarpo-quaresma':{scripts:['js/corpus/triste-fim-policarpo-quaresma.js']},
     'o-guarani':{scripts:['js/corpus/o-guarani.js']},
-    'iracema':{scripts:['js/corpus/iracema.js']}
+    'iracema':{scripts:['js/corpus/iracema.js']},
+    'os-sertoes':{scripts:['js/corpus/os-sertoes.js']}
   });
   const inFlight=new Map();
   function loadScript(src){

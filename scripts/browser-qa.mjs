@@ -31,9 +31,10 @@ await run('lazy loading da obra individual',async()=>{
 await run('Atlas carrega o registry completo',async()=>{
   const page=await browser.newPage({viewport:{width:1440,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(`${base}/atlas.html`,{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>Object.keys(window.CORPUS_PROFUNDO||{}).length===6,{timeout:20000});
+  const expected=await page.evaluate(()=>Object.keys(window.CORPUS_REGISTRY||{}).length);assert(expected>0,'registry vazio no Atlas');
+  await page.waitForFunction(expected=>Object.keys(window.CORPUS_PROFUNDO||{}).length===expected,expected,{timeout:30000});
   const loaded=await page.evaluate(()=>Object.keys(window.CORPUS_PROFUNDO||{}).sort());
-  assert(loaded.length===6,`Atlas carregou ${loaded.length} corpora`);
+  assert(loaded.length===expected,`Atlas carregou ${loaded.length} corpora; esperado ${expected}`);
   await page.waitForFunction(()=>document.querySelector('#atlas-stats')?.textContent?.trim().length>0,{timeout:10000});
   assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close();
 });
