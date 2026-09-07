@@ -18,6 +18,8 @@ jobs:
         run: node scripts/smoke-check.mjs
       - name: Validar corpus de O Cortiço
         run: node scripts/validate-o-cortico.mjs
+      - name: Validar corpus de Policarpo Quaresma
+        run: node scripts/validate-policarpo.mjs
       - name: Verificar JavaScript
         shell: bash
         run: |
