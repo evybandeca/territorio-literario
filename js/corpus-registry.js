@@ -7,7 +7,8 @@
     'o-guarani':{scripts:['js/corpus/o-guarani.js']},
     'iracema':{scripts:['js/corpus/iracema.js']},
     'os-sertoes':{scripts:['js/corpus/os-sertoes.js']},
-    'ursula':{scripts:['js/corpus/ursula.js']}
+    'ursula':{scripts:['js/corpus/ursula.js']},
+    'memorias-sargento-milicias':{scripts:['js/corpus/memorias-sargento-milicias.js']}
   });
   const inFlight=new Map();
   function loadScript(src){
@@ -25,18 +26,9 @@
     if(!entry)return null;
     if(global.CORPUS_PROFUNDO?.[id])return global.CORPUS_PROFUNDO[id];
     if(inFlight.has(id))return inFlight.get(id);
-    const promise=(async()=>{
-      for(const src of entry.scripts)await loadScript(src);
-      return global.CORPUS_PROFUNDO?.[id]||null;
-    })();
-    inFlight.set(id,promise);
-    try{return await promise}finally{inFlight.delete(id)}
+    const promise=(async()=>{for(const src of entry.scripts)await loadScript(src);return global.CORPUS_PROFUNDO?.[id]||null})();
+    inFlight.set(id,promise);try{return await promise}finally{inFlight.delete(id)}
   }
-  async function loadAllCorpora(){
-    await Promise.all(Object.keys(REGISTRY).map(loadCorpusById));
-    return global.CORPUS_PROFUNDO||{};
-  }
-  global.CORPUS_REGISTRY=REGISTRY;
-  global.loadCorpusById=loadCorpusById;
-  global.loadAllCorpora=loadAllCorpora;
+  async function loadAllCorpora(){await Promise.all(Object.keys(REGISTRY).map(loadCorpusById));return global.CORPUS_PROFUNDO||{}}
+  global.CORPUS_REGISTRY=REGISTRY;global.loadCorpusById=loadCorpusById;global.loadAllCorpora=loadAllCorpora;
 })(window);
