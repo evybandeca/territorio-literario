@@ -22,6 +22,8 @@ jobs:
         run: node scripts/validate-policarpo.mjs
       - name: Validar corpus de O Guarani
         run: node scripts/validate-o-guarani.mjs
+      - name: Validar corpus de Iracema
+        run: node scripts/validate-iracema.mjs
       - name: Verificar JavaScript
         shell: bash
         run: |
