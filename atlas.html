@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas — Território Literário</title>
+<meta name="description" content="O mesmo acervo, organizado pelo lugar em vez do livro: que obras da literatura brasileira passam por cada território.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+</head>
+<body>
+<header class="atlas-header"><div class="atlas-header-inner"><nav class="nav-secundaria"><a href="index.html">Território Literário</a><span>·</span><a href="index.html#biblioteca">Biblioteca</a><span>·</span><a href="atlas.html" class="ativo">Atlas</a></nav><h1>O Brasil escrito.</h1><p>A Biblioteca pergunta que mundos existem dentro de um livro. O Atlas pergunta o contrário: que livros existem dentro de um lugar.</p><div class="atlas-stats" id="atlas-stats"></div></div></header>
+<section class="atlas-corpo"><div class="atlas-busca"><input type="search" id="busca-lugar" placeholder="Procure um lugar — ex.: Rio de Janeiro, Canudos, Ceará…" aria-label="Procurar lugar"></div><div id="atlas-mapa"></div><div class="legenda" id="legenda-atlas"></div><div class="atlas-lista-painel"><div class="atlas-lista" id="atlas-lista"></div><div class="atlas-detalhe" id="atlas-detalhe"><p class="atlas-detalhe-vazio">Escolha um lugar no mapa ou na lista para ver quais obras passam por ele.</p></div></div></section>
+<footer>O Atlas agrupa lugares pelo nome exatamente como registrado em cada obra — não é geocodificação automática. Dois nomes parecidos só aparecem juntos aqui se foram escritos da mesma forma no acervo.</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script><script src="js/data.js"></script><script src="js/lugares.js"></script><script src="js/atlas.js"></script>
+</body></html>
