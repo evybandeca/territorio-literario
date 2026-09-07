@@ -16,6 +16,8 @@ jobs:
         uses: actions/checkout@v6
       - name: Verificar estrutura pública
         run: node scripts/smoke-check.mjs
+      - name: Validar corpus de O Cortiço
+        run: node scripts/validate-o-cortico.mjs
       - name: Verificar JavaScript
         shell: bash
         run: |
