@@ -1,0 +1,79 @@
+name: QA real de navegador
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "*.html"
+      - "css/**"
+      - "js/*.js"
+      - "scripts/browser-qa.mjs"
+      - "scripts/audit-lighthouse.mjs"
+      - ".github/workflows/browser-qa.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "*.html"
+      - "css/**"
+      - "js/*.js"
+      - "scripts/browser-qa.mjs"
+      - "scripts/audit-lighthouse.mjs"
+      - ".github/workflows/browser-qa.yml"
+  schedule:
+    - cron: "41 7 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v6
+      - name: Instalar QA de navegador
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0 lighthouse@13.4.1
+          npx playwright install --with-deps chromium
+      - name: Iniciar servidor estático
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/territorio-http.log 2>&1 &
+          echo $! > /tmp/territorio-http.pid
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/territorio-http.log
+          exit 1
+      - name: Testar fluxos em Chromium
+        env:
+          QA_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/browser-qa.mjs
+      - name: Executar Lighthouse
+        shell: bash
+        run: |
+          export CHROME_PATH="$(find "$HOME/.cache/ms-playwright" -type f -path '*/chrome-linux*/chrome' | head -n 1)"
+          test -n "$CHROME_PATH"
+          npx lighthouse http://127.0.0.1:4173/index.html \
+            --chrome-flags="--headless --no-sandbox --disable-gpu" \
+            --preset=desktop \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json \
+            --output-path=lighthouse-home.json \
+            --quiet
+          node scripts/audit-lighthouse.mjs lighthouse-home.json
+      - name: Guardar relatório Lighthouse
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-home-${{ github.run_id }}
+          path: lighthouse-home.json
+          if-no-files-found: ignore
+          retention-days: 14
