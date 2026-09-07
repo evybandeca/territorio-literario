@@ -10,7 +10,7 @@
     'ursula':{scripts:['js/corpus/ursula.js']},
     'memorias-sargento-milicias':{scripts:['js/corpus/memorias-sargento-milicias.js']},
     'o-ateneu':{scripts:['js/corpus/o-ateneu.js']},
-    'macunaima':{scripts:['js/corpus/macunaima.js','js/corpus/macunaima-tl111.js']},
+    'macunaima':{scripts:['js/corpus/macunaima.js','js/corpus/macunaima-tl111.js','js/corpus/macunaima-tl112.js']},
     'vidas-secas':{scripts:['js/corpus/vidas-secas.js']}
   });
   const inFlight=new Map();
