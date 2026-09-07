@@ -1,0 +1,6 @@
+(function(){
+  const filtro=document.getElementById('timeline-movimento'),lista=document.getElementById('timeline-list');if(!filtro||!lista)return;
+  [...new Set(OBRAS.map(o=>o.movimento))].sort((a,b)=>a.localeCompare(b,'pt-BR')).forEach(m=>{const op=document.createElement('option');op.value=m;op.textContent=m;filtro.appendChild(op)});
+  function render(){const dados=OBRAS.filter(o=>!filtro.value||o.movimento===filtro.value).sort((a,b)=>a.ano-b.ano||a.titulo.localeCompare(b.titulo,'pt-BR'));const grupos=new Map();dados.forEach(o=>{const dec=Math.floor(o.ano/10)*10;const arr=grupos.get(dec)||[];arr.push(o);grupos.set(dec,arr)});lista.innerHTML=[...grupos.entries()].map(([dec,obras])=>`<section class="timeline-decade"><div><div class="eyebrow">Década</div><div class="timeline-year">${dec}</div></div><div>${obras.map(o=>`<a class="obra-card" href="obra.html?id=${encodeURIComponent(o.id)}"><span class="obra-titulo">${o.titulo}</span><span class="obra-ano">${o.anoLabel||o.ano}</span><span class="obra-autor">${o.autor} · ${o.movimento}</span></a>`).join('')}</div></section>`).join('')||'<div class="empty-state">Nenhuma obra neste filtro.</div>'}
+  filtro.addEventListener('change',render);render();
+})();

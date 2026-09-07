@@ -4,56 +4,85 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Território Literário — o Brasil através de sua literatura</title>
-<meta name="description" content="Um atlas digital da literatura brasileira em domínio público: livros, autores e os territórios que ajudaram a construí-los.">
+<meta name="description" content="Explore clássicos brasileiros pelo território, pelos autores e pela história em um atlas literário digital de obras em domínio público.">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
+<div data-site-header></div>
 
-<div class="nav-barra">
-  <nav class="nav-secundaria">
-    <a href="index.html">Território Literário</a>
-    <span>·</span>
-    <a href="index.html#biblioteca">Biblioteca</a>
-    <span>·</span>
-    <a href="atlas.html">Atlas</a>
-  </nav>
-</div>
+<main id="conteudo">
+<section class="globo-hero" id="globo-hero" aria-labelledby="hero-title">
+  <canvas id="globo-canvas" aria-hidden="true"></canvas>
+  <div class="container">
+    <div class="globo-texto">
+      <div class="marca">TERRITÓRIO <span>LITERÁRIO</span></div>
+      <h1 id="hero-title">Toda história ocupa um lugar.</h1>
+      <p>Um atlas cultural da literatura brasileira: livros, autores, cidades, paisagens e evidências reunidos em uma experiência editorial navegável.</p>
+      <div class="globo-cta">
+        <a class="button button--light" href="atlas.html">Explorar o Atlas</a>
+        <a class="button button--ghost" href="biblioteca.html">Abrir a Biblioteca</a>
+      </div>
+    </div>
+    <div class="globo-dica" id="globo-dica" aria-hidden="true"></div>
+    <div class="globo-legenda">arraste para girar · passe o mouse sobre um ponto · clique para abrir a obra</div>
+  </div>
+</section>
 
-<section class="globo-hero" id="globo-hero">
-  <canvas id="globo-canvas"></canvas>
-  <div class="globo-texto">
-    <div class="marca">TERRITÓRIO <span>LITERÁRIO</span></div>
-    <h1>Toda história ocupa um lugar.</h1>
-    <p>Um atlas dos grandes clássicos da literatura brasileira em domínio público — organizados por movimento, e situados nos territórios que os viram nascer.</p>
-    <div class="globo-cta">
-      <a class="botao-cta" href="atlas.html">Explorar o Atlas</a>
-      <a class="botao-cta botao-cta-fraco" href="#biblioteca">Abrir a Biblioteca</a>
+<section class="section discover-strip">
+  <div class="container">
+    <div class="eyebrow">Descobrir</div>
+    <h2 class="section-title">Entre no acervo por uma pergunta.</h2>
+    <p class="section-intro">O Território Literário pode ser percorrido por livros, lugares ou períodos. Cada caminho revela uma relação diferente entre literatura e espaço.</p>
+    <div class="card-grid" style="margin-top:1.5rem">
+      <a class="card feature-card" href="atlas.html"><span class="card__meta">Pelo território</span><h3 class="card__title">Que livros existem dentro de um lugar?</h3><p class="card__body">Abra o Atlas e veja as obras associadas a cidades, bairros, regiões e paisagens.</p></a>
+      <a class="card feature-card" href="biblioteca.html"><span class="card__meta">Pelos livros</span><h3 class="card__title">Que territórios existem dentro de uma obra?</h3><p class="card__body">Explore o catálogo completo por autor, movimento e período.</p></a>
+      <a class="card feature-card" href="linha-do-tempo.html"><span class="card__meta">Pelo tempo</span><h3 class="card__title">Como o Brasil foi sendo escrito?</h3><p class="card__body">Percorra publicações e movimentos em sequência histórica.</p></a>
     </div>
   </div>
-  <div class="globo-dica" id="globo-dica" aria-hidden="true"></div>
-  <div class="globo-legenda">arraste para girar · passe o mouse sobre um ponto · clique para abrir a obra</div>
 </section>
 
-<nav class="timeline" id="timeline" aria-label="Filtrar por movimento literário"></nav>
-
-<section class="mapa-geral-secao" id="biblioteca">
-  <div class="mapa-geral-inner">
-    <h2>O Brasil contado por seus livros</h2>
-    <p>Cada ponto é um lugar de uma obra. Clique para abrir o território e seguir seus lugares no mapa.</p>
-    <div id="mapa-geral"></div>
-    <div class="legenda" id="legenda-geral"></div>
+<section class="section obras-destaque">
+  <div class="container">
+    <div class="eyebrow">Curadoria</div>
+    <h2 class="section-title">Obras para começar.</h2>
+    <p class="section-intro">Uma seleção de portas de entrada para o acervo, escolhidas pela força literária e pela riqueza territorial.</p>
+    <div class="card-grid" style="margin-top:1.5rem">
+      <a class="card" href="obra.html?id=memorias-postumas"><span class="card__meta">Realismo · 1881</span><h3 class="card__title">Memórias Póstumas de Brás Cubas</h3><p class="card__body">Machado de Assis. O primeiro corpus profundo do projeto, com ocorrências geográficas auditadas por capítulo.</p></a>
+      <a class="card" href="obra.html?id=o-guarani"><span class="card__meta">Romantismo · 1857</span><h3 class="card__title">O Guarani</h3><p class="card__body">José de Alencar. Mata, serra e rio compõem um dos espaços fundadores do indianismo brasileiro.</p></a>
+      <a class="card" href="obra.html?id=ursula"><span class="card__meta">Romantismo · 1859</span><h3 class="card__title">Úrsula</h3><p class="card__body">Maria Firmina dos Reis. Literatura, território maranhense e crítica pioneira à escravidão.</p></a>
+    </div>
   </div>
 </section>
 
-<main id="catalogo"></main>
+<section class="section">
+  <div class="container atlas-preview">
+    <div>
+      <div class="eyebrow">Atlas</div>
+      <h2 class="section-title">O Brasil contado por seus livros.</h2>
+      <p class="section-intro">Cada ponto da prévia representa um lugar associado a uma obra. A versão completa permite pesquisar e comparar territórios do acervo.</p>
+      <p style="margin-top:1.2rem"><a class="button" href="atlas.html">Abrir Atlas completo</a></p>
+    </div>
+    <div class="map-frame"><div id="mapa-geral" aria-label="Prévia cartográfica do acervo"></div></div>
+  </div>
+  <div class="container"><div class="legenda" id="legenda-geral"></div></div>
+</section>
 
-<footer>
-  Território Literário reúne obras de domínio público (70 anos após a morte do autor, conforme a Lei 9.610/98).
-  Os links de leitura apontam para o Wikisource em português — confira a exatidão antes de publicar.
-  Coordenadas territoriais são aproximações de pesquisa, não medições cartográficas exatas.
-</footer>
+<section class="section" id="biblioteca-preview">
+  <div class="container">
+    <div class="eyebrow">Biblioteca</div>
+    <h2 class="section-title">Percorra os movimentos literários.</h2>
+    <p class="section-intro">Use a faixa abaixo para navegar por movimentos. A Biblioteca completa oferece busca, filtros e ordenação.</p>
+    <nav class="timeline" id="timeline" aria-label="Filtrar por movimento literário" style="margin-top:1rem"></nav>
+    <div id="catalogo"></div>
+    <p style="margin-top:1.5rem"><a class="button" href="biblioteca.html">Ver biblioteca completa</a></p>
+  </div>
+</section>
+</main>
 
+<footer class="site-footer"><div class="container site-footer__grid"><div><h3>Território Literário</h3><p>Tornar visível a geografia da literatura brasileira. Coordenadas ilustrativas não equivalem a localização histórica exata.</p></div><div><h3>Explorar</h3><a href="atlas.html">Atlas</a><a href="biblioteca.html">Biblioteca</a><a href="autores.html">Autores</a></div><div><h3>Projeto</h3><a href="linha-do-tempo.html">Linha do Tempo</a><a href="sobre.html">Sobre e metodologia</a></div></div></footer>
+
+<script src="js/navigation.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="js/data.js"></script>
