@@ -24,6 +24,8 @@ jobs:
         run: node scripts/test-corpus-registry.mjs
       - name: Validar todos os corpora
         run: node scripts/validate-corpora.mjs
+      - name: Gerar fila de aprofundamento
+        run: node scripts/generate-deepening-queue.mjs
       - name: Auditar identidade transversal de lugares
         run: node scripts/audit-place-identity.mjs
       - name: Validar proveniência de geocodificação
