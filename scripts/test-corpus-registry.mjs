@@ -12,8 +12,13 @@ const context={window:{},document:{
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(path,'utf8'),context,{filename:path});
 const ids=Object.keys(context.window.CORPUS_REGISTRY||{});
-if(ids.length!==6)throw new Error(`Registry esperado com 6 obras; recebeu ${ids.length}`);
-for(const id of ['memorias-postumas','dom-casmurro','o-cortico','triste-fim-policarpo-quaresma','o-guarani','iracema'])if(!ids.includes(id))throw new Error(`Obra ausente no registry: ${id}`);
+const expected=['memorias-postumas','dom-casmurro','o-cortico','triste-fim-policarpo-quaresma','o-guarani','iracema','os-sertoes'];
+if(ids.length!==expected.length)throw new Error(`Registry esperado com ${expected.length} obras; recebeu ${ids.length}`);
+for(const id of expected)if(!ids.includes(id))throw new Error(`Obra ausente no registry: ${id}`);
+for(const [id,entry] of Object.entries(context.window.CORPUS_REGISTRY)){
+  if(!Array.isArray(entry.scripts)||!entry.scripts.length)throw new Error(`${id}: scripts ausentes`);
+  for(const file of entry.scripts)if(!fs.existsSync(file))throw new Error(`${id}: arquivo registrado não existe: ${file}`);
+}
 const unknown=await context.window.loadCorpusById('obra-inexistente');
 if(unknown!==null)throw new Error('ID desconhecido deve retornar null');
 const corpus=await context.window.loadCorpusById('o-cortico');
