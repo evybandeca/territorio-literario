@@ -10,6 +10,7 @@ const registry=registryContext.window.CORPUS_REGISTRY||{};
 const ids=Object.keys(registry);
 if(!ids.length)throw new Error('Registry sem obras');
 
+const allowedStatus=new Set(['COBERTURA_CONTINUA_AUDITADA','COBERTURA_ESTRUTURAL_CONTINUA_AUDITADA']);
 const allowedTipo=new Set(['narrativo','historico','biografico','mencionado','ficcional']);
 const allowedEscala=new Set(['ponto','bairro','cidade','regiao','estado','rota']);
 const allowedCerteza=new Set(['identificado','ilustrativo']);
@@ -40,19 +41,16 @@ for(const id of ids){
   const c=context.window.CORPUS_PROFUNDO?.[id];
   if(!c)throw new Error(`${id}: objeto canônico ausente`);
   if(!/^\d+\.\d+\.\d+$/.test(c.versao||''))throw new Error(`${id}: versão inválida ${c.versao}`);
-  if(c.status!=='COBERTURA_CONTINUA_AUDITADA')throw new Error(`${id}: status inválido ${c.status}`);
+  if(!allowedStatus.has(c.status))throw new Error(`${id}: status inválido ${c.status}`);
   const structure=estruturaAuditada(c,id);
+  if(c.status==='COBERTURA_ESTRUTURAL_CONTINUA_AUDITADA'&&structure.kind!=='unidade')throw new Error(`${id}: cobertura estrutural exige unidades`);
   if((c.percursos||[]).length!==0)throw new Error(`${id}: rotas inferidas não permitidas`);
   const entities=c.place_entities||[],mentions=c.place_mentions||[];
   const entityIds=new Set();
-  for(const e of entities){
-    if(!e.id||entityIds.has(e.id))throw new Error(`${id}: entity id inválido/duplicado ${e.id}`);
-    entityIds.add(e.id);
-  }
+  for(const e of entities){if(!e.id||entityIds.has(e.id))throw new Error(`${id}: entity id inválido/duplicado ${e.id}`);entityIds.add(e.id)}
   const mentionIds=new Set();
   for(const m of mentions){
-    if(!m.id||mentionIds.has(m.id))throw new Error(`${id}: mention id inválido/duplicado ${m.id}`);
-    mentionIds.add(m.id);
+    if(!m.id||mentionIds.has(m.id))throw new Error(`${id}: mention id inválido/duplicado ${m.id}`);mentionIds.add(m.id);
     if(!entityIds.has(m.place_id))throw new Error(`${id}: place_id órfão ${m.place_id}`);
     const position=structure.kind==='capitulo'?m.capitulo:m.unidade;
     if(!Number.isInteger(position)||position<1||position>structure.total)throw new Error(`${id}: ${structure.kind} inválida em ${m.id}`);
