@@ -9,7 +9,7 @@ window.CORPUS_PROFUNDO["o-cortico"] = {
   politica_inclusao_geografica:{incluir:["lugares onde ocorre ação narrativa","origens e destinos materialmente relevantes","instituições, ruas, bairros e espaços urbanos explicitamente situados","lugares ficcionais recorrentes com função espacial clara"],excluir_por_padrao:["alusões retóricas","origens biográficas sem função espacial na cena","lugares hipotéticos ou não realizados","trajetos sem sequência espacial validável"]},
   personagens:[
     {id:"joao-romao",nome:"João Romão",papel:"protagonista"},
-    {id:"bert<PRIVATE_PERSON>",nome:"Bertoleza",papel:"personagem-central"},
+    {id:"bertoleza",nome:"Bertoleza",papel:"personagem-central"},
     {id:"miranda",nome:"Miranda",papel:"personagem-central"},
     {id:"jeronimo",nome:"Jerônimo",papel:"personagem-central"},
     {id:"rita-baiana",nome:"Rita Baiana",papel:"personagem-central"},
