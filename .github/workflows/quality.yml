@@ -20,6 +20,8 @@ jobs:
         run: node scripts/validate-o-cortico.mjs
       - name: Validar corpus de Policarpo Quaresma
         run: node scripts/validate-policarpo.mjs
+      - name: Validar corpus de O Guarani
+        run: node scripts/validate-o-guarani.mjs
       - name: Verificar JavaScript
         shell: bash
         run: |
