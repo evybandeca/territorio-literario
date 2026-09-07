@@ -1,0 +1,28 @@
+name: Monitorar portal
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  uptime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar páginas essenciais
+        shell: bash
+        run: |
+          set -euo pipefail
+          urls=(
+            "https://evybandeca.github.io/territorio-literario/"
+            "https://evybandeca.github.io/territorio-literario/atlas.html"
+            "https://evybandeca.github.io/territorio-literario/biblioteca.html"
+            "https://evybandeca.github.io/territorio-literario/obra.html?id=memorias-postumas"
+          )
+          for url in "${urls[@]}"; do
+            echo "Checking $url"
+            curl --location --fail --silent --show-error --retry 2 --retry-delay 2 --max-time 25 "$url" >/dev/null
+          done
