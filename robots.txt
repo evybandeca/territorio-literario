@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://evybandeca.github.io/territorio-literario/sitemap.xml
