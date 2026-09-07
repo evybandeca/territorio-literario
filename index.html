@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Território Literário — o Brasil através de sua literatura</title>
+<meta name="description" content="Um atlas digital da literatura brasileira em domínio público: livros, autores e os territórios que ajudaram a construí-los.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+
+<div class="nav-barra">
+  <nav class="nav-secundaria">
+    <a href="index.html">Território Literário</a>
+    <span>·</span>
+    <a href="index.html#biblioteca">Biblioteca</a>
+    <span>·</span>
+    <a href="atlas.html">Atlas</a>
+  </nav>
+</div>
+
+<section class="globo-hero" id="globo-hero">
+  <canvas id="globo-canvas"></canvas>
+  <div class="globo-texto">
+    <div class="marca">TERRITÓRIO <span>LITERÁRIO</span></div>
+    <h1>Toda história ocupa um lugar.</h1>
+    <p>Um atlas dos grandes clássicos da literatura brasileira em domínio público — organizados por movimento, e situados nos territórios que os viram nascer.</p>
+    <div class="globo-cta">
+      <a class="botao-cta" href="atlas.html">Explorar o Atlas</a>
+      <a class="botao-cta botao-cta-fraco" href="#biblioteca">Abrir a Biblioteca</a>
+    </div>
+  </div>
+  <div class="globo-dica" id="globo-dica" aria-hidden="true"></div>
+  <div class="globo-legenda">arraste para girar · passe o mouse sobre um ponto · clique para abrir a obra</div>
+</section>
+
+<nav class="timeline" id="timeline" aria-label="Filtrar por movimento literário"></nav>
+
+<section class="mapa-geral-secao" id="biblioteca">
+  <div class="mapa-geral-inner">
+    <h2>O Brasil contado por seus livros</h2>
+    <p>Cada ponto é um lugar de uma obra. Clique para abrir o território e seguir seus lugares no mapa.</p>
+    <div id="mapa-geral"></div>
+    <div class="legenda" id="legenda-geral"></div>
+  </div>
+</section>
+
+<main id="catalogo"></main>
+
+<footer>
+  Território Literário reúne obras de domínio público (70 anos após a morte do autor, conforme a Lei 9.610/98).
+  Os links de leitura apontam para o Wikisource em português — confira a exatidão antes de publicar.
+  Coordenadas territoriais são aproximações de pesquisa, não medições cartográficas exatas.
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/globo.js"></script>
+<script src="js/catalogo.js"></script>
+</body>
+</html>
