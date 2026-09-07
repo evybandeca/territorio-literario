@@ -16,6 +16,10 @@ jobs:
         uses: actions/checkout@v6
       - name: Verificar estrutura pública
         run: node scripts/smoke-check.mjs
+      - name: Auditar páginas públicas
+        run: node scripts/audit-public-pages.mjs
+      - name: Auditar orçamento de performance
+        run: node scripts/audit-performance-budget.mjs
       - name: Testar corpus registry
         run: node scripts/test-corpus-registry.mjs
       - name: Validar todos os corpora
