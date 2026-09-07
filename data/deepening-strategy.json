@@ -2,8 +2,8 @@
   "schema_version":"1.0.0",
   "updated_at":"2026-09-07",
   "strategy":[
-    {"work_id":"os-sertoes","priority":1,"mode":"historical_deepening","target":"Promover de v0.2 estrutural para corpus profundo com leitura interna progressiva e geografia histórica documentada.","constraint":"Não converter sequência militar em rota; topônimos históricos ambíguos exigem P12."},
-    {"work_id":"macunaima","priority":2,"mode":"fantastic_geography_deepening","target":"Aprofundar ocorrências reais e ficcionais por capítulo sem transformar saltos fantásticos em itinerário real.","constraint":"Separar deslocamento narrativo, enumeração paródica e geografia mítica."},
+    {"work_id":"macunaima","priority":1,"mode":"fantastic_geography_deepening","target":"Aprofundar ocorrências reais e ficcionais por capítulo sem transformar saltos fantásticos em itinerário real.","constraint":"Separar deslocamento narrativo, enumeração paródica e geografia mítica."},
+    {"work_id":"os-sertoes","priority":2,"mode":"historical_deepening","target":"Continuar a promoção de v0.3 estrutural para corpus profundo com leitura interna progressiva e geografia histórica documentada.","constraint":"Não converter sequência militar em rota; topônimos históricos ambíguos exigem P12."},
     {"work_id":"memorias-sargento-milicias","priority":3,"mode":"urban_historical_deepening","target":"Expandir a geografia urbana do Rio de Janeiro oitocentista com desambiguação histórica de ruas, igrejas, largos e instituições.","constraint":"Não substituir topônimo histórico por denominação moderna sem fonte."},
     {"work_id":"o-ateneu","priority":4,"mode":"urban_fictional_deepening","target":"Aprofundar a rede espacial externa e interna mantendo o Ateneu como instituição ficcional.","constraint":"Não geocodificar o colégio por equivalência biográfica."},
     {"work_id":"ursula","priority":5,"mode":"historical_anonymity_deepening","target":"Aprofundar espacialidade nomeada e não nomeada preservando anonimizações da edição de 1859.","constraint":"Não inferir Maranhão, comarca ou convento quando o texto omite o nome."},
