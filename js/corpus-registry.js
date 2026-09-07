@@ -6,7 +6,7 @@
     'triste-fim-policarpo-quaresma':{scripts:['js/corpus/triste-fim-policarpo-quaresma.js']},
     'o-guarani':{scripts:['js/corpus/o-guarani.js']},
     'iracema':{scripts:['js/corpus/iracema.js']},
-    'os-sertoes':{scripts:['js/corpus/os-sertoes.js','js/corpus/os-sertoes-canonical.js']},
+    'os-sertoes':{scripts:['js/corpus/os-sertoes.js','js/corpus/os-sertoes-canonical.js','js/corpus/os-sertoes-tl072.js']},
     'ursula':{scripts:['js/corpus/ursula.js']},
     'memorias-sargento-milicias':{scripts:['js/corpus/memorias-sargento-milicias.js']},
     'o-ateneu':{scripts:['js/corpus/o-ateneu.js']},
