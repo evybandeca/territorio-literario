@@ -1,127 +1,131 @@
 # Território Literário — Relatório de Prontidão para Produção
 
-Data de referência: 07/09/2026 — atualização após P9
+Data de referência: 07/09/2026 — atualização após P10 e fechamento estrutural das 12 obras fundadoras
 
 ## Resumo executivo
 
-O Território Literário está em **pré-produção avançada**, com arquitetura de corpus escalável, CI transversal, deploy automático, QA estático, monitoramento operacional e governança de direitos/proveniência sob gates automáticos.
+O Território Literário está em **pré-produção final / beta tecnicamente pronto**. Os principais riscos de infraestrutura, escala, QA, performance e proveniência foram transformados em gates automáticos; o conjunto fundador completo já está representado no registry.
 
-**Prontidão estimada para produção v1 planejada: 79%.**
+**Prontidão estimada para produção v1 planejada: 88%.**
 
-**Prontidão estimada para beta público controlado: 96%.**
+**Prontidão estimada para beta público controlado: 99%.**
 
-O núcleo validado contém **6 obras canônicas, 433 capítulos auditados, 86 entidades geográficas/literárias e 149 ocorrências com evidência textual**, mantendo **0 rotas inferidas**.
+O CI valida atualmente **12 obras publicadas, 591 unidades estruturais auditadas, 127 entidades geográficas/literárias, 210 ocorrências com evidência textual e 0 rotas inferidas**. As evidências totalizam 210 referências estruturais e 117 URLs únicas.
+
+A distinção editorial permanece explícita: **6 obras possuem corpus profundo v1.0 com auditoria contínua**, enquanto **6 obras mais recentes possuem cobertura estrutural v0.1 integral**, com edição congelada e camada geográfica inicial conservadora, mas ainda sem alegação de exaustividade toponímica.
 
 ## Estado por eixo
 
 | Eixo | Prontidão | Estado |
 |---|---:|---|
-| Shell, navegação e páginas públicas | 94% | 9 páginas sob auditoria automática, incluindo 404 |
-| Atlas/Biblioteca/Autores/Linha do Tempo | 85% | Funcional; refinamentos finais pendentes |
-| Corpus fundador | 50% | 6 de 12 obras fundadoras canônicas |
-| Integridade de dados e CI | 96% | Gates globais ativos para corpus, direitos, evidências, páginas e sintaxe |
-| Deploy e operação | 94% | Pages automático + monitoramento periódico |
-| Arquitetura/performance | 84% | Lazy loading + budget estático; Lighthouse real pendente |
-| SEO e acessibilidade | 70% | Semântica básica sob gate; QA dinâmica/WCAG pendente |
-| Direitos, edição e governança editorial | 90% | 12 autores documentados; 6 edições publicadas congeladas; futuras bloqueadas por edição |
-| Geocodificação histórica | 40% | Política conservadora correta; validação histórica incompleta |
+| Shell, navegação e páginas públicas | 97% | Publicado, 404 e auditoria automática |
+| Atlas/Biblioteca/Autores/Linha do Tempo | 90% | Funcional; refinamentos finais pendentes |
+| Corpus fundador — presença estrutural | 100% | 12 de 12 obras no registry |
+| Corpus fundador — profundidade editorial | 72% | 6 v1.0 profundas + 6 v0.1 estruturais |
+| Integridade de dados e CI | 98% | Gates globais de schema, direitos, evidências, páginas e sintaxe |
+| Deploy e operação | 97% | Pages automático, uptime e QA seletivo |
+| Arquitetura/performance | 95% | Lazy loading, budget estático e Lighthouse real |
+| SEO e acessibilidade | 92% | Lighthouse 100 SEO / 96 acessibilidade; refinamento WCAG manual residual |
+| Direitos, edição e governança editorial | 97% | 12 obras publicadas com autoria e edição-fonte documentadas |
+| Geocodificação histórica | 45% | Política conservadora; aprofundamento histórico ainda necessário |
 
-## Métricas atuais sob CI
+## Métricas validadas automaticamente
 
-- 9 páginas públicas auditadas e 99 referências locais verificadas.
-- 175,3 KiB de JavaScript próprio e 23,7 KiB de CSS próprio dentro dos budgets.
-- 6 corpora canônicos no registry.
-- 433 capítulos auditados continuamente.
-- 86 entidades geográficas/literárias.
-- 149 ocorrências e 97 URLs únicas de evidência.
+- 12 obras publicadas derivadas do manifest de direitos/proveniência.
+- 591 unidades estruturais auditadas.
+- 127 entidades geográficas/literárias.
+- 210 ocorrências com evidência.
+- 117 URLs únicas de evidência.
 - 0 rotas inferidas.
-- 12 obras fundadoras cobertas pelo manifest de direitos/proveniência.
-- 6 obras publicadas com edição congelada e 6 planejadas bloqueadas até seleção da edição exata.
+- 9 páginas públicas e 99 referências locais sob auditoria estática.
+- 221,3 KiB de JavaScript próprio e 23,7 KiB de CSS dentro do budget atual.
+- QA real em Chromium para shell, lazy loading, Atlas, viewport móvel e teclado.
+- Lighthouse no `main`: performance 95, acessibilidade 96, best practices 100 e SEO 100.
+- FCP 1,1 s; LCP 1,1 s; TBT 30 ms; CLS 0,06 no baseline Lighthouse desktop validado.
 
-## Corpus validado automaticamente
+## Corpus fundador
 
-| Obra | Capítulos | Entidades | Ocorrências | Estado |
+| Obra | Estrutura | Entidades | Ocorrências | Estado editorial |
 |---|---:|---:|---:|---|
-| Memórias Póstumas de Brás Cubas | 160 | 30 | 62 | v1.0 canônica |
-| Dom Casmurro | 148 | 10 | 22 | v1.0 canônica |
-| O Cortiço | 23 | 16 | 24 | v1.0 canônica |
-| Triste Fim de Policarpo Quaresma | 15 | 11 | 15 | v1.0 canônica |
-| O Guarani | 54 | 9 | 14 | v1.0 canônica |
-| Iracema | 33 | 10 | 12 | v1.0 canônica |
-| **Total** | **433** | **86** | **149** | **6 obras** |
+| Memórias Póstumas de Brás Cubas | 160 capítulos | 30 | 62 | v1.0 profunda |
+| Dom Casmurro | 148 capítulos | 10 | 22 | v1.0 profunda |
+| O Cortiço | 23 capítulos | 16 | 24 | v1.0 profunda |
+| Triste Fim de Policarpo Quaresma | 15 capítulos | 11 | 15 | v1.0 profunda |
+| O Guarani | 54 capítulos | 9 | 14 | v1.0 profunda |
+| Iracema | 33 capítulos | 10 | 12 | v1.0 profunda |
+| Os Sertões | 44 unidades | 16 | 30 | v0.1 estrutural |
+| Úrsula | 22 unidades | 4 | 4 | v0.1 estrutural |
+| Memórias de um Sargento de Milícias | 48 unidades | 4 | 4 | v0.1 estrutural |
+| O Ateneu | 12 unidades | 4 | 4 | v0.1 estrutural |
+| Macunaíma | 19 unidades | 8 | 11 | v0.1 estrutural |
+| Vidas Secas | 13 unidades | 5 | 8 | v0.1 estrutural |
+| **Total** | **591 unidades** | **127** | **210** | **12/12 no registry** |
 
-## P7 — escala e corpus — concluído
+## P7–P10 concluídos
 
+### P7 — escala e corpus
 - Registry único e lazy loading.
-- Bootstrap assíncrono das superfícies.
-- Validador genérico de todos os corpora.
-- Auditoria estrutural e semanal de evidências.
+- Bootstrap assíncrono.
+- Validador genérico de corpora.
+- Auditoria estrutural e semanal das evidências.
 
-## P8 — QA e operação — concluído
-
-- Auditoria automática de páginas, links e assets locais.
-- Budgets de JS/CSS e proteção contra regressão do carregamento de corpora.
+### P8 — QA e operação
+- Auditoria de páginas, links e assets.
+- Budgets de JS/CSS.
 - Página 404.
-- Monitoramento de uptime a cada 6 horas.
+- Monitoramento periódico do portal.
 
-## P9 — direitos, edição e proveniência — concluído
+### P9 — direitos, edição e proveniência
+- Manifest das 12 obras fundadoras.
+- Gate operacional baseado no art. 41 da Lei 9.610/1998.
+- Edição-fonte congelada para todas as 12 obras atualmente publicadas.
+- Controle separado para autoria, edição/transcrição digital e materiais visuais.
 
-- `data/rights-provenance.json` cobre as 12 obras fundadoras.
-- O cálculo operacional aplica o art. 41 da Lei 9.610/1998 e recalcula automaticamente a data de término do prazo patrimonial autoral.
-- As 6 obras publicadas exigem `edition_status = frozen_in_corpus` e são cruzadas com `corpus.edicao` real.
-- Obras planejadas permanecem bloqueadas até a escolha da edição-fonte exata.
-- `Macunaíma` e `Vidas Secas` deixam de ser tratadas como dúvida de prazo autoral: o gargalo passa a ser a edição/transcrição/fonte específica.
-- `docs/RIGHTS_AND_PROVENANCE.md` explicita que edição, tradução, transcrição digital, imagens e aparato crítico possuem verificações próprias.
-- O controle é editorial/operacional e não é apresentado como parecer jurídico.
+### P10 — navegador real e Lighthouse
+- Playwright/Chrome em workflow seletivo.
+- Teste funcional de lazy loading.
+- Teste do Atlas com registry completo.
+- QA mobile e teclado.
+- Lighthouse com budgets mínimos e relatório preservado como artefato.
+- Correção de regressão real em `obra.js` detectada somente pelo navegador.
 
-## Bloqueadores restantes para produção v1
+## O que ainda bloqueia a produção v1 definitiva
 
-### P0
+### P0 editorial
 
-1. **QA de navegador e acessibilidade dinâmica:** teclado, foco, mapa, estados assíncronos e viewport móvel real.
-2. **Lighthouse/Core Web Vitals:** medição real e revisão de dependências externas/CDN.
-3. **Teste funcional do lazy loading no navegador:** confirmar que a página individual baixa somente o corpus solicitado e tolera falha parcial.
+1. **Aprofundar as 6 obras v0.1.** A estrutura integral está fechada, mas Úrsula, Memórias de um Sargento de Milícias, O Ateneu, Macunaíma e Vidas Secas ainda possuem camada geográfica inicial; Os Sertões possui camada mais ampla, porém também classificada como estrutural.
+2. **Auditoria transversal de lugares compartilhados.** Criar identidade canônica entre obras sem fuzzy merge e sem perder formas históricas distintas.
+3. **Geocodificação histórica documentada.** Adicionar coordenadas somente quando houver fonte histórico-cartográfica defensável e registrar essa proveniência.
 
-### P1
+### P1 de acabamento para release
 
-- Fechar as outras 6 obras fundadoras.
-- Criar identidade canônica transversal para lugares compartilhados, sem fuzzy merge automático.
-- Geocodificar somente lugares historicamente defensáveis, com fonte.
-- Adicionar JSON-LD e imagens OG.
-- Criar tags/releases e backup formal dos corpora.
-
-## Obras fundadoras restantes
-
-| Obra | Prazo autoral | Edição-fonte | Corpus |
-|---|---|---|---|
-| Os Sertões | documentado/expirado | pendente | pendente |
-| Úrsula | documentado/expirado | pendente | pendente |
-| Memórias de um Sargento de Milícias | documentado/expirado | pendente | pendente |
-| O Ateneu | documentado/expirado | pendente | pendente |
-| Macunaíma | documentado/expirado | pendente | bloqueado até edição |
-| Vidas Secas | documentado/expirado | pendente | bloqueado até edição |
+- JSON-LD para `Book`, `Person` e `CreativeWork`.
+- Imagem OG institucional e por obra.
+- Revisão manual WCAG final focada em mapa, foco visível e leitores de tela.
+- Release/tag e backup formal dos corpora publicados.
+- Checklist final de smoke test do domínio público de produção.
 
 ## Decisão de lançamento
 
-### Beta público
+### Beta público controlado
 
-**GO condicionado — 96% pronto.** Os principais controles de infraestrutura e governança editorial estão automatizados. Resta uma rodada de QA dinâmica em navegador/Lighthouse antes de divulgação ampla.
+**GO — 99% pronto.** Não há bloqueador técnico conhecido para um beta público controlado. O portal possui QA estático e dinâmico, performance medida, deploy automatizado, monitoramento e proveniência editorial documentada. O beta deve ser apresentado como **acervo em expansão e aprofundamento**, porque seis obras ainda estão em v0.1 estrutural.
 
 ### Produção v1 definitiva
 
-**NO-GO principalmente por escopo editorial.** A infraestrutura e os controles transversais estão próximos de produção; a lacuna dominante é o corpus fundador, ainda em 6 de 12 obras.
+**GO condicionado ao aprofundamento editorial.** A infraestrutura deixou de ser bloqueadora. A versão v1 definitiva deve aguardar principalmente o aprofundamento das seis obras estruturais e a consolidação transversal de lugares/geocodificação.
 
-## Caminho crítico atualizado
+## Caminho crítico otimizado
 
-1. Automatizar QA real em navegador e Lighthouse.
-2. Abrir beta público controlado após QA dinâmica verde.
-3. Produzir `Os Sertões`, `Úrsula`, `Memórias de um Sargento de Milícias` e `O Ateneu` no pipeline atual.
-4. Selecionar/validar edições de `Macunaíma` e `Vidas Secas`, então produzir seus corpora.
-5. Consolidar identidade transversal de lugares e geocodificação histórica.
-6. Auditoria final, tag e release `v1.0.0`.
+1. Aprofundar em lote as seis obras v0.1, priorizando maior retorno espacial: `Os Sertões` → `Macunaíma` → `Memórias de um Sargento de Milícias` → `O Ateneu` → `Úrsula` → `Vidas Secas`.
+2. Executar deduplicação assistida de lugares entre obras com revisão humana/semântica obrigatória antes de qualquer fusão.
+3. Criar camada de proveniência da geocodificação histórica.
+4. Adicionar JSON-LD/OG e fechar acessibilidade manual residual.
+5. Gerar release candidate, congelar corpora e executar QA final.
+6. Marcar `v1.0.0` somente após o gate editorial final.
 
 ## Métrica de conclusão
 
-Ponderação: 30% corpus fundador; 20% integridade/validação; 15% UX/acessibilidade; 15% performance/arquitetura; 10% direitos/proveniência; 10% operação/deploy/monitoramento.
+Ponderação operacional: 30% corpus fundador/profundidade; 20% integridade/validação; 15% UX/acessibilidade; 15% performance/arquitetura; 10% direitos/proveniência; 10% operação/deploy/monitoramento.
 
-Após P7, P8 e P9, a estimativa de produção v1 evoluiu de **65% para 79%**. O maior ganho seguinte virá do QA real de navegador e, sobretudo, da conclusão das seis obras fundadoras restantes.
+Com P10 concluído e as 12 obras fundadoras presentes no registry, a estimativa sobe de **79% para 88% da produção v1 planejada**. O trabalho restante é predominantemente editorial e histórico-cartográfico, não mais de infraestrutura básica.
