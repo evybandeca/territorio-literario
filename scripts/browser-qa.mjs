@@ -1,7 +1,8 @@
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
 
 const base=process.env.QA_BASE_URL||'http://127.0.0.1:4173';
-const browser=await chromium.launch({headless:true});
+const executablePath=process.env.CHROME_PATH||'/usr/bin/google-chrome';
+const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox','--disable-dev-shm-usage']});
 const failures=[];
 
 async function run(name,fn){
