@@ -1,0 +1,22 @@
+{
+  "schema_version":"1.0.0",
+  "assessment_date":"2026-09-07",
+  "policy":{
+    "auto_geocoding":false,
+    "fuzzy_merge":false,
+    "default_decision":"withheld_until_verified",
+    "coordinate_rule":"Nenhuma coordenada entra no corpus público sem fonte explícita, precisão declarada, justificativa e revisão humana/documental.",
+    "fictional_rule":"Entidades ficcionais não recebem coordenadas por equivalência biográfica, crítica ou similaridade nominal.",
+    "historical_rule":"Topônimos históricos exigem desambiguação compatível com a época da obra antes de marcador público."
+  },
+  "records":[
+    {"work_id":"o-ateneu","entity_id":"oa-ateneu","decision":"withheld","accuracy":"not_geocodable","reviewed_at":"2026-09-07","rationale":"O Ateneu é instituição ficcional; a equivalência com colégios reais conhecidos da biografia de Raul Pompeia não é prova textual suficiente para geocodificação."},
+    {"work_id":"ursula","entity_id":"urs-br-praias-brasileiras","decision":"withheld","accuracy":"context_only","reviewed_at":"2026-09-07","rationale":"A narrativa de Susana informa apenas desembarque em praias brasileiras, sem porto, província ou coordenada defensável."},
+    {"work_id":"ursula","entity_id":"urs-convento-carmelitas","decision":"withheld","accuracy":"not_geocodable","reviewed_at":"2026-09-07","rationale":"O convento dos Carmelitas não possui localidade identificada no texto adotado; múltiplas instituições históricas poderiam corresponder ao nome."},
+    {"work_id":"vidas-secas","entity_id":"vs-sertao-caatinga","decision":"withheld","accuracy":"context_only","reviewed_at":"2026-09-07","rationale":"O romance preserva deliberadamente a indeterminação do sertão/caatinga; um centroide regional criaria falsa precisão."},
+    {"work_id":"vidas-secas","entity_id":"vs-rio-seco","decision":"withheld","accuracy":"not_geocodable","reviewed_at":"2026-09-07","rationale":"O rio seco não recebe nome próprio e não pode ser ligado com segurança a um curso d'água real."},
+    {"work_id":"vidas-secas","entity_id":"vs-fazenda","decision":"withheld","accuracy":"not_geocodable","reviewed_at":"2026-09-07","rationale":"A fazenda é narrativamente material, porém não nomeada; não há base textual para equivalência com propriedade real."},
+    {"work_id":"vidas-secas","entity_id":"vs-cidade","decision":"withheld","accuracy":"not_geocodable","reviewed_at":"2026-09-07","rationale":"A cidade não é nomeada no romance; atribuir município por contexto biográfico ou crítico violaria a política conservadora."},
+    {"work_id":"vidas-secas","entity_id":"vs-cadeia","decision":"withheld","accuracy":"not_geocodable","reviewed_at":"2026-09-07","rationale":"A cadeia depende da cidade anônima da narrativa e, portanto, também permanece sem marcador."}
+  ]
+}
