@@ -1,58 +1,18 @@
-// TERRITÓRIO LITERÁRIO — índice de lugares.
-// O Atlas inverte a Biblioteca: em vez de "obra → lugares", construímos
-// "lugar → obras" a partir dos mesmos dados, agrupando por nome exato do lugar.
-// Isto NÃO é geocodificação real (não fundimos lugares com nomes diferentes
-// mesmo que próximos no mapa) — é deliberadamente conservador: só une o que
-// já escrevemos como o mesmo nome. (Evolução futura documentada em data.js:
-// place_id + canonical_name + aliases, quando isso passar a valer a pena.)
-
-// Quando um lugar reúne mais de um "tipo" (ex.: histórico numa obra,
-// narrativo em outra), o Atlas precisa mostrar UM tipo principal — mas nunca
-// pela ordem em que os dados foram inseridos. Esta é a hierarquia editorial
-// explícita: um lugar onde a ação de fato acontece (narrativo) pesa mais que
-// um pano de fundo histórico, que pesa mais que um vínculo biográfico do
-// autor, e assim por diante. Mudar esta ordem é uma decisão editorial, não
-// um acidente de código.
-const ORDEM_TIPOS = ["narrativo", "historico", "biografico", "mencionado", "ficcional"];
-
-function tipoPrincipalDe(tipos) {
-  for (const t of ORDEM_TIPOS) {
-    if (tipos.has(t)) return t;
-  }
-  return "mencionado";
+// TERRITÓRIO LITERÁRIO — índice geográfico unificado.
+// Mantém retrocompatibilidade com OBRAS[].lugares e incorpora, quando disponível,
+// o corpus canônico place_entities/place_mentions. Lugares sem coordenadas continuam
+// pesquisáveis no Atlas, mas não recebem marcador até haver geocodificação defensável.
+const ORDEM_TIPOS=["narrativo","historico","biografico","mencionado","ficcional"];
+function tipoPrincipalDe(tipos){for(const t of ORDEM_TIPOS)if(tipos.has(t))return t;return "mencionado"}
+function normalizarLugar(s){return(s||'').toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
+function construirIndiceLugares(){
+  const corpora=window.CORPUS_PROFUNDO||{},entidades=[];Object.entries(corpora).forEach(([obraId,corpus])=>(corpus.place_entities||[]).forEach(e=>entidades.push({obraId,corpus,e})));
+  const aliasParaEntidade=new Map();entidades.forEach(({e})=>{const nomes=[e.canonical_name,...(e.aliases||[])];const base=(e.canonical_name||'').split(',')[0];if(base)nomes.push(base);nomes.forEach(n=>{const k=normalizarLugar(n);if(k&&!aliasParaEntidade.has(k))aliasParaEntidade.set(k,e.id)})});
+  const porChave=new Map();
+  function garantir(chave,nome,extra={}){if(!porChave.has(chave))porChave.set(chave,{id:chave,nome,lat:null,lon:null,escala:extra.escala||null,aliases:new Set(),tipos:new Set(),certezas:new Set(),obras:new Map(),ocorrencias:0,fontes:new Set(),entity_id:extra.entity_id||null});return porChave.get(chave)}
+  function addObra(entrada,obra){if(!obra)return;entrada.obras.set(obra.id,{id:obra.id,titulo:obra.titulo,autor:obra.autor,ano:obra.anoLabel||obra.ano})}
+  OBRAS.forEach(obra=>(obra.lugares||[]).forEach(lugar=>{const nk=normalizarLugar(lugar.nome),entityId=aliasParaEntidade.get(nk),chave=entityId?`entity:${entityId}`:`legacy:${nk}`,ent=entidades.find(x=>x.e.id===entityId)?.e,entrada=garantir(chave,ent?.canonical_name||lugar.nome,{escala:ent?.escala||lugar.escala,entity_id:entityId||null});entrada.aliases.add(lugar.nome);entrada.tipos.add(lugar.tipo||'mencionado');entrada.certezas.add(lugar.certeza||'ilustrativo');if(Number.isFinite(lugar.lat)&&Number.isFinite(lugar.lon)){entrada.lat=lugar.lat;entrada.lon=lugar.lon}entrada.fontes.add('catalogo');addObra(entrada,obra)}));
+  Object.entries(corpora).forEach(([obraId,corpus])=>{const obra=OBRAS.find(o=>o.id===obraId),entityMap=new Map((corpus.place_entities||[]).map(e=>[e.id,e]));(corpus.place_entities||[]).forEach(e=>{const entrada=garantir(`entity:${e.id}`,e.canonical_name,{escala:e.escala,entity_id:e.id});(e.aliases||[]).forEach(a=>entrada.aliases.add(a));entrada.fontes.add('corpus')});(corpus.place_mentions||[]).forEach(m=>{const e=entityMap.get(m.place_id),entrada=garantir(`entity:${m.place_id}`,e?.canonical_name||m.canonical_name||m.nome_textual,{escala:e?.escala||m.escala,entity_id:m.place_id});entrada.aliases.add(m.nome_textual||'');entrada.tipos.add(m.tipo||'mencionado');entrada.certezas.add(m.certeza||'ilustrativo');entrada.ocorrencias++;entrada.fontes.add('corpus');if(Number.isFinite(m.lat)&&Number.isFinite(m.lon)&&!Number.isFinite(entrada.lat)){entrada.lat=m.lat;entrada.lon=m.lon}addObra(entrada,obra)});});
+  return [...porChave.values()].map(l=>{const certezas=[...l.certezas],localizado=Number.isFinite(l.lat)&&Number.isFinite(l.lon);return{...l,aliases:[...l.aliases].filter(Boolean),tipos:[...l.tipos],obras:[...l.obras.values()],fontes:[...l.fontes],tipoPrincipal:tipoPrincipalDe(l.tipos),certezaPrincipal:certezas.length&&certezas.every(c=>c==='identificado')?'identificado':'ilustrativo',localizado}}).sort((a,b)=>b.obras.length-a.obras.length||Number(b.localizado)-Number(a.localizado)||a.nome.localeCompare(b.nome,'pt-BR'));
 }
-
-function construirIndiceLugares() {
-  const porNome = new Map();
-  OBRAS.forEach((obra) => {
-    (obra.lugares || []).forEach((lugar) => {
-      const chave = lugar.nome;
-      if (!porNome.has(chave)) {
-        porNome.set(chave, { nome: lugar.nome, lat: lugar.lat, lon: lugar.lon, tipos: new Set(), certezas: new Set(), obras: [] });
-      }
-      const entrada = porNome.get(chave);
-      entrada.tipos.add(lugar.tipo);
-      entrada.certezas.add(lugar.certeza);
-      if (!entrada.obras.some((o) => o.id === obra.id)) {
-        entrada.obras.push({ id: obra.id, titulo: obra.titulo, autor: obra.autor, ano: obra.anoLabel || obra.ano });
-      }
-    });
-  });
-  return Array.from(porNome.values()).map((l) => ({
-    ...l,
-    tipos: Array.from(l.tipos),
-    tipoPrincipal: tipoPrincipalDe(l.tipos),
-    certezaPrincipal: Array.from(l.certezas).every((c) => c === "identificado") ? "identificado" : "ilustrativo",
-  })).sort((a, b) => b.obras.length - a.obras.length);
-}
-
-function estatisticasAcervo() {
-  const lugares = construirIndiceLugares();
-  const autores = new Set(OBRAS.map((o) => o.autor));
-  return {
-    obras: OBRAS.length,
-    autores: autores.size,
-    lugaresUnicos: lugares.length,
-    citacoesDeLugar: OBRAS.reduce((soma, o) => soma + (o.lugares ? o.lugares.length : 0), 0),
-  };
-}
+function estatisticasAcervo(){const lugares=construirIndiceLugares(),autores=new Set(OBRAS.map(o=>o.autor));return{obras:OBRAS.length,autores:autores.size,lugaresUnicos:lugares.length,lugaresComCoordenadas:lugares.filter(l=>l.localizado).length,ocorrenciasAuditadas:lugares.reduce((s,l)=>s+l.ocorrencias,0),citacoesDeLugar:OBRAS.reduce((s,o)=>s+(o.lugares||[]).length,0)}}
