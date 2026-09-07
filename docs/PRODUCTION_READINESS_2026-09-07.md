@@ -1,130 +1,110 @@
 # Território Literário — Relatório de Prontidão para Produção
 
-Data de referência: 07/09/2026
+Data de referência: 07/09/2026 — atualização após P7
 
 ## Resumo executivo
 
-O Território Literário já deixou a fase de protótipo: há navegação pública completa, Atlas, Biblioteca, Autores, Linha do Tempo, páginas de obra, metodologia pública, CI e deploy automático no GitHub Pages. O corpus profundo possui agora seis obras canônicas em padrão v1.0 ou em fechamento v1.0: Memórias Póstumas de Brás Cubas, Dom Casmurro, O Cortiço, Triste Fim de Policarpo Quaresma, O Guarani e Iracema.
+O Território Literário está em fase de **pré-produção avançada**. O portal público, o modelo editorial e o pipeline de publicação já funcionam; o principal gargalo técnico de crescimento dos corpora foi removido no P7.
 
-**Estimativa de prontidão para a versão de produção v1 planejada: 65%.**
+**Prontidão estimada para produção v1 planejada: 72%.**
 
-**Estimativa de prontidão para um beta público controlado: 82%.**
+**Prontidão estimada para beta público controlado: 90%.**
 
-A diferença existe porque o produto já pode ser usado por público real, mas ainda faltam controles de escala, validação transversal e fechamento editorial do conjunto fundador antes de ser apresentado como versão v1 definitiva.
+O núcleo validado contém **6 obras canônicas, 433 capítulos auditados, 86 entidades geográficas/literárias e 149 ocorrências com evidência textual**, mantendo **0 rotas inferidas**. O CI valida automaticamente todos os corpora registrados e 149 URLs de evidência; 97 URLs são únicas e todas as evidências atuais usam `pt.wikisource.org`.
 
 ## Estado por eixo
 
 | Eixo | Prontidão | Estado |
 |---|---:|---|
-| Shell, navegação e páginas públicas | 88% | Funcional e publicado |
-| Atlas/Biblioteca/Autores/Linha do Tempo | 82% | Funcional; requer refinamento e escala |
-| Corpus fundador | 50% | 6 de 12 obras fundadoras em padrão canônico |
-| Integridade de dados e CI | 70% | Gates existem, mas ainda não são uniformes para todos os corpora |
-| Deploy e operação | 88% | GitHub Actions + Pages funcionando |
-| SEO, acessibilidade e performance | 62% | Base existente; auditoria final ainda necessária |
-| Direitos, edição e governança editorial | 58% | Política definida; auditoria documental final por obra ainda necessária |
-| Geocodificação histórica | 40% | Política conservadora correta; muitos topônimos aguardam validação histórica |
+| Shell, navegação e páginas públicas | 90% | Funcional e publicado |
+| Atlas/Biblioteca/Autores/Linha do Tempo | 84% | Funcional; refinamentos finais pendentes |
+| Corpus fundador | 50% | 6 de 12 obras fundadoras canônicas |
+| Integridade de dados e CI | 92% | Registry, validador genérico, evidências e sintaxe sob gate único |
+| Deploy e operação | 90% | GitHub Actions + Pages estáveis |
+| Arquitetura/performance | 78% | Lazy loading por obra implementado; medição Lighthouse ainda pendente |
+| SEO e acessibilidade | 64% | Base existente; auditoria WCAG/Lighthouse pendente |
+| Direitos, edição e governança editorial | 60% | Política definida; revisão documental final por obra pendente |
+| Geocodificação histórica | 40% | Política conservadora correta; validação histórica ainda incompleta |
 
-## Concluído
+## Corpus validado automaticamente
 
-- Identidade e design system inicial.
-- Homepage e navegação global.
-- Atlas com busca e filtros.
-- Biblioteca pesquisável.
-- Autores e perfil individual.
-- Linha do Tempo.
-- Página Sobre/Metodologia.
-- Página de obra com navegação interna, personagens, eventos, território e evidências.
-- SEO técnico básico: metadados, canonical dinâmico, Open Graph básico, robots.txt e sitemap.xml.
-- GitHub Actions para qualidade e deploy.
-- Smoke check do portal.
-- Política canônica de `place_entity` versus `place_mention`.
-- Política explícita de `tipo`, `escala` e `certeza`.
-- Regra de não inventar coordenadas ou rotas.
-- Evidência textual por ocorrência geográfica.
-- Corpus canônico v1.0 de Memórias Póstumas de Brás Cubas.
-- Corpus canônico v1.0 de Dom Casmurro.
-- Corpus canônico v1.0 de O Cortiço.
-- Corpus canônico v1.0 de Triste Fim de Policarpo Quaresma.
-- Corpus canônico v1.0 de O Guarani.
-- Corpus canônico v1.0 de Iracema em fechamento neste PR.
+| Obra | Capítulos | Entidades | Ocorrências | Estado |
+|---|---:|---:|---:|---|
+| Memórias Póstumas de Brás Cubas | 160 | 30 | 62 | v1.0 canônica |
+| Dom Casmurro | 148 | 10 | 22 | v1.0 canônica |
+| O Cortiço | 23 | 16 | 24 | v1.0 canônica |
+| Triste Fim de Policarpo Quaresma | 15 | 11 | 15 | v1.0 canônica |
+| O Guarani | 54 | 9 | 14 | v1.0 canônica |
+| Iracema | 33 | 10 | 12 | v1.0 canônica |
+| **Total** | **433** | **86** | **149** | **6 obras** |
 
-## Bloqueadores para produção v1
+## P7 concluído — escala e automação
 
-### P0 — obrigatórios
+- `js/corpus-registry.js` tornou-se o ponto único de registro das obras canônicas.
+- A página de obra usa lazy loading e baixa somente o corpus solicitado.
+- Atlas, Biblioteca e Autores carregam os corpora pelo registry, sem conhecer nomes individuais de arquivos.
+- `js/page-bootstrap.js` preserva os módulos de página existentes e inicializa a interface somente após os dados necessários estarem disponíveis.
+- `scripts/test-corpus-registry.mjs` verifica registry e idempotência do loader.
+- `scripts/validate-corpora.mjs` valida todas as obras registradas com uma regra única.
+- Memórias Póstumas e Dom Casmurro agora estão cobertos pelo mesmo gate dos corpora mais recentes.
+- `scripts/audit-evidence-links.mjs` valida HTTPS, host, estrutura e duplicações das evidências.
+- `.github/workflows/evidence-links.yml` executa auditoria externa semanal e falha apenas para 404/410 confirmados; bloqueios/rate limits transitórios são avisos.
+- O CI continua executando smoke check e verificação de sintaxe JavaScript.
 
-1. **Registro/lazy loading dos corpora.** Atualmente páginas genéricas carregam vários arquivos de corpus diretamente. Com 12+ obras, isso aumenta payload, acoplamento e risco de regressão. Criar um `corpus-registry.js`/manifest e carregar somente os corpora necessários por página/obra.
-2. **Validador genérico para todos os corpora.** Unificar regras de schema e garantir que Memórias Póstumas e Dom Casmurro também sejam cobertos pelo CI, além dos validadores específicos atuais.
-3. **Auditoria editorial final de direitos e edição.** Confirmar, para cada obra publicada, autor em domínio público e a edição/texto exato utilizado, mantendo referência e proveniência congeladas.
-4. **Auditoria de links/evidências.** Validar automaticamente URLs de fonte e detectar capítulos/links quebrados.
-5. **QA responsivo e acessibilidade.** Testes em desktop/mobile, teclado, contraste, landmarks, aria e navegação do mapa.
-6. **Performance.** Medir Lighthouse/Core Web Vitals, reduzir JS global, evitar carregar corpora desnecessários e revisar dependências CDN.
+## Bloqueadores restantes para produção v1
 
-### P1 — necessário para v1 robusta
+### P0 — obrigatórios antes de declarar produção definitiva
 
-- Fechar as 12 obras fundadoras.
-- Criar identidade canônica transversal de lugares compartilhados entre obras, sem fusão automática por similaridade nominal.
-- Geocodificar apenas os lugares historicamente defensáveis e registrar fonte da geocodificação.
+1. **Auditoria editorial de direitos e edição.** Congelar para cada obra: domínio público do texto/autoria, edição exata, fonte digital e proveniência.
+2. **QA responsivo e acessibilidade.** Desktop/mobile, teclado, foco, contraste, landmarks, ARIA e operação do mapa sem mouse.
+3. **Performance mensurada.** Lighthouse/Core Web Vitals, orçamento de payload, dependências CDN e comportamento em conexão móvel.
+4. **Teste funcional de lazy loading no navegador.** Cobrir página individual, Atlas e falha parcial de um corpus com teste automatizado de browser quando a infraestrutura permitir.
+
+### P1 — necessários para v1 robusta
+
+- Fechar as outras 6 obras fundadoras.
+- Criar identidade canônica transversal para lugares compartilhados entre obras sem fuzzy merge automático.
+- Geocodificar apenas lugares historicamente defensáveis e registrar fonte da geocodificação.
 - Criar página 404 e estados de erro/ausência de dados.
-- Adicionar JSON-LD para `Book`, `Person` e `CreativeWork` quando aplicável.
-- Criar imagem social/OG institucional e por obra.
-- Adicionar monitoramento externo de disponibilidade do site.
-- Criar rotina de backup/release/tag para corpora publicados.
+- Adicionar JSON-LD para `Book`, `Person` e `CreativeWork`.
+- Criar imagem OG institucional e por obra.
+- Adicionar monitoramento de disponibilidade do portal.
+- Criar tags/releases e rotina de backup dos corpora publicados.
 
-### P2 — pode entrar após lançamento
-
-- Mapas históricos sobrepostos.
-- Imagens históricas com proveniência avançada.
-- Reader sincronizado texto-mapa.
-- Story beats e narrativa guiada.
-- Rotas literárias apenas quando explicitamente comprovadas.
-- Busca full-text avançada.
-- Migração futura de GitHub Pages/estático para Next.js + PostgreSQL/PostGIS quando o volume justificar.
-
-## Corpus fundador
+## Obras fundadoras restantes
 
 | Obra | Estado |
 |---|---|
-| Memórias Póstumas de Brás Cubas | v1.0 canônica |
-| Dom Casmurro | v1.0 canônica |
-| O Cortiço | v1.0 canônica |
-| Triste Fim de Policarpo Quaresma | v1.0 canônica |
-| O Guarani | v1.0 canônica |
-| Iracema | v1.0 em fechamento |
 | Os Sertões | pendente |
 | Úrsula | pendente |
 | Memórias de um Sargento de Milícias | pendente |
 | O Ateneu | pendente |
-| Macunaíma | pendente de revisão de direitos/edição antes de inclusão |
-| Vidas Secas | pendente de revisão de direitos/edição antes de inclusão |
+| Macunaíma | revisão de direitos/edição obrigatória antes de inclusão |
+| Vidas Secas | revisão de direitos/edição obrigatória antes de inclusão |
 
 ## Decisão de lançamento
 
 ### Beta público
 
-**GO condicionado.** O portal já possui conteúdo, arquitetura editorial e experiência suficientes para um beta público, desde que seja explicitamente rotulado como acervo em expansão e que as seis obras canônicas sejam tratadas como o núcleo validado.
-
-Antes do beta, executar os P0 de lazy loading/registry, validador genérico, auditoria de direitos/edições das obras publicadas, link check e QA básico.
+**GO condicionado — 90% pronto.** O portal possui massa crítica, modelo editorial consistente, CI, deploy e agora arquitetura de corpus escalável. Antes de divulgar amplamente, executar auditoria de direitos/edições das seis obras atuais e uma rodada curta de QA mobile/acessibilidade/performance.
 
 ### Produção v1 definitiva
 
-**NO-GO neste momento.** O principal motivo não é instabilidade do site, mas incompletude do escopo fundador e controles transversais ainda insuficientes para sustentar crescimento sem dívida técnica/editorial.
+**NO-GO por escopo, não por infraestrutura.** O maior déficit passa a ser editorial: apenas 6 das 12 obras fundadoras estão fechadas. A infraestrutura já não é o principal impedimento.
 
-## Caminho crítico recomendado
+## Caminho crítico atualizado
 
-1. Concluir TL-06 — Iracema.
-2. Implementar `corpus-registry` + lazy loading.
-3. Criar validador genérico único e colocar os seis corpora sob o mesmo gate.
-4. Auditar direitos/edições e links das seis obras.
-5. Executar Lighthouse + acessibilidade + QA mobile.
-6. Publicar beta controlado.
-7. Produzir as seis obras fundadoras restantes em lotes.
-8. Consolidar identidade canônica de lugares e geocodificação histórica.
-9. Executar auditoria editorial final e marcar release `v1.0.0` do portal.
+1. Auditoria automatizada/manual de direitos e proveniência das seis obras publicadas.
+2. Lighthouse + acessibilidade + QA mobile.
+3. Publicar beta público controlado.
+4. Produzir `Os Sertões`, `Úrsula`, `Memórias de um Sargento de Milícias` e `O Ateneu` no pipeline automatizado.
+5. Resolver direitos/edições de `Macunaíma` e `Vidas Secas` antes de qualquer corpus público.
+6. Consolidar identidade transversal de lugares e geocodificação histórica.
+7. Auditoria editorial final, tag e release `v1.0.0`.
 
-## Métrica de progresso sugerida
+## Métrica de conclusão
 
-A partir deste ponto, o projeto não deve ser medido apenas por número de páginas ou obras. A métrica de conclusão deve combinar:
+A ponderação continua:
 
 - 30% corpus fundador;
 - 20% integridade/validação;
@@ -133,4 +113,4 @@ A partir deste ponto, o projeto não deve ser medido apenas por número de pági
 - 10% direitos/proveniência;
 - 10% operação/deploy/monitoramento.
 
-Com essa ponderação, o estado atual fica em aproximadamente **65% da produção v1 planejada**.
+Com o P7 concluído, a estimativa sobe de **65% para 72% da produção v1 planejada**. O próximo ganho de prontidão virá menos de adicionar páginas e mais de fechar QA, direitos/proveniência e o restante do corpus fundador.
