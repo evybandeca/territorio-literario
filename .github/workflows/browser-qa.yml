@@ -33,14 +33,18 @@ concurrency:
 jobs:
   browser-qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Baixar o repositório
         uses: actions/checkout@v6
-      - name: Instalar QA de navegador
+      - name: Preparar QA de navegador
+        shell: bash
         run: |
-          npm install --no-save --no-package-lock playwright@1.63.0 lighthouse@13.4.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --no-package-lock playwright-core@1.63.0 lighthouse@13.4.1
+          CHROME_PATH="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME_PATH"
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+          "$CHROME_PATH" --version
       - name: Iniciar servidor estático
         shell: bash
         run: |
@@ -59,8 +63,6 @@ jobs:
       - name: Executar Lighthouse
         shell: bash
         run: |
-          export CHROME_PATH="$(find "$HOME/.cache/ms-playwright" -type f -path '*/chrome-linux*/chrome' | head -n 1)"
-          test -n "$CHROME_PATH"
           npx lighthouse http://127.0.0.1:4173/index.html \
             --chrome-flags="--headless --no-sandbox --disable-gpu" \
             --preset=desktop \
