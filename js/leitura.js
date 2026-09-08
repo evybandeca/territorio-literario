@@ -7,7 +7,15 @@
   if(!config){fail('Esta obra ainda não possui uma edição integral aprovada para leitura local.');return}
   els.title.textContent=config.titulo;els.author.textContent=config.autor;els.edition.textContent=config.edicao;els.back.href=`obra.html?id=${encodeURIComponent(config.id)}`;els.sourceCopy.textContent=`Edição-base: ${config.edicao}. Texto digital preparado a partir de ${config.source.provider}, eBook #${config.source.ebook}, com proveniência registrada pelo projeto.`;els.sourceLink.href=config.sourceReference||config.source.url;
   let response;try{response=await fetch(config.localPath,{cache:'force-cache'})}catch{fail('Não foi possível carregar o texto desta edição.');return}if(!response.ok){fail(`O arquivo local da obra não está disponível (HTTP ${response.status}).`);return}const raw=await response.text();
-  const chapterRe=/^CAPITULO\s+([IVXLCDM]+)\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm,matches=[...raw.matchAll(chapterRe)];if(!matches.length){fail('A estrutura de capítulos desta edição não pôde ser reconhecida.');return}
+  function chapterMatches(text,format){
+    const patterns={
+      'capitulo-roman':/^CAPITULO\s+([IVXLCDM]+)\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm,
+      'roman-heading':/^([IVXLCDM]+)\.?\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm
+    };
+    const re=patterns[format]||patterns['capitulo-roman'];
+    return [...text.matchAll(re)];
+  }
+  const matches=chapterMatches(raw,config.chapterFormat);if(!matches.length){fail('A estrutura de capítulos desta edição não pôde ser reconhecida.');return}
   const romanValue=s=>{const m={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};let n=0;for(let i=0;i<s.length;i++)n+=(m[s[i]]<(m[s[i+1]]||0)?-m[s[i]]:m[s[i]]);return n};
   const chapters=matches.map((m,i)=>({roman:m[1],number:romanValue(m[1]),title:m[2].trim(),body:raw.slice(m.index+m[0].length,i+1<matches.length?matches[i+1].index:raw.length).trim()}));
   const key=`tl-reader:${config.id}:chapter`,explicit=params.has('capitulo');let requested=Number(params.get('capitulo')||(explicit?'':safeGet(key))||1);if(!chapters.some(c=>c.number===requested))requested=chapters[0].number;
