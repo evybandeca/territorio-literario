@@ -35,7 +35,6 @@ on:
 
 permissions:
   contents: read
-  statuses: write
 
 concurrency:
   group: browser-qa-${{ github.ref }}
@@ -56,17 +55,6 @@ jobs:
           test -n "$CHROME_PATH"
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
           "$CHROME_PATH" --version
-      - name: Registrar checksum diagnóstico de Policarpo
-        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        shell: bash
-        run: |
-          HASH="$(curl --fail --silent --show-error https://www.gutenberg.org/cache/epub/67535/pg67535.txt | sha256sum | cut -d' ' -f1)"
-          gh api "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
-            -f state=pending \
-            -f context=reader-source-sha256 \
-            -f description="$HASH" >/dev/null
       - name: Preparar textos do leitor
         run: node scripts/vendor-reader-content.mjs
       - name: Iniciar servidor estático
