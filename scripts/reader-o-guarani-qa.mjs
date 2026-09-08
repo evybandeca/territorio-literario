@@ -35,9 +35,16 @@ try{
   const atlasHref=await page.locator('#reader-atlas-link').getAttribute('href');
   assert(atlasHref?.startsWith('atlas.html?busca='),'O Guarani: capítulo 1 não ativou integração contextual com Atlas');
 
-  await page.goto(`${base}/leitura.html?obra=o-guarani&capitulo=16`,{waitUntil:'domcontentloaded'});
+  await page.goto(`${base}/leitura.html?obra=o-guarani&capitulo=15`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
-  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 2'),'O Guarani: capítulo 16 não foi associado à segunda parte');
+  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 1'),'O Guarani: capítulo 15 não permaneceu na primeira parte');
+  await page.locator('#reader-next').click();
+  await page.waitForFunction(()=>new URLSearchParams(location.search).get('capitulo')==='16',{timeout:20000});
+  assert(new URL(page.url()).searchParams.get('capitulo')==='16','O Guarani: botão próximo não avançou da fronteira 15 para 16');
+  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 2'),'O Guarani: navegação 15→16 não entrou na segunda parte');
+  await page.locator('#reader-prev').click();
+  await page.waitForFunction(()=>new URLSearchParams(location.search).get('capitulo')==='15',{timeout:20000});
+  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 1'),'O Guarani: botão anterior não retornou à primeira parte');
 
   await page.goto(`${base}/leitura.html?obra=o-guarani&capitulo=30`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
