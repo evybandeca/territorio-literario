@@ -9,7 +9,7 @@
   if(metricas)metricas.innerHTML=`<div class="page-metric"><strong>${OBRAS.length}</strong><span>obras no acervo</span></div><div class="page-metric"><strong>${autores.size}</strong><span>autores</span></div><div class="page-metric"><strong>${movimentos.length}</strong><span>movimentos</span></div><div class="page-metric"><strong>${corpusIds.size}</strong><span>corpora em pesquisa</span></div>`;
   const params=new URLSearchParams(location.search),autorInicial=params.get('autor');
   try{const saved=JSON.parse(localStorage.getItem(STORE)||'{}');if(!autorInicial){busca.value=saved.busca||'';if(movimentos.includes(saved.movimento))mov.value=saved.movimento||'';if(['ano','titulo','autor'].includes(saved.ordem))ord.value=saved.ordem}}catch(_){ }
-  const persist=()=>{if(autorInicial)return;localStorage.setItem(STORE,JSON.stringify({busca:busca.value,movimento:mov.value,ordem:ord.value}))};
+  const persist=()=>{if(autorInicial)return;try{localStorage.setItem(STORE,JSON.stringify({busca:busca.value,movimento:mov.value,ordem:ord.value}))}catch(_){ }};
   const tons=['#183a32','#274c59','#7a4933','#59463b','#3e5547','#6f4a51','#425a66','#745a36'];
   if(rail){rail.innerHTML=`<button type="button" class="movement-chip is-active" data-movement="">Todos</button>${movimentos.map(m=>`<button type="button" class="movement-chip" data-movement="${m}">${m}</button>`).join('')}`;rail.addEventListener('click',e=>{const b=e.target.closest('.movement-chip');if(!b)return;mov.value=b.dataset.movement||'';rail.querySelectorAll('.movement-chip').forEach(x=>x.classList.toggle('is-active',x===b));persist();render()})}
   function syncRail(){if(!rail)return;rail.querySelectorAll('.movement-chip').forEach(b=>b.classList.toggle('is-active',(b.dataset.movement||'')===mov.value))}
