@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+
+const read = path => fs.readFileSync(path, 'utf8');
+const home = read('index.html');
+const library = read('biblioteca.html');
+const nav = read('js/navigation.js');
+const libraryJs = read('js/biblioteca.js');
+
+const requireText = (source, token, label) => {
+  if (!source.includes(token)) throw new Error(`${label}: ausente ${token}`);
+};
+
+requireText(home, 'data-continue-reading', 'Home');
+requireText(home, 'Começar por uma obra', 'Home');
+requireText(library, 'id="biblioteca-filtros-toggle"', 'Biblioteca');
+requireText(library, 'js/reader-registry.js', 'Biblioteca');
+requireText(nav, 'aria-current="page"', 'Navegação');
+requireText(libraryJs, 'READER_REGISTRY', 'Biblioteca');
+requireText(libraryJs, 'Ler agora', 'Biblioteca');
+
+console.log('UX-01 contract OK');
