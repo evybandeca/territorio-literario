@@ -70,7 +70,7 @@
         ebook:67535,
         url:'https://www.gutenberg.org/cache/epub/67535/pg67535.txt',
         expectedUpdate:'October 18, 2024',
-        sha256:'0000000000000000000000000000000000000000000000000000000000000000',
+        sha256:'7898e07218e1431f00d6e6aa1d5ebe364bb6d770afaab865868a11df6da07350',
         requiredMarkers:['LIMA BARRETO','POLYCARPO QUARESMA','PRIMEIRA PARTE','SEGUNDA PARTE','TERCEIRA PARTE']
       },
       localPath:'reader-content/triste-fim-policarpo-quaresma.txt',
