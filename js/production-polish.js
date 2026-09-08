@@ -4,8 +4,17 @@
   const esc=s=>String(s??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
   const live=document.createElement('div');live.className='tl-live-region';live.setAttribute('aria-live','polite');live.setAttribute('aria-atomic','true');document.body.appendChild(live);
   const announce=msg=>{live.textContent='';requestAnimationFrame(()=>live.textContent=msg)};
-  const injectScript=src=>new Promise((resolve,reject)=>{const existing=[...document.scripts].find(s=>new URL(s.src||location.href,location.href).pathname.endsWith('/'+src.replace(/^\.\//,'')));if(existing){if(typeof OBRAS!=='undefined')resolve();else existing.addEventListener('load',resolve,{once:true});return}const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.body.appendChild(s)});
-  let dataPromise=null;async function ensureData(){if(typeof OBRAS!=='undefined')return;if(!dataPromise)dataPromise=injectScript('js/data.js');await dataPromise}
+  const scriptPath=src=>new URL(src,location.href).pathname;
+  const injectScript=src=>new Promise((resolve,reject)=>{const wanted=scriptPath(src),existing=[...document.scripts].find(s=>s.src&&new URL(s.src,location.href).pathname===wanted);if(existing){if(existing.dataset.tlLoaded==='true'||existing.readyState==='complete')return resolve();existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});setTimeout(resolve,0);return}const s=document.createElement('script');s.src=src;s.async=false;s.onload=()=>{s.dataset.tlLoaded='true';resolve()};s.onerror=reject;document.body.appendChild(s)});
+  let dataPromise=null;async function ensureData(){
+    if(!dataPromise)dataPromise=(async()=>{
+      if(typeof OBRAS==='undefined')await injectScript('js/data.js');
+      if(typeof CORPUS_REGISTRY==='undefined'||typeof loadAllCorpora!=='function')await injectScript('js/corpus-registry.js');
+      if(typeof loadAllCorpora==='function')await loadAllCorpora();
+      if(typeof construirIndiceLugares!=='function')await injectScript('js/lugares.js');
+    })();
+    await dataPromise;
+  }
   function searchEntries(){const entries=[
     {type:'Página',label:'Atlas',meta:'Cartografia literária',href:'atlas.html',text:'atlas mapa lugares territorio cartografia'},
     {type:'Página',label:'Biblioteca',meta:'Obras do acervo',href:'biblioteca.html',text:'biblioteca livros obras acervo'},
@@ -16,8 +25,9 @@
   if(typeof OBRAS==='undefined')return entries;
   OBRAS.forEach(o=>entries.push({type:'Obra',label:o.titulo,meta:`${o.autor} · ${o.movimento} · ${o.anoLabel||o.ano}`,href:`obra.html?id=${encodeURIComponent(o.id)}`,text:[o.titulo,o.autor,o.movimento,o.anoLabel||o.ano].join(' ')}));
   [...new Set(OBRAS.map(o=>o.autor))].forEach(a=>entries.push({type:'Autor',label:a,meta:`${OBRAS.filter(o=>o.autor===a).length} obra(s) no acervo`,href:`autor.html?nome=${encodeURIComponent(a)}`,text:a}));
-  const places=new Map();OBRAS.forEach(o=>(o.lugares||[]).forEach(l=>{const key=norm(l.nome);if(!key)return;const p=places.get(key)||{nome:l.nome,obras:new Set()};p.obras.add(o.titulo);places.set(key,p)}));
+  const places=new Map();
   if(typeof construirIndiceLugares==='function'){try{construirIndiceLugares().forEach(l=>{const key=norm(l.nome);if(!key)return;const p=places.get(key)||{nome:l.nome,obras:new Set()};(l.obras||[]).forEach(o=>p.obras.add(o.titulo));places.set(key,p)})}catch(_){}}
+  if(!places.size)OBRAS.forEach(o=>(o.lugares||[]).forEach(l=>{const key=norm(l.nome);if(!key)return;const p=places.get(key)||{nome:l.nome,obras:new Set()};p.obras.add(o.titulo);places.set(key,p)}));
   places.forEach(p=>entries.push({type:'Lugar',label:p.nome,meta:`${p.obras.size} obra${p.obras.size===1?'':'s'} relacionada${p.obras.size===1?'':'s'}`,href:`atlas.html?busca=${encodeURIComponent(p.nome)}`,text:[p.nome,...p.obras].join(' ')}));
   return entries;
   }
@@ -31,7 +41,7 @@
   dialog.querySelector('.global-search__close').addEventListener('click',closeSearch);dialog.addEventListener('click',e=>{if(e.target===dialog)closeSearch()});
   input.addEventListener('input',renderSearch);input.addEventListener('keydown',e=>{if(!current.length)return;if(e.key==='ArrowDown'){e.preventDefault();active=(active+1)%current.length;syncActive()}else if(e.key==='ArrowUp'){e.preventDefault();active=(active-1+current.length)%current.length;syncActive()}else if(e.key==='Enter'){const target=results.querySelector(`.global-search__item[data-index="${active}"]`);if(target){e.preventDefault();target.click()}}});
   document.addEventListener('keydown',e=>{const tag=document.activeElement?.tagName;if((e.key==='k'&&(e.metaKey||e.ctrlKey))||(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(tag))){e.preventDefault();openSearch()}});
-  document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a||a.target==='_blank'||a.hasAttribute('download')||a.getAttribute('href')?.startsWith('#'))return;try{const u=new URL(a.href,location.href);if(u.origin===location.origin){document.body.classList.add('tl-route-transition')}}catch(_){}});
+  document.addEventListener('click',e=>{if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const a=e.target.closest('a[href]');if(!a||a.target==='_blank'||a.hasAttribute('download')||a.getAttribute('href')?.startsWith('#'))return;try{const u=new URL(a.href,location.href);if(u.origin===location.origin){document.body.classList.add('tl-route-transition')}}catch(_){}});
   window.addEventListener('pageshow',()=>document.body.classList.remove('tl-route-transition'));
   function contextualRail(){const page=location.pathname.split('/').pop()||'index.html';if(!['obra.html','autor.html','atlas.html'].includes(page))return;const root=document.querySelector('[data-site-header]');if(!root||root.querySelector('.context-rail'))return;const rail=document.createElement('div');rail.className='context-rail';let content='';
     if(page==='obra.html'){const id=new URLSearchParams(location.search).get('id');if(typeof OBRAS!=='undefined'){const sorted=[...OBRAS].sort((a,b)=>a.ano-b.ano||a.titulo.localeCompare(b.titulo,'pt-BR')),i=sorted.findIndex(o=>o.id===id),o=sorted[i];if(o){const prev=sorted[i-1],next=sorted[i+1];content=`<a href="biblioteca.html">Biblioteca</a><span class="context-rail__sep">/</span><span class="context-rail__current">${esc(o.titulo)}</span><span class="context-rail__spacer"></span>${prev?`<a class="context-rail__neighbor" href="obra.html?id=${encodeURIComponent(prev.id)}">← ${esc(prev.titulo)}</a>`:''}${next?`<a class="context-rail__neighbor" href="obra.html?id=${encodeURIComponent(next.id)}">${esc(next.titulo)} →</a>`:''}`}}
