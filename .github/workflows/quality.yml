@@ -22,6 +22,8 @@ jobs:
         run: node scripts/validate-ux01.mjs
       - name: Validar contrato UX-02
         run: node scripts/validate-ux02.mjs
+      - name: Validar landing e globo
+        run: node scripts/validate-landing-globe-ux.mjs
       - name: Auditar orçamento de performance
         run: node scripts/audit-performance-budget.mjs
       - name: Testar corpus registry
