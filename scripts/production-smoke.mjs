@@ -59,7 +59,8 @@ await run('dados estruturados dinâmicos chegam à produção',async()=>{
 await run('leitores integrais estão hospedados e navegáveis',async()=>{
   const works=[
     {id:'memorias-postumas',file:'memorias-postumas.txt',marker:'CAPITULO I',body:'defunto autor'},
-    {id:'dom-casmurro',file:'dom-casmurro.txt',marker:'Do titulo.',body:'Engenho Novo'}
+    {id:'dom-casmurro',file:'dom-casmurro.txt',marker:'Do titulo.',body:'Engenho Novo'},
+    {id:'o-cortico',file:'o-cortico.txt',marker:'João Romão',body:'João Romão'}
   ];
   for(const work of works){
     const page=await browser.newPage();

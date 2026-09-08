@@ -37,6 +37,25 @@
       },
       localPath:'reader-content/dom-casmurro.txt',
       sourceReference:'https://pt.wikisource.org/wiki/Dom_Casmurro'
+    },
+    'o-cortico':{
+      id:'o-cortico',
+      titulo:'O Cortiço',
+      tituloEdicao:'O Cortiço',
+      autor:'Aluísio Azevedo',
+      ano:1890,
+      edicao:'Rio de Janeiro: H. Garnier, 4ª ed., 1897',
+      chapterFormat:'roman-untitled',
+      source:{
+        provider:'Project Gutenberg',
+        ebook:69187,
+        url:'https://www.gutenberg.org/cache/epub/69187/pg69187.txt',
+        expectedUpdate:'October 19, 2024',
+        sha256:'f17560b8cc8b260e61251090e62c6ed7794d1e1e57c5a573910bcbf726e169e5',
+        requiredMarkers:['ALUIZIO AZEVEDO','O CORTICO','João Romão']
+      },
+      localPath:'reader-content/o-cortico.txt',
+      sourceReference:'https://pt.wikisource.org/wiki/O_Corti%C3%A7o'
     }
   };
   root.READER_REGISTRY=registry;
