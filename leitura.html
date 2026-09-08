@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leitura — Território Literário</title>
+<meta name="description" content="Leia obras brasileiras em domínio público dentro do Território Literário, com navegação por capítulos e contexto geográfico.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/reader.css">
+</head>
+<body class="reader-page">
+<div data-site-header></div>
+<main id="conteudo" class="reader-shell">
+  <aside class="reader-sidebar" aria-label="Índice da obra">
+    <div class="reader-book-meta">
+      <span class="eyebrow">Sala de leitura</span>
+      <a id="reader-back-work" href="biblioteca.html">← Voltar à obra</a>
+      <h1 id="reader-book-title">Carregando obra…</h1>
+      <p id="reader-book-author"></p>
+      <p class="reader-edition" id="reader-edition"></p>
+    </div>
+    <label class="reader-search-label" for="reader-search">Buscar nesta obra</label>
+    <input id="reader-search" class="reader-search" type="search" placeholder="Palavra ou expressão" autocomplete="off">
+    <div id="reader-search-results" class="reader-search-results" aria-live="polite"></div>
+    <nav class="reader-index" aria-label="Capítulos"><ol id="reader-index"></ol></nav>
+  </aside>
+
+  <section class="reader-main" aria-labelledby="reader-chapter-title">
+    <div class="reader-toolbar" aria-label="Preferências de leitura">
+      <button id="reader-font-dec" type="button" aria-label="Diminuir tamanho do texto">A−</button>
+      <button id="reader-font-inc" type="button" aria-label="Aumentar tamanho do texto">A+</button>
+      <a id="reader-atlas-link" class="reader-atlas-link" href="atlas.html" hidden>Ver lugares deste capítulo no Atlas</a>
+    </div>
+    <article class="reader-article">
+      <div class="reader-chapter-kicker" id="reader-chapter-number"></div>
+      <h2 id="reader-chapter-title" tabindex="-1">Preparando leitura…</h2>
+      <div id="reader-text" class="reader-text"></div>
+    </article>
+    <nav class="reader-pagination" aria-label="Navegação entre capítulos">
+      <a id="reader-prev" class="button button--ghost" href="#">← Capítulo anterior</a>
+      <a id="reader-next" class="button" href="#">Próximo capítulo →</a>
+    </nav>
+    <section class="reader-source" aria-labelledby="reader-source-title">
+      <h2 id="reader-source-title">Fonte e edição</h2>
+      <p id="reader-source-copy"></p>
+      <p><a id="reader-source-link" href="#" target="_blank" rel="noopener">Consultar fonte editorial externa</a></p>
+    </section>
+  </section>
+</main>
+<div id="reader-live" class="sr-only" aria-live="polite"></div>
+<footer class="site-footer"><div class="container site-footer__grid"><div><h3>Território Literário</h3><p>Leitura, território e evidência editorial no mesmo acervo.</p></div><div><h3>Explorar</h3><a href="atlas.html">Atlas</a><a href="biblioteca.html">Biblioteca</a><a href="autores.html">Autores</a></div><div><h3>Projeto</h3><a href="sobre.html">Sobre e metodologia</a></div></div></footer>
+<script src="js/navigation.js"></script>
+<script src="js/reader-registry.js"></script>
+<script src="js/corpus-registry.js"></script>
+<script src="js/leitura.js"></script>
+</body>
+</html>
