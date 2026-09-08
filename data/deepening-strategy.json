@@ -2,7 +2,6 @@
   "schema_version":"1.0.0",
   "updated_at":"2026-09-08",
   "strategy":[
-    {"work_id":"ursula","priority":1,"mode":"historical_anonymity_deepening","target":"Aprofundar espacialidade nomeada e não nomeada preservando anonimizações da edição de 1859.","constraint":"Não inferir Maranhão, comarca ou convento quando o texto omite o nome."},
-    {"work_id":"vidas-secas","priority":2,"mode":"intentional_indeterminacy","target":"Aprofundar função espacial e recorrência, não quantidade de topônimos.","constraint":"A baixa densidade toponímica é característica literária; não preencher lacunas com geografia externa."}
+    {"work_id":"vidas-secas","priority":1,"mode":"intentional_indeterminacy","target":"Aprofundar função espacial e recorrência, não quantidade de topônimos.","constraint":"A baixa densidade toponímica é característica literária; não preencher lacunas com geografia externa."}
   ]
 }
