@@ -9,6 +9,8 @@ on:
       - "js/*.js"
       - "scripts/browser-qa.mjs"
       - "scripts/seo-runtime-qa.mjs"
+      - "scripts/reader-runtime-qa.mjs"
+      - "scripts/vendor-reader-content.mjs"
       - "scripts/audit-lighthouse.mjs"
       - ".github/workflows/browser-qa.yml"
   push:
@@ -19,6 +21,8 @@ on:
       - "js/*.js"
       - "scripts/browser-qa.mjs"
       - "scripts/seo-runtime-qa.mjs"
+      - "scripts/reader-runtime-qa.mjs"
+      - "scripts/vendor-reader-content.mjs"
       - "scripts/audit-lighthouse.mjs"
       - ".github/workflows/browser-qa.yml"
   schedule:
@@ -47,6 +51,8 @@ jobs:
           test -n "$CHROME_PATH"
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
           "$CHROME_PATH" --version
+      - name: Preparar textos do leitor
+        run: node scripts/vendor-reader-content.mjs
       - name: Iniciar servidor estático
         shell: bash
         run: |
@@ -66,6 +72,10 @@ jobs:
         env:
           QA_BASE_URL: http://127.0.0.1:4173
         run: node scripts/seo-runtime-qa.mjs
+      - name: Validar leitor integrado
+        env:
+          QA_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/reader-runtime-qa.mjs
       - name: Executar Lighthouse
         shell: bash
         run: |
