@@ -15,15 +15,33 @@
     else if(current==='autor.html'){const nome=params.get('nome');if(nome){const title=`${nome} — Território Literário`;meta('property','og:title',title);meta('property','og:type','profile');meta('name','twitter:title',title);putJsonLd('tl-jsonld-entity',{'@context':'https://schema.org','@type':'Person',name:nome,url:canonicalUrl})}}
     else if(current!=='index.html')putJsonLd('tl-jsonld-page',{'@context':'https://schema.org','@type':'CreativeWork',name:document.title,url:canonicalUrl,inLanguage:'pt-BR',isPartOf:{'@type':'WebSite',name:'Território Literário',url:SITE}});
   }
+  function hydrateContinueReading(){
+    const links=document.querySelectorAll('[data-continue-reading]');
+    if(!links.length)return;
+    try{
+      const raw=localStorage.getItem('tl-reader:last');
+      if(!raw)return;
+      const state=JSON.parse(raw);
+      if(!state?.workId||!Number.isFinite(Number(state.chapter)))return;
+      links.forEach(link=>{
+        link.href=`leitura.html?obra=${encodeURIComponent(state.workId)}&capitulo=${encodeURIComponent(state.chapter)}`;
+        link.textContent=state.title?`Continuar lendo ${state.title}`:'Continuar lendo';
+        link.hidden=false;
+      });
+    }catch(_){ }
+  }
   baseMeta();structuredData();
   document.querySelectorAll('[data-site-header]').forEach(root=>{
     const links=routes.map(([href,label])=>`<a href="${href}"${current===href?' aria-current="page"':''}>${label}</a>`).join('');
     root.innerHTML=`<a class="skip-link" href="#conteudo">Pular para o conteúdo</a><header class="site-header"><div class="container site-header__inner"><a class="brand" href="index.html" aria-label="Território Literário — início"><span class="brand__mark" aria-hidden="true">TL</span><span>Território Literário</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button><nav class="site-nav" id="site-nav" aria-label="Navegação principal">${links}</nav><button class="site-search-trigger" type="button" aria-label="Buscar em todo o portal"><span>Buscar</span><kbd>⌘K</kbd><span aria-hidden="true">⌕</span></button></div></header>`;
     const btn=root.querySelector('.nav-toggle'),nav=root.querySelector('.site-nav');
+    const closeNav=({restoreFocus=false}={})=>{btn.setAttribute('aria-expanded','false');nav.classList.remove('is-open');if(restoreFocus)btn.focus()};
     btn.addEventListener('click',()=>{const open=btn.getAttribute('aria-expanded')==='true';btn.setAttribute('aria-expanded',String(!open));nav.classList.toggle('is-open',!open)});
-    nav.addEventListener('click',e=>{if(e.target.closest('a')){btn.setAttribute('aria-expanded','false');nav.classList.remove('is-open')}});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&btn.getAttribute('aria-expanded')==='true'){btn.setAttribute('aria-expanded','false');nav.classList.remove('is-open');btn.focus()}});
+    nav.addEventListener('click',e=>{if(e.target.closest('a'))closeNav()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&btn.getAttribute('aria-expanded')==='true')closeNav({restoreFocus:true})});
+    addEventListener('resize',()=>{if(matchMedia('(min-width: 901px)').matches&&btn.getAttribute('aria-expanded')==='true')closeNav()},{passive:true});
   });
-  window.addEventListener('load',()=>{baseMeta();structuredData()},{once:true});document.addEventListener('tl:page-ready',()=>{baseMeta();structuredData()});
+  hydrateContinueReading();
+  window.addEventListener('load',()=>{baseMeta();structuredData();hydrateContinueReading()},{once:true});document.addEventListener('tl:page-ready',()=>{baseMeta();structuredData();hydrateContinueReading()});
   if(!document.querySelector('script[src="js/production-polish.js"]')){const s=document.createElement('script');s.src='js/production-polish.js';document.body.appendChild(s)}
 })();
