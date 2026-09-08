@@ -33,7 +33,7 @@ try{
   await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
   assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 2'),'Policarpo: capítulo 6 não foi associado à segunda parte');
   const secondPartText=(await page.locator('#reader-text').textContent())||'';
-  assert(secondPartText.includes('Sossego'),'Policarpo: capítulo 6 não corresponde à abertura da segunda parte');
+  assert(secondPartText.includes('Socego'),'Policarpo: capítulo 6 não corresponde à abertura da segunda parte na grafia da edição de 1915');
   const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
   assert(canonical?.includes('leitura.html?obra=triste-fim-policarpo-quaresma&capitulo=6'),'Policarpo: canonical do capítulo 6 incorreto');
   const atlasText=(await page.locator('#reader-atlas-link').textContent())||'';
