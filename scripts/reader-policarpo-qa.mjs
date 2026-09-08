@@ -36,8 +36,13 @@ try{
   assert(secondPartText.includes('Socego'),'Policarpo: capítulo 6 não corresponde à abertura da segunda parte na grafia da edição de 1915');
   const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
   assert(canonical?.includes('leitura.html?obra=triste-fim-policarpo-quaresma&capitulo=6'),'Policarpo: canonical do capítulo 6 incorreto');
-  const atlasText=(await page.locator('#reader-atlas-link').textContent())||'';
-  assert(atlasText.includes('lugar'),'Policarpo: integração contextual com Atlas ausente no capítulo 6');
+  await page.waitForFunction(()=>{
+    const link=document.getElementById('reader-atlas-link');
+    return Boolean(link&&!link.hidden&&(link.getAttribute('href')||'').startsWith('atlas.html?busca='));
+  },{timeout:20000});
+  assert(!(await page.locator('#reader-atlas-link').isHidden()),'Policarpo: integração contextual com Atlas permaneceu oculta no capítulo 6');
+  const atlasHref=await page.locator('#reader-atlas-link').getAttribute('href');
+  assert(atlasHref?.startsWith('atlas.html?busca='),'Policarpo: link contextual do Atlas não recebeu busca específica do capítulo 6');
 
   await page.goto(`${base}/leitura.html?obra=triste-fim-policarpo-quaresma&capitulo=11`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
