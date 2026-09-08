@@ -10,14 +10,15 @@
   function chapterMatches(text,format){
     const patterns={
       'capitulo-roman':/^CAPITULO\s+([IVXLCDM]+)\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm,
-      'roman-heading':/^([IVXLCDM]+)\.?\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm
+      'roman-heading':/^([IVXLCDM]+)\.?\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm,
+      'roman-untitled':/^([IVXLCDM]+)\.?\s*\r?\n/gm
     };
     const re=patterns[format]||patterns['capitulo-roman'];
     return [...text.matchAll(re)];
   }
   const matches=chapterMatches(raw,config.chapterFormat);if(!matches.length){fail('A estrutura de capítulos desta edição não pôde ser reconhecida.');return}
   const romanValue=s=>{const m={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};let n=0;for(let i=0;i<s.length;i++)n+=(m[s[i]]<(m[s[i+1]]||0)?-m[s[i]]:m[s[i]]);return n};
-  const chapters=matches.map((m,i)=>({roman:m[1],number:romanValue(m[1]),title:m[2].trim(),body:raw.slice(m.index+m[0].length,i+1<matches.length?matches[i+1].index:raw.length).trim()}));
+  const chapters=matches.map((m,i)=>({roman:m[1],number:romanValue(m[1]),title:config.chapterFormat==='roman-untitled'?`Capítulo ${m[1]}`:m[2].trim(),body:raw.slice(m.index+m[0].length,i+1<matches.length?matches[i+1].index:raw.length).trim()}));
   const key=`tl-reader:${config.id}:chapter`,explicit=params.has('capitulo');let requested=Number(params.get('capitulo')||(explicit?'':safeGet(key))||1);if(!chapters.some(c=>c.number===requested))requested=chapters[0].number;
   let fontSize=Number(safeGet('tl-reader:font-size')||1.18);if(!Number.isFinite(fontSize))fontSize=1.18;const applyFont=()=>document.documentElement.style.setProperty('--reader-font-size',`${fontSize}rem`);applyFont();
   function textParagraphs(body){els.text.innerHTML='';body.split(/\r?\n\s*\r?\n+/).map(x=>x.replace(/\s*\r?\n\s*/g,' ').trim()).filter(Boolean).forEach(t=>{const p=document.createElement('p');p.textContent=t;els.text.appendChild(p)})}
