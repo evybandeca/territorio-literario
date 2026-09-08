@@ -26,6 +26,8 @@ jobs:
         run: node scripts/validate-corpora.mjs
       - name: Validar aprofundamento de Memórias de um Sargento de Milícias
         run: node scripts/validate-memorias-sargento-deepening.mjs
+      - name: Validar aprofundamento de Macunaíma
+        run: node scripts/validate-macunaima-deepening.mjs
       - name: Gerar fila de aprofundamento
         run: node scripts/generate-deepening-queue.mjs
       - name: Auditar identidade transversal de lugares
