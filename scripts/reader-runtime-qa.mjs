@@ -78,5 +78,32 @@ try{
     await page.close();
   }
 
-  console.log('Reader runtime QA OK: origem local, navegação bidirecional, busca, progresso, Atlas, mobile e CTA interno.');
+  {
+    const {page,errors}=await readerPage();
+    const contentRequests=[];
+    page.on('request',request=>{
+      const url=new URL(request.url());
+      if(url.pathname.endsWith('/reader-content/dom-casmurro.txt'))contentRequests.push(url);
+    });
+    const response=await page.goto(`${base}/leitura.html?obra=dom-casmurro&capitulo=1`,{waitUntil:'domcontentloaded'});
+    assert(response?.ok(),'Dom Casmurro: leitor não respondeu HTTP 200');
+    await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
+    assert(contentRequests.length===1,'Dom Casmurro: texto integral local não foi requisitado exatamente uma vez');
+    assert(contentRequests[0].origin===new URL(base).origin,'Dom Casmurro: texto integral foi buscado fora do domínio do portal');
+    assert((await page.locator('#reader-book-title').textContent())?.includes('Dom Casmurro'),'Dom Casmurro: título da obra ausente');
+    assert((await page.locator('#reader-chapter-title').textContent())?.toLocaleLowerCase('pt-BR').includes('titulo'),'Dom Casmurro: capítulo I não foi reconhecido');
+    const text=(await page.locator('#reader-text').textContent())||'';
+    assert(text.includes('Engenho Novo'),'Dom Casmurro: capítulo I não contém o texto esperado');
+    const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
+    assert(canonical?.includes('leitura.html?obra=dom-casmurro&capitulo=1'),'Dom Casmurro: canonical do capítulo incorreto');
+    await page.locator('#reader-next').click();
+    await page.waitForFunction(()=>new URLSearchParams(location.search).get('capitulo')==='2');
+    assert((await page.locator('#reader-chapter-number').textContent())?.includes('II'),'Dom Casmurro: navegação não abriu capítulo II');
+    await page.locator('#reader-search').fill('Matacavallos');
+    await page.waitForFunction(()=>document.querySelectorAll('#reader-search-results a').length>0);
+    assert(!errors.length,`Dom Casmurro: erros no leitor: ${errors.join(' | ')}`);
+    await page.close();
+  }
+
+  console.log('Reader runtime QA OK: origem local, navegação bidirecional, busca, progresso, Atlas, mobile, CTA interno e Dom Casmurro.');
 }finally{await browser.close()}
