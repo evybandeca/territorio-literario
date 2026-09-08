@@ -28,22 +28,30 @@ await run('lazy loading da obra individual',async()=>{
   assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close();
 });
 
-await run('Atlas carrega o registry completo',async()=>{
+await run('Atlas Experience carrega e abre dossiê',async()=>{
   const page=await browser.newPage({viewport:{width:1440,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(`${base}/atlas.html`,{waitUntil:'domcontentloaded'});
   const expected=await page.evaluate(()=>Object.keys(window.CORPUS_REGISTRY||{}).length);assert(expected>0,'registry vazio no Atlas');
   await page.waitForFunction(expected=>Object.keys(window.CORPUS_PROFUNDO||{}).length===expected,expected,{timeout:30000});
-  const loaded=await page.evaluate(()=>Object.keys(window.CORPUS_PROFUNDO||{}).sort());
-  assert(loaded.length===expected,`Atlas carregou ${loaded.length} corpora; esperado ${expected}`);
-  await page.waitForFunction(()=>document.querySelector('#atlas-stats')?.textContent?.trim().length>0,{timeout:10000});
+  const loaded=await page.evaluate(()=>Object.keys(window.CORPUS_PROFUNDO||{}).sort());assert(loaded.length===expected,`Atlas carregou ${loaded.length} corpora; esperado ${expected}`);
+  await page.waitForFunction(()=>document.querySelectorAll('#atlas-lista .atlas-lista-item').length>0,{timeout:10000});
+  assert(await page.locator('.atlas-experience').count()===1,'shell Atlas Experience ausente');
+  const first=page.locator('#atlas-lista .atlas-lista-item').first();await first.click();
+  await page.waitForFunction(()=>document.querySelector('.atlas-sidebar')?.classList.contains('is-detail-mode'));
+  assert((await page.locator('#atlas-detalhe h2').textContent())?.trim(),'dossiê sem nome de lugar');
+  assert(await page.locator('#atlas-detalhe .atlas-work-link').count()>0,'dossiê sem obras relacionadas');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(()=>!document.querySelector('.atlas-sidebar')?.classList.contains('is-detail-mode'));
   assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close();
 });
 
 await run('viewport móvel sem overflow estrutural',async()=>{
-  for(const url of ['/index.html','/obra.html?id=memorias-postumas','/biblioteca.html']){
-    const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true});await page.goto(base+url,{waitUntil:'domcontentloaded'});await page.waitForTimeout(700);
+  for(const url of ['/index.html','/obra.html?id=memorias-postumas','/biblioteca.html','/atlas.html']){
+    const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true});await page.goto(base+url,{waitUntil:'domcontentloaded'});await page.waitForTimeout(url.includes('atlas')?1600:700);
     const dims=await page.evaluate(()=>({innerWidth:window.innerWidth,scrollWidth:document.documentElement.scrollWidth}));
-    assert(dims.scrollWidth<=dims.innerWidth+2,`${url}: overflow horizontal ${dims.scrollWidth}px > ${dims.innerWidth}px`);await page.close();
+    assert(dims.scrollWidth<=dims.innerWidth+2,`${url}: overflow horizontal ${dims.scrollWidth}px > ${dims.innerWidth}px`);
+    if(url.includes('atlas')){assert(await page.locator('.atlas-sidebar').count()===1,'bottom sheet do Atlas ausente');assert(await page.locator('#atlas-mapa').count()===1,'mapa móvel ausente')}
+    await page.close();
   }
 });
 
@@ -56,4 +64,4 @@ await run('navegação por teclado alcança link',async()=>{
 
 await browser.close();
 if(failures.length){console.error(`\nBrowser QA: ${failures.length} falha(s)\n- ${failures.join('\n- ')}`);process.exit(1)}
-console.log('Browser QA OK: shell, lazy loading, Atlas, mobile e teclado.');
+console.log('Browser QA OK: shell, lazy loading, Atlas Experience, mobile e teclado.');
