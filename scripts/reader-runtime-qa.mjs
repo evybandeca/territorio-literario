@@ -16,9 +16,17 @@ async function readerPage(viewport={width:1280,height:900}){
 try{
   {
     const {page,errors}=await readerPage();
+    const contentRequests=[];
+    page.on('request',request=>{
+      const url=new URL(request.url());
+      if(url.pathname.endsWith('/reader-content/memorias-postumas.txt'))contentRequests.push(url);
+    });
     const response=await page.goto(`${base}/leitura.html?obra=memorias-postumas&capitulo=1`,{waitUntil:'domcontentloaded'});
     assert(response?.ok(),'leitor não respondeu HTTP 200');
     await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
+    assert(contentRequests.length===1,'texto integral não foi requisitado exatamente uma vez do artefato local');
+    assert(contentRequests[0].origin===new URL(base).origin,'texto integral foi buscado fora do domínio do portal');
+    assert(contentRequests[0].pathname.endsWith('/reader-content/memorias-postumas.txt'),'caminho do artefato local inesperado');
     assert((await page.locator('#reader-book-title').textContent())?.includes('Memórias Póstumas'),'título da obra ausente');
     assert((await page.locator('#reader-chapter-title').textContent())?.trim(),'título do capítulo ausente');
     const text=(await page.locator('#reader-text').textContent())||'';
@@ -29,6 +37,9 @@ try{
     await page.locator('#reader-next').click();
     await page.waitForFunction(()=>new URLSearchParams(location.search).get('capitulo')==='2');
     assert((await page.locator('#reader-chapter-number').textContent())?.includes('II'),'navegação não abriu capítulo II');
+    await page.locator('#reader-prev').click();
+    await page.waitForFunction(()=>new URLSearchParams(location.search).get('capitulo')==='1');
+    assert((await page.locator('#reader-chapter-number').textContent())?.includes('I'),'navegação anterior não retornou ao capítulo I');
     await page.locator('#reader-search').fill('emplasto');
     await page.waitForFunction(()=>document.querySelectorAll('#reader-search-results a').length>0);
     assert((await page.locator('#reader-search-results').textContent())?.toLocaleLowerCase('pt-BR').includes('cap.'),'busca não retornou capítulos');
@@ -67,5 +78,5 @@ try{
     await page.close();
   }
 
-  console.log('Reader runtime QA OK: leitura local, navegação, busca, progresso, Atlas, mobile e CTA interno.');
+  console.log('Reader runtime QA OK: origem local, navegação bidirecional, busca, progresso, Atlas, mobile e CTA interno.');
 }finally{await browser.close()}
