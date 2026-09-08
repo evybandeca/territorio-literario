@@ -61,7 +61,8 @@ await run('leitores integrais estão hospedados e navegáveis',async()=>{
     {id:'memorias-postumas',file:'memorias-postumas.txt',marker:'CAPITULO I',body:'defunto autor'},
     {id:'dom-casmurro',file:'dom-casmurro.txt',marker:'Do titulo.',body:'Engenho Novo'},
     {id:'o-cortico',file:'o-cortico.txt',marker:'João Romão',body:'João Romão'},
-    {id:'triste-fim-policarpo-quaresma',file:'triste-fim-policarpo-quaresma.txt',marker:'PRIMEIRA PARTE',body:'Polycarpo Quaresma'}
+    {id:'triste-fim-policarpo-quaresma',file:'triste-fim-policarpo-quaresma.txt',marker:'PRIMEIRA PARTE',body:'Polycarpo Quaresma'},
+    {id:'o-guarani',file:'o-guarani.txt',marker:'PRIMEIRA PARTE',body:'Paquequer'}
   ];
   for(const work of works){
     const page=await browser.newPage();
@@ -82,6 +83,10 @@ await run('leitores integrais estão hospedados e navegáveis',async()=>{
   await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:30000});
   assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 2'),'Policarpo: capítulo 6 não entrou na segunda parte em produção');
   assert(((await page.locator('#reader-text').textContent())||'').includes('Socego'),'Policarpo: capítulo 6 incorreto em produção');
+  await page.goto(`${base}/leitura.html?obra=o-guarani&capitulo=44`,{waitUntil:'domcontentloaded',timeout:30000});
+  await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:30000});
+  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 4'),'O Guarani: capítulo 44 não entrou na quarta parte em produção');
+  assert(await page.locator('#reader-index a').count()===54,'O Guarani: índice não contém 54 capítulos em produção');
   await page.close();
 });
 

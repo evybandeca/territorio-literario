@@ -12,7 +12,7 @@
       'capitulo-roman':/^CAPITULO\s+([IVXLCDM]+)\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm,
       'roman-heading':/^([IVXLCDM]+)\.?\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm,
       'roman-untitled':/^([IVXLCDM]+)\.?\s*\r?\n/gm,
-      'part-roman-heading':/^(?:(PRIMEIRA|SEGUNDA|TERCEIRA) PARTE\s*\r?\n+(?:\s*\r?\n)*)?([IVXLCDM]+)\.?\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm
+      'part-roman-heading':/^(?:(PRIMEIRA|SEGUNDA|TERCEIRA|QUARTA) PARTE\s*\r?\n+(?:\s*\r?\n)*(?:[^\r\n]+\s*\r?\n+(?:\s*\r?\n)*)?)?([IVXLCDM]+)\.?\s*\r?\n+(?:\s*\r?\n)*([^\r\n]+)\s*\r?\n/gm
     };
     const re=patterns[format]||patterns['capitulo-roman'];
     return [...text.matchAll(re)];
@@ -20,7 +20,7 @@
   const matches=chapterMatches(raw,config.chapterFormat);if(!matches.length){fail('A estrutura de capítulos desta edição não pôde ser reconhecida.');return}
   const romanValue=s=>{const m={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};let n=0;for(let i=0;i<s.length;i++)n+=(m[s[i]]<(m[s[i+1]]||0)?-m[s[i]]:m[s[i]]);return n};
   let currentPart=1;
-  const partNumber=name=>({PRIMEIRA:1,SEGUNDA:2,TERCEIRA:3}[name]||currentPart);
+  const partNumber=name=>({PRIMEIRA:1,SEGUNDA:2,TERCEIRA:3,QUARTA:4}[name]||currentPart);
   const chapters=matches.map((m,i)=>{
     const end=i+1<matches.length?matches[i+1].index:raw.length;
     if(config.chapterFormat==='part-roman-heading'){
