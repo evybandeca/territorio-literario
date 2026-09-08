@@ -51,7 +51,7 @@
         ebook:69187,
         url:'https://www.gutenberg.org/cache/epub/69187/pg69187.txt',
         expectedUpdate:'October 19, 2024',
-        sha256:'0000000000000000000000000000000000000000000000000000000000000000',
+        sha256:'f17560b8cc8b260e61251090e62c6ed7794d1e1e57c5a573910bcbf726e169e5',
         requiredMarkers:['ALUIZIO AZEVEDO','O CORTICO','João Romão']
       },
       localPath:'reader-content/o-cortico.txt',
