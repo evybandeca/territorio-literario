@@ -13,6 +13,7 @@
         ebook:54829,
         url:'https://www.gutenberg.org/cache/epub/54829/pg54829.txt',
         expectedUpdate:'October 23, 2024',
+        sha256:'edfe4370698ed5716a9692b980a8d6ee77b4ff8116503bb2e08675f1d10d303a',
         requiredMarkers:['MACHADO DE ASSIS','CAPITULO I','CAPITULO II']
       },
       localPath:'reader-content/memorias-postumas.txt',
@@ -31,8 +32,8 @@
         ebook:55752,
         url:'https://www.gutenberg.org/cache/epub/55752/pg55752.txt',
         expectedUpdate:'October 23, 2024',
-        sha256:'__PIN_AFTER_DISCOVERY__',
-        requiredMarkers:['MACHADO DE ASSIS','I\n\nDo titulo.','II.\n\nDo livro.']
+        sha256:'0fc3dbf384544d81d87e5a731e67b7976ac3a57acb378f0f354d12a3b52bd0c7',
+        requiredMarkers:['MACHADO DE ASSIS','Do titulo.','Do livro.']
       },
       localPath:'reader-content/dom-casmurro.txt',
       sourceReference:'https://pt.wikisource.org/wiki/Dom_Casmurro'
