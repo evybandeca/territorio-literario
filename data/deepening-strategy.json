@@ -2,10 +2,9 @@
   "schema_version":"1.0.0",
   "updated_at":"2026-09-08",
   "strategy":[
-    {"work_id":"macunaima","priority":1,"mode":"fantastic_geography_deepening","target":"Continuar o aprofundamento seletivo sem transformar saltos fantásticos em itinerário real.","constraint":"Separar deslocamento narrativo, enumeração paródica e geografia mítica."},
-    {"work_id":"os-sertoes","priority":2,"mode":"historical_deepening","target":"Continuar a promoção de v0.3 estrutural para corpus profundo com leitura interna progressiva e geografia histórica documentada.","constraint":"Não converter sequência militar em rota; topônimos históricos ambíguos exigem P12."},
-    {"work_id":"o-ateneu","priority":3,"mode":"urban_fictional_deepening","target":"Aprofundar a rede espacial externa e interna mantendo o Ateneu como instituição ficcional.","constraint":"Não geocodificar o colégio por equivalência biográfica."},
-    {"work_id":"ursula","priority":4,"mode":"historical_anonymity_deepening","target":"Aprofundar espacialidade nomeada e não nomeada preservando anonimizações da edição de 1859.","constraint":"Não inferir Maranhão, comarca ou convento quando o texto omite o nome."},
-    {"work_id":"vidas-secas","priority":5,"mode":"intentional_indeterminacy","target":"Aprofundar função espacial e recorrência, não quantidade de topônimos.","constraint":"A baixa densidade toponímica é característica literária; não preencher lacunas com geografia externa."}
+    {"work_id":"os-sertoes","priority":1,"mode":"historical_deepening","target":"Continuar a promoção de v0.3 estrutural para corpus profundo com leitura interna progressiva e geografia histórica documentada.","constraint":"Não converter sequência militar em rota; topônimos históricos ambíguos exigem P12."},
+    {"work_id":"o-ateneu","priority":2,"mode":"urban_fictional_deepening","target":"Aprofundar a rede espacial externa e interna mantendo o Ateneu como instituição ficcional.","constraint":"Não geocodificar o colégio por equivalência biográfica."},
+    {"work_id":"ursula","priority":3,"mode":"historical_anonymity_deepening","target":"Aprofundar espacialidade nomeada e não nomeada preservando anonimizações da edição de 1859.","constraint":"Não inferir Maranhão, comarca ou convento quando o texto omite o nome."},
+    {"work_id":"vidas-secas","priority":4,"mode":"intentional_indeterminacy","target":"Aprofundar função espacial e recorrência, não quantidade de topônimos.","constraint":"A baixa densidade toponímica é característica literária; não preencher lacunas com geografia externa."}
   ]
 }
