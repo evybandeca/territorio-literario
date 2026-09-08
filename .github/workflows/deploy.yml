@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Baixar o repositório
         uses: actions/checkout@v6
+      - name: Preparar textos do leitor
+        run: node scripts/vendor-reader-content.mjs
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
       - name: Preparar os arquivos do site
