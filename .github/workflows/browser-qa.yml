@@ -8,6 +8,7 @@ on:
       - "css/**"
       - "js/*.js"
       - "scripts/browser-qa.mjs"
+      - "scripts/seo-runtime-qa.mjs"
       - "scripts/audit-lighthouse.mjs"
       - ".github/workflows/browser-qa.yml"
   push:
@@ -17,6 +18,7 @@ on:
       - "css/**"
       - "js/*.js"
       - "scripts/browser-qa.mjs"
+      - "scripts/seo-runtime-qa.mjs"
       - "scripts/audit-lighthouse.mjs"
       - ".github/workflows/browser-qa.yml"
   schedule:
@@ -60,6 +62,10 @@ jobs:
         env:
           QA_BASE_URL: http://127.0.0.1:4173
         run: node scripts/browser-qa.mjs
+      - name: Validar SEO semântico em runtime
+        env:
+          QA_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/seo-runtime-qa.mjs
       - name: Executar Lighthouse
         shell: bash
         run: |

@@ -1,0 +1,51 @@
+name: Smoke de produção
+
+on:
+  workflow_run:
+    workflows: ["Publicar no GitHub Pages"]
+    types: [completed]
+  schedule:
+    - cron: "23 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v6
+      - name: Preparar navegador
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright-core@1.63.0 lighthouse@13.4.1
+          CHROME_PATH="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME_PATH"
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+      - name: Validar portal publicado
+        env:
+          PRODUCTION_BASE_URL: https://evybandeca.github.io/territorio-literario
+        run: node scripts/production-smoke.mjs
+      - name: Lighthouse no ambiente publicado
+        shell: bash
+        run: |
+          npx lighthouse https://evybandeca.github.io/territorio-literario/ \
+            --chrome-flags="--headless --no-sandbox --disable-gpu" \
+            --preset=desktop \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json \
+            --output-path=lighthouse-production.json \
+            --quiet
+          node scripts/audit-lighthouse.mjs lighthouse-production.json
+      - name: Guardar Lighthouse de produção
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-production-${{ github.run_id }}
+          path: lighthouse-production.json
+          if-no-files-found: ignore
+          retention-days: 14
