@@ -64,6 +64,15 @@ try{
     await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
     const dims=await page.evaluate(()=>({inner:innerWidth,scroll:document.documentElement.scrollWidth}));
     assert(dims.scroll<=dims.inner+2,`leitor móvel com overflow ${dims.scroll}>${dims.inner}`);
+    const toggle=page.locator('#reader-index-toggle');
+    assert(await toggle.isVisible(),'toggle de capítulos não está visível no mobile');
+    assert(await toggle.getAttribute('aria-expanded')==='false','drawer deveria iniciar fechado');
+    assert((await page.locator('#reader-progress-text').textContent())?.includes(' de '),'progresso estrutural não foi renderizado');
+    await toggle.click();
+    assert(await toggle.getAttribute('aria-expanded')==='true','drawer não abriu');
+    assert(await page.locator('#reader-sidebar').evaluate(el=>el.classList.contains('is-open')),'sidebar não entrou em estado aberto');
+    await page.keyboard.press('Escape');
+    assert(await toggle.getAttribute('aria-expanded')==='false','Escape não fechou o drawer');
     assert(!errors.length,`erros no leitor móvel: ${errors.join(' | ')}`);
     await page.close();
   }
@@ -71,9 +80,10 @@ try{
   {
     const {page,errors}=await readerPage();
     await page.goto(`${base}/obra.html?id=memorias-postumas`,{waitUntil:'domcontentloaded'});
-    await page.waitForFunction(()=>document.getElementById('link-leitura')?.textContent?.includes('Ler esta obra'),{timeout:20000});
+    await page.waitForFunction(()=>['Ler agora','Continuar leitura'].includes(document.getElementById('link-leitura')?.textContent?.trim()),{timeout:20000});
     const href=await page.locator('#link-leitura').getAttribute('href');
-    assert(href==='leitura.html?obra=memorias-postumas','CTA da obra não aponta para o leitor interno');
+    assert(href?.startsWith('leitura.html?obra=memorias-postumas'),'CTA da obra não aponta para o leitor interno');
+    assert(await page.locator('.work-hero__actions').getAttribute('data-reader-available')==='true','obra não sinaliza reader hospedado');
     assert(!errors.length,`erros na integração da obra: ${errors.join(' | ')}`);
     await page.close();
   }
@@ -105,5 +115,5 @@ try{
     await page.close();
   }
 
-  console.log('Reader runtime QA OK: origem local, navegação bidirecional, busca, progresso, Atlas, mobile, CTA interno e Dom Casmurro.');
+  console.log('Reader runtime QA OK: origem local, navegação, busca, progresso, drawer mobile, Atlas, CTA retomável e Dom Casmurro.');
 }finally{await browser.close()}
