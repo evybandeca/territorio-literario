@@ -1,1 +1,72 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Atlas — Território Literário</title><meta name="description" content="Explore lugares da literatura brasileira e descubra quais obras passam por cada território."><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/phase-b.css"><link rel="stylesheet" href="css/phase-c.css"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"><link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"></head><body><div data-site-header></div><main id="conteudo"><header class="atlas-header"><div class="container"><div class="eyebrow" style="color:#dfb692">Atlas</div><h1>O Brasil escrito.</h1><p>O Atlas reúne o catálogo publicado e o corpus profundo auditado. Lugares sem coordenadas continuam visíveis e pesquisáveis, mas não recebem marcador até que a geocodificação seja historicamente defensável.</p><div class="atlas-stats" id="atlas-stats"></div></div></header><section class="atlas-corpo"><div class="container"><div class="atlas-controles"><label><span>Buscar lugar</span><input type="search" id="busca-lugar" placeholder="Rio de Janeiro, Canudos, Ceará…" aria-label="Procurar lugar"></label><label><span>Tipo</span><select id="filtro-tipo"><option value="">Todos</option></select></label><label><span>Certeza</span><select id="filtro-certeza"><option value="">Todas</option><option value="identificado">Identificada</option><option value="ilustrativo">Ilustrativa</option></select></label><button type="button" class="botao botao-secundario" id="limpar-filtros">Limpar filtros</button></div><div class="atlas-resultados" id="atlas-resultados" aria-live="polite"></div><div class="map-frame"><div id="atlas-mapa" aria-label="Mapa do Atlas Literário"></div></div><div class="legenda" id="legenda-atlas"></div><div class="atlas-lista-painel"><div class="atlas-lista" id="atlas-lista"></div><div class="atlas-detalhe" id="atlas-detalhe"><p class="atlas-detalhe-vazio">Escolha um lugar no mapa ou na lista para ver quais obras passam por ele.</p></div></div></div></section></main><footer class="site-footer"><div class="container site-footer__grid"><div><h3>Território Literário</h3><p>Identidade geográfica, ocorrência literária e geocodificação são camadas distintas. O Atlas não inventa precisão para lugares ainda não georreferenciados.</p></div><div><h3>Explorar</h3><a href="biblioteca.html">Biblioteca</a><a href="autores.html">Autores</a></div><div><h3>Projeto</h3><a href="sobre.html">Sobre e metodologia</a></div></div></footer><script src="js/navigation.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script><script src="js/data.js"></script><script src="js/lugares.js"></script><script src="js/corpus-registry.js"></script><script src="js/page-bootstrap.js" data-mode="all" data-page-script="js/atlas.js"></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas — Território Literário</title>
+<meta name="description" content="Explore lugares da literatura brasileira e descubra quais obras passam por cada território.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/phase-b.css">
+<link rel="stylesheet" href="css/phase-c.css">
+<link rel="stylesheet" href="css/atlas-experience.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+</head>
+<body class="atlas-page">
+<div data-site-header></div>
+<main id="conteudo" class="atlas-main">
+  <section class="atlas-experience" aria-labelledby="atlas-title">
+    <aside class="atlas-sidebar" aria-label="Explorar o Atlas">
+      <div class="atlas-sidebar__intro">
+        <div class="eyebrow">Cartoteca literária</div>
+        <div class="atlas-title-row">
+          <h1 id="atlas-title">O Brasil escrito.</h1>
+          <span class="atlas-edition">Acervo vivo</span>
+        </div>
+        <p>Pesquise um lugar e atravesse as obras, ocorrências e evidências que o conectam à literatura brasileira.</p>
+        <div class="atlas-stats" id="atlas-stats"></div>
+      </div>
+
+      <div class="atlas-explore-view" id="atlas-explore-view">
+        <div class="atlas-controles" aria-label="Filtros do Atlas">
+          <label class="atlas-search-field">
+            <span>Buscar lugar, obra ou autor</span>
+            <input type="search" id="busca-lugar" placeholder="Ex.: Canudos, Rio de Janeiro, Machado…" aria-label="Procurar lugar, obra ou autor" autocomplete="off">
+          </label>
+          <div class="atlas-filter-row">
+            <label><span>Tipo</span><select id="filtro-tipo"><option value="">Todos os tipos</option></select></label>
+            <label><span>Certeza</span><select id="filtro-certeza"><option value="">Todas</option><option value="identificado">Identificada</option><option value="ilustrativo">Ilustrativa</option></select></label>
+          </div>
+          <button type="button" class="atlas-clear" id="limpar-filtros">Limpar filtros</button>
+        </div>
+        <div class="atlas-resultados" id="atlas-resultados" aria-live="polite"></div>
+        <div class="atlas-lista" id="atlas-lista" aria-label="Lugares encontrados"></div>
+      </div>
+
+      <div class="atlas-detalhe" id="atlas-detalhe" aria-live="polite">
+        <p class="atlas-detalhe-vazio">Escolha um lugar no mapa ou na lista para abrir seu dossiê literário.</p>
+      </div>
+    </aside>
+
+    <div class="atlas-map-shell">
+      <div class="atlas-map-kicker" aria-hidden="true"><span>Atlas</span><span>Literatura × território</span></div>
+      <div class="map-frame atlas-map-frame"><div id="atlas-mapa" aria-label="Mapa do Atlas Literário"></div></div>
+      <details class="atlas-legend-panel">
+        <summary>Legenda cartográfica</summary>
+        <div class="legenda" id="legenda-atlas"></div>
+      </details>
+      <div class="atlas-map-note">Sem marcador significa geocodificação pendente — não ausência literária.</div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer atlas-footer"><div class="container site-footer__grid"><div><h3>Território Literário</h3><p>Identidade geográfica, ocorrência literária e geocodificação são camadas distintas. O Atlas não inventa precisão para lugares ainda não georreferenciados.</p></div><div><h3>Explorar</h3><a href="biblioteca.html">Biblioteca</a><a href="autores.html">Autores</a></div><div><h3>Projeto</h3><a href="sobre.html">Sobre e metodologia</a></div></div></footer>
+<script src="js/navigation.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="js/data.js"></script>
+<script src="js/lugares.js"></script>
+<script src="js/corpus-registry.js"></script>
+<script src="js/page-bootstrap.js" data-mode="all" data-page-script="js/atlas.js"></script>
+</body>
+</html>
