@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const pages=['index.html','atlas.html','biblioteca.html','autores.html','autor.html','obra.html','linha-do-tempo.html','sobre.html','404.html'];
+const pages=['index.html','atlas.html','biblioteca.html','autores.html','autor.html','obra.html','leitura.html','linha-do-tempo.html','sobre.html','404.html'];
 const failures=[];
 const localRefs=[];
 
