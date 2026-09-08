@@ -24,6 +24,8 @@ jobs:
         run: node scripts/test-corpus-registry.mjs
       - name: Validar todos os corpora
         run: node scripts/validate-corpora.mjs
+      - name: Validar aprofundamento de Memórias de um Sargento de Milícias
+        run: node scripts/validate-memorias-sargento-deepening.mjs
       - name: Gerar fila de aprofundamento
         run: node scripts/generate-deepening-queue.mjs
       - name: Auditar identidade transversal de lugares
