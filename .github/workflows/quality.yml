@@ -30,6 +30,8 @@ jobs:
         run: node scripts/validate-macunaima-deepening.mjs
       - name: Validar aprofundamento de Os Sertões
         run: node scripts/validate-os-sertoes-deepening.mjs
+      - name: Validar aprofundamento de O Ateneu
+        run: node scripts/validate-o-ateneu-deepening.mjs
       - name: Gerar fila de aprofundamento
         run: node scripts/generate-deepening-queue.mjs
       - name: Auditar identidade transversal de lugares

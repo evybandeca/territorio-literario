@@ -1,33 +1,43 @@
-// TERRITÓRIO LITERÁRIO — TL-10 O Ateneu v0.1
+// TERRITÓRIO LITERÁRIO — TL-10 O Ateneu v1.0
 window.CORPUS_PROFUNDO = window.CORPUS_PROFUNDO || {};
 window.CORPUS_PROFUNDO["o-ateneu"] = {
-  status:"COBERTURA_ESTRUTURAL_CONTINUA_AUDITADA",
-  versao:"0.1.0",
+  status:"COBERTURA_CONTINUA_AUDITADA",
+  versao:"1.0.0",
   metodologia:"TL-10",
-  edicao:{titulo:"O Atheneu: Chronica de saudades",autor:"Raul Pompeia",cidade:"Rio de Janeiro",editora:"Typ. da Gazeta de Noticias",ano:1888,fonte:"Wikisource — transcrição da edição de 1888",url:"https://pt.wikisource.org/wiki/O_Ateneu",nota:"Fonte congelada: Rio de Janeiro, Typ. da «Gazeta de Noticias», Rua Sete de Setembro 72, 1888. Índice original com doze capítulos."},
-  estrutura:{unidades:12,unidade_tipo:"capitulos_da_edicao_original",unidades_auditadas:Array.from({length:12},(_,i)=>i+1),blocos:[{titulo:"Capítulos I–XII",inicio:1,fim:12}],nota:"A v0.1 congela os doze capítulos da edição original e inicia a camada geográfica explícita; a auditoria toponímica integral do corpo segue em versões posteriores."},
-  politica_inclusao_geografica:{incluir:["lugares explicitamente nomeados no corpo da obra","instituições ficcionais com função espacial central","ruas e acidentes geográficos materialmente ligados às cenas"],excluir_por_padrao:["lugares de analogias eruditas","topônimos apenas metafóricos","identificação real do colégio por equivalência biográfica sem prova textual"]},
-  personagens:[
-    {id:"sergio",nome:"Sérgio",papel:"protagonista"},
-    {id:"aristarco",nome:"Aristarco",papel:"personagem-central"},
-    {id:"egbert",nome:"Egbert",papel:"personagem-central"},
-    {id:"bento-alves",nome:"Bento Alves",papel:"personagem-central"},
-    {id:"sanches",nome:"Sanches",papel:"personagem-central"},
-    {id:"ema",nome:"Ema",papel:"personagem-central"}
-  ],
+  edicao:{titulo:"O Atheneu: Chronica de saudades",autor:"Raul Pompeia",cidade:"Rio de Janeiro",editora:"Typ. da Gazeta de Noticias",ano:1888,fonte:"Wikisource — transcrição da edição de 1888",url:"https://pt.wikisource.org/wiki/O_Ateneu",nota:"Fonte congelada: Rio de Janeiro, Typ. da «Gazeta de Noticias», Rua Sete de Setembro 72, 1888. Os doze capítulos foram auditados em sequência. A v1.0 aprofunda a topologia interna do internato e as referências urbanas explícitas sem atribuir coordenadas reais à instituição ficcional."},
+  estrutura:{unidades:12,unidade_tipo:"capitulos_da_edicao_original",unidades_auditadas:Array.from({length:12},(_,i)=>i+1),cobertura:"continua_auditada",blocos:[{titulo:"Capítulos I–XII",inicio:1,fim:12}],nota:"Os doze capítulos permanecem auditados. A espacialidade do colégio é representada por ambientes internos e relações topológicas textuais, não por equivalência biográfica com um prédio real."},
+  politica_inclusao_geografica:{incluir:["lugares explicitamente nomeados no corpo da obra","instituições e ambientes ficcionais com função espacial central","ruas, bairros e acidentes geográficos materialmente ligados às cenas"],excluir_por_padrao:["lugares de analogias eruditas","topônimos apenas metafóricos","identificação real do colégio por equivalência biográfica sem prova textual","coordenadas inferidas para ambientes do internato"]},
+  personagens:[{id:"sergio",nome:"Sérgio",papel:"protagonista"},{id:"aristarco",nome:"Aristarco",papel:"personagem-central"},{id:"egbert",nome:"Egbert",papel:"personagem-central"},{id:"bento-alves",nome:"Bento Alves",papel:"personagem-central"},{id:"sanches",nome:"Sanches",papel:"personagem-central"},{id:"ema",nome:"Ema",papel:"personagem-central"}],
   eventos:[],
   place_entities:[
     {id:"oa-ateneu",canonical_name:"Ateneu — internato ficcional",escala:"ponto",aliases:["Ateneu","Atheneu"],ficcional:true},
+    {id:"oa-ateneu-escritorio",canonical_name:"Escritório do Ateneu",escala:"ponto",aliases:["escritório do estabelecimento"],ficcional:true},
+    {id:"oa-ateneu-patio",canonical_name:"Pátio interno do Ateneu",escala:"ponto",aliases:["grande pátio interno dos recreios","pátio"],ficcional:true},
+    {id:"oa-ateneu-capela",canonical_name:"Capela do Ateneu",escala:"ponto",aliases:["capela"],ficcional:true},
+    {id:"oa-ateneu-refeitorio",canonical_name:"Refeitório do Ateneu",escala:"ponto",aliases:["refeitório"],ficcional:true},
+    {id:"oa-ateneu-salao-azul",canonical_name:"Salão azul — dormitório dos médios",escala:"ponto",aliases:["salão azul"],ficcional:true},
+    {id:"oa-ateneu-natacao",canonical_name:"Natação — banheiro do Ateneu",escala:"ponto",aliases:["Natação","banheiro"],ficcional:true},
+    {id:"oa-ateneu-chacara",canonical_name:"Chácara particular do diretor",escala:"ponto",aliases:["chácara particular do diretor"],ficcional:true},
+    {id:"oa-rj-rio-comprido",canonical_name:"Rio Comprido, Rio de Janeiro",escala:"regiao",aliases:["Rio Comprido"]},
     {id:"oa-rj-tijuca",canonical_name:"Tijuca, Rio de Janeiro",escala:"regiao",aliases:["montanhas da Tijuca","Tijuca"]},
     {id:"oa-rj-rua-ourives",canonical_name:"Rua dos Ourives, Rio de Janeiro",escala:"rota",aliases:["Rua dos Ourives"]},
     {id:"oa-rj-rua-assembleia",canonical_name:"Rua da Assembleia, Rio de Janeiro",escala:"rota",aliases:["Rua da Assembléia","Rua da Assembleia"]}
   ],
   place_mentions:[
-    {id:"oa-ateneu-u1",place_id:"oa-ateneu",canonical_name:"Ateneu — internato ficcional",unidade:1,unidade_label:"Cap. I — Impressão",tipo:"ficcional",escala:"ponto",certeza:"ilustrativo",funcao:"Instituição central à qual Sérgio chega no início da narrativa e que organiza espacialmente o romance.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/I",nota:"O capítulo inicial começa com Sérgio à porta do Ateneu."}},
+    {id:"oa-ateneu-u1",place_id:"oa-ateneu",canonical_name:"Ateneu — internato ficcional",unidade:1,unidade_label:"Cap. I — Impressão",tipo:"ficcional",escala:"ponto",certeza:"ilustrativo",funcao:"Instituição central à qual Sérgio chega e que organiza espacialmente o romance.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/I",nota:"O capítulo inicial situa Sérgio à porta do Ateneu."}},
+    {id:"oa-ateneu-u2",place_id:"oa-ateneu",canonical_name:"Ateneu — internato ficcional",unidade:2,unidade_label:"Cap. II",tipo:"ficcional",escala:"ponto",certeza:"ilustrativo",funcao:"Espaço institucional percorrido por Sérgio em sua entrada definitiva no colégio.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/II",nota:"O capítulo descreve a entrada, apresentação e visita ao estabelecimento."}},
+    {id:"oa-escritorio-u2",place_id:"oa-ateneu-escritorio",canonical_name:"Escritório do Ateneu",unidade:2,unidade_label:"Cap. II",tipo:"ficcional",escala:"ponto",certeza:"identificado",funcao:"Centro administrativo onde Aristarco recebe alunos e responsáveis.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/II",nota:"O capítulo começa com Aristarco no escritório do estabelecimento."}},
+    {id:"oa-refeitorio-u2",place_id:"oa-ateneu-refeitorio",canonical_name:"Refeitório do Ateneu",unidade:2,unidade_label:"Cap. II",tipo:"ficcional",escala:"ponto",certeza:"identificado",funcao:"Ambiente explicitamente visitado na apresentação do colégio.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/II",nota:"A visita enumera o refeitório entre os ambientes do estabelecimento."}},
+    {id:"oa-patio-u2",place_id:"oa-ateneu-patio",canonical_name:"Pátio interno do Ateneu",unidade:2,unidade_label:"Cap. II",tipo:"ficcional",escala:"ponto",certeza:"identificado",funcao:"Centro de recreio e circulação dos alunos.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/II",nota:"A visita descreve o grande pátio interno dos recreios e depois Sérgio desce ao pátio."}},
+    {id:"oa-capela-u2",place_id:"oa-ateneu-capela",canonical_name:"Capela do Ateneu",unidade:2,unidade_label:"Cap. II",tipo:"ficcional",escala:"ponto",certeza:"identificado",funcao:"Ambiente religioso explicitamente integrado à planta narrativa do internato.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/II",nota:"A capela é enumerada durante a visita ao estabelecimento."}},
+    {id:"oa-salao-azul-u2",place_id:"oa-ateneu-salao-azul",canonical_name:"Salão azul — dormitório dos médios",unidade:2,unidade_label:"Cap. II",tipo:"ficcional",escala:"ponto",certeza:"identificado",funcao:"Dormitório em que fica a cama de Sérgio.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/II",nota:"Sérgio sobe ao salão azul, identificado como dormitório dos médios."}},
+    {id:"oa-natacao-u3",place_id:"oa-ateneu-natacao",canonical_name:"Natação — banheiro do Ateneu",unidade:3,unidade_label:"Cap. III",tipo:"ficcional",escala:"ponto",certeza:"identificado",funcao:"Tanque de banho onde ocorre o episódio que aproxima Sérgio de Sanches.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/III",nota:"O capítulo define Natação como o banheiro construído nas dependências do Ateneu."}},
+    {id:"oa-rio-comprido-u3",place_id:"oa-rj-rio-comprido",canonical_name:"Rio Comprido, Rio de Janeiro",unidade:3,unidade_label:"Cap. III",tipo:"narrativo",escala:"regiao",certeza:"identificado",funcao:"Referência hidrográfica externa que recebe o escoamento do tanque de Natação.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/III",nota:"O tanque é descrito com escoamento para o Rio Comprido."}},
+    {id:"oa-chacara-u3",place_id:"oa-ateneu-chacara",canonical_name:"Chácara particular do diretor",unidade:3,unidade_label:"Cap. III",tipo:"ficcional",escala:"ponto",certeza:"identificado",funcao:"Espaço adjacente ao tanque, separado por um muro divisório.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/III",nota:"Além do muro do tanque fica a chácara particular do diretor."}},
     {id:"oa-tijuca-u7",place_id:"oa-rj-tijuca",canonical_name:"Tijuca, Rio de Janeiro",unidade:7,unidade_label:"Cap. VII — Tédio",tipo:"narrativo",escala:"regiao",certeza:"identificado",funcao:"Paisagem montanhosa explicitamente visível em torno do internato.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/VII",nota:"O narrador descreve as montanhas da Tijuca compondo o entorno visual do colégio."}},
     {id:"oa-ourives-u10",place_id:"oa-rj-rua-ourives",canonical_name:"Rua dos Ourives, Rio de Janeiro",unidade:10,unidade_label:"Cap. X — Impaciência",tipo:"narrativo",escala:"rota",certeza:"identificado",funcao:"Rua associada ao edifício onde Sérgio realiza exames públicos.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/X",nota:"O narrador menciona a 'bastilha da Rua dos Ourives' durante a memória dos exames."}},
     {id:"oa-assembleia-u10",place_id:"oa-rj-rua-assembleia",canonical_name:"Rua da Assembleia, Rio de Janeiro",unidade:10,unidade_label:"Cap. X — Impaciência",tipo:"narrativo",escala:"rota",certeza:"identificado",funcao:"Acesso explicitamente indicado ao local dos exames de Sérgio.",evidencia:{url:"https://pt.wikisource.org/wiki/O_Ateneu/X",nota:"O capítulo afirma que se entrava pela Rua da Assembléia para o saguão."}}
   ],
   percursos:[],
-  notas:["O Ateneu é mantido como instituição ficcional sem coordenada real, ainda que a obra tenha antecedentes biográficos conhecidos.","Nenhuma rota é inferida entre o internato e as ruas citadas.","A v0.1 é estrutural, não exaustiva em toponímia."]
+  notas:["O Ateneu permanece instituição ficcional sem coordenada real.","A v1.0 modela a topologia interna do internato com ambientes explicitamente descritos no texto.","Nenhuma rota é inferida entre o internato e as referências urbanas externas."]
 };
