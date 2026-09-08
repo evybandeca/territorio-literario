@@ -3,6 +3,7 @@
   const mode=self?.dataset.mode||'all';
   const pageScript=self?.dataset.pageScript;
   const afterScript=self?.dataset.afterScript;
+  document.body.dataset.loading='true';
   function inject(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error(`Falha ao iniciar módulo: ${src}`));document.body.appendChild(s)})}
   (async()=>{
     try{
@@ -13,5 +14,7 @@
     }catch(error){console.warn('[Território Literário] corpus parcial:',error)}
     if(pageScript)await inject(pageScript);
     if(afterScript)await inject(afterScript);
-  })().catch(error=>console.error('[Território Literário] falha de inicialização:',error));
+    delete document.body.dataset.loading;
+    document.dispatchEvent(new CustomEvent('tl:page-ready',{detail:{mode,pageScript}}));
+  })().catch(error=>{delete document.body.dataset.loading;document.dispatchEvent(new CustomEvent('tl:page-ready',{detail:{mode,pageScript,error:true}}));console.error('[Território Literário] falha de inicialização:',error)});
 })();
