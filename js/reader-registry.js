@@ -56,6 +56,25 @@
       },
       localPath:'reader-content/o-cortico.txt',
       sourceReference:'https://pt.wikisource.org/wiki/O_Corti%C3%A7o'
+    },
+    'triste-fim-policarpo-quaresma':{
+      id:'triste-fim-policarpo-quaresma',
+      titulo:'Triste Fim de Policarpo Quaresma',
+      tituloEdicao:'Triste Fim de Polycarpo Quaresma',
+      autor:'Lima Barreto',
+      ano:1915,
+      edicao:'Rio de Janeiro: Typ. Revista dos Tribunaes, 1915',
+      chapterFormat:'part-roman-heading',
+      source:{
+        provider:'Project Gutenberg',
+        ebook:67535,
+        url:'https://www.gutenberg.org/cache/epub/67535/pg67535.txt',
+        expectedUpdate:'October 18, 2024',
+        sha256:'7898e07218e1431f00d6e6aa1d5ebe364bb6d770afaab865868a11df6da07350',
+        requiredMarkers:['LIMA BARRETO','POLYCARPO QUARESMA','PRIMEIRA PARTE','SEGUNDA PARTE','TERCEIRA PARTE']
+      },
+      localPath:'reader-content/triste-fim-policarpo-quaresma.txt',
+      sourceReference:'https://pt.wikisource.org/wiki/Triste_Fim_de_Policarpo_Quaresma'
     }
   };
   root.READER_REGISTRY=registry;

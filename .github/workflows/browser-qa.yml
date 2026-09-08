@@ -11,6 +11,7 @@ on:
       - "scripts/seo-runtime-qa.mjs"
       - "scripts/reader-runtime-qa.mjs"
       - "scripts/reader-o-cortico-qa.mjs"
+      - "scripts/reader-policarpo-qa.mjs"
       - "scripts/vendor-reader-content.mjs"
       - "scripts/audit-lighthouse.mjs"
       - ".github/workflows/browser-qa.yml"
@@ -24,6 +25,7 @@ on:
       - "scripts/seo-runtime-qa.mjs"
       - "scripts/reader-runtime-qa.mjs"
       - "scripts/reader-o-cortico-qa.mjs"
+      - "scripts/reader-policarpo-qa.mjs"
       - "scripts/vendor-reader-content.mjs"
       - "scripts/audit-lighthouse.mjs"
       - ".github/workflows/browser-qa.yml"
@@ -82,6 +84,10 @@ jobs:
         env:
           QA_BASE_URL: http://127.0.0.1:4173
         run: node scripts/reader-o-cortico-qa.mjs
+      - name: Validar leitor de Policarpo Quaresma
+        env:
+          QA_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/reader-policarpo-qa.mjs
       - name: Executar Lighthouse
         shell: bash
         run: |

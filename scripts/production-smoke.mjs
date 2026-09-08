@@ -60,7 +60,8 @@ await run('leitores integrais estão hospedados e navegáveis',async()=>{
   const works=[
     {id:'memorias-postumas',file:'memorias-postumas.txt',marker:'CAPITULO I',body:'defunto autor'},
     {id:'dom-casmurro',file:'dom-casmurro.txt',marker:'Do titulo.',body:'Engenho Novo'},
-    {id:'o-cortico',file:'o-cortico.txt',marker:'João Romão',body:'João Romão'}
+    {id:'o-cortico',file:'o-cortico.txt',marker:'João Romão',body:'João Romão'},
+    {id:'triste-fim-policarpo-quaresma',file:'triste-fim-policarpo-quaresma.txt',marker:'PRIMEIRA PARTE',body:'Polycarpo Quaresma'}
   ];
   for(const work of works){
     const page=await browser.newPage();
@@ -76,6 +77,12 @@ await run('leitores integrais estão hospedados e navegáveis',async()=>{
     assert(!errors.length,`${work.id}: erros de runtime ${errors.join(' | ')}`);
     await page.close();
   }
+  const page=await browser.newPage();
+  await page.goto(`${base}/leitura.html?obra=triste-fim-policarpo-quaresma&capitulo=6`,{waitUntil:'domcontentloaded',timeout:30000});
+  await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:30000});
+  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 2'),'Policarpo: capítulo 6 não entrou na segunda parte em produção');
+  assert(((await page.locator('#reader-text').textContent())||'').includes('Socego'),'Policarpo: capítulo 6 incorreto em produção');
+  await page.close();
 });
 
 await browser.close();
