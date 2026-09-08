@@ -56,6 +56,21 @@ await run('dados estruturados dinâmicos chegam à produção',async()=>{
   await page.close();
 });
 
+await run('leitor integral está hospedado e navegável',async()=>{
+  const request=await browser.newPage();
+  const textResponse=await request.request.get(base+'/reader-content/memorias-postumas.txt');
+  assert(textResponse.ok(),`texto local: HTTP ${textResponse.status()}`);
+  assert((await textResponse.text()).includes('CAPITULO I'),'texto local sem capítulo I');
+  const errors=[];request.on('pageerror',e=>errors.push(e.message));
+  const nav=await request.goto(base+'/leitura.html?obra=memorias-postumas&capitulo=1',{waitUntil:'domcontentloaded',timeout:30000});
+  assert(nav?.ok(),'leitor: navegação HTTP inválida');
+  await request.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:30000});
+  assert(((await request.locator('#reader-text').textContent())||'').includes('defunto autor'),'leitor: capítulo I não renderizado');
+  assert((await request.locator('link[rel="canonical"]').getAttribute('href'))?.includes('capitulo=1'),'leitor: canonical sem capítulo');
+  assert(!errors.length,`leitor: erros de runtime ${errors.join(' | ')}`);
+  await request.close();
+});
+
 await browser.close();
 if(failures.length){console.error(`\nProduction smoke: ${failures.length} falha(s)\n- ${failures.join('\n- ')}`);process.exit(1)}
-console.log('Production smoke OK: runtime, HTTP interno, busca e SEO semântico no GitHub Pages.');
+console.log('Production smoke OK: runtime, HTTP interno, busca, SEO semântico e leitor no GitHub Pages.');
