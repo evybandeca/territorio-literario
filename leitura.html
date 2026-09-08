@@ -11,9 +11,12 @@
 <body class="reader-page">
 <div data-site-header></div>
 <main id="conteudo" class="reader-shell">
-  <aside class="reader-sidebar" aria-label="Índice da obra">
-    <div class="reader-book-meta">
+  <aside class="reader-sidebar" id="reader-sidebar" aria-label="Índice da obra" aria-hidden="false">
+    <div class="reader-drawer-head">
       <span class="eyebrow">Sala de leitura</span>
+      <button id="reader-index-close" class="reader-index-close" type="button" aria-label="Fechar índice">×</button>
+    </div>
+    <div class="reader-book-meta">
       <a id="reader-back-work" href="biblioteca.html">← Voltar à obra</a>
       <h1 id="reader-book-title">Carregando obra…</h1>
       <p id="reader-book-author"></p>
@@ -25,8 +28,15 @@
     <nav class="reader-index" aria-label="Capítulos"><ol id="reader-index"></ol></nav>
   </aside>
 
+  <div id="reader-backdrop" class="reader-backdrop" hidden></div>
+
   <section class="reader-main" aria-labelledby="reader-chapter-title">
-    <div class="reader-toolbar" aria-label="Preferências de leitura">
+    <div class="reader-toolbar" aria-label="Preferências e navegação de leitura">
+      <button id="reader-index-toggle" class="reader-index-toggle" type="button" aria-expanded="false" aria-controls="reader-sidebar">Capítulos</button>
+      <div class="reader-progress" aria-label="Progresso na obra">
+        <span id="reader-progress-text">Preparando progresso…</span>
+        <div class="reader-progress-track" aria-hidden="true"><span id="reader-progress-bar"></span></div>
+      </div>
       <button id="reader-font-dec" type="button" aria-label="Diminuir tamanho do texto">A−</button>
       <button id="reader-font-inc" type="button" aria-label="Aumentar tamanho do texto">A+</button>
       <a id="reader-atlas-link" class="reader-atlas-link" href="atlas.html" hidden>Ver lugares deste capítulo no Atlas</a>
