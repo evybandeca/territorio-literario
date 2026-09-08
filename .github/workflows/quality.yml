@@ -28,6 +28,8 @@ jobs:
         run: node scripts/validate-memorias-sargento-deepening.mjs
       - name: Validar aprofundamento de Macunaíma
         run: node scripts/validate-macunaima-deepening.mjs
+      - name: Validar aprofundamento de Os Sertões
+        run: node scripts/validate-os-sertoes-deepening.mjs
       - name: Gerar fila de aprofundamento
         run: node scripts/generate-deepening-queue.mjs
       - name: Auditar identidade transversal de lugares
