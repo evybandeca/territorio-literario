@@ -21,4 +21,10 @@ requireText(libraryJs, 'READER_REGISTRY', 'Biblioteca');
 requireText(libraryJs, 'Ler agora', 'Biblioteca');
 requireText(readerJs, 'tl-reader:last', 'Leitor');
 
+const searchPos=library.indexOf('id="busca-obras"');
+const collapsedFiltersPos=library.indexOf('id="biblioteca-filtros"');
+if(searchPos<0||collapsedFiltersPos<0||searchPos>collapsedFiltersPos){
+  throw new Error('Biblioteca: busca mobile deve permanecer fora do painel recolhível de filtros');
+}
+
 console.log('UX-01 contract OK');
