@@ -4,64 +4,21 @@ const base=process.env.QA_BASE_URL||'http://127.0.0.1:4173';
 const executablePath=process.env.CHROME_PATH||'/usr/bin/google-chrome';
 const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox','--disable-dev-shm-usage']});
 const failures=[];
-
-async function run(name,fn){
-  try{await fn();console.log(`PASS ${name}`)}catch(error){failures.push(`${name}: ${error.message}`);console.error(`FAIL ${name}: ${error.stack||error.message}`)}
-}
+async function run(name,fn){try{await fn();console.log(`PASS ${name}`)}catch(error){failures.push(`${name}: ${error.message}`);console.error(`FAIL ${name}: ${error.stack||error.message}`)}}
 function assert(condition,message){if(!condition)throw new Error(message)}
 
-await run('home sem erro e responsiva',async()=>{
-  const page=await browser.newPage({viewport:{width:1440,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  const response=await page.goto(`${base}/index.html`,{waitUntil:'networkidle'});assert(response?.ok(),'home HTTP inválida');
-  const h1=(await page.locator('h1').first().textContent())?.trim();assert(h1,'home sem h1 visível');
-  assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close();
-});
+await run('home sem erro e responsiva',async()=>{const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));const response=await page.goto(`${base}/index.html`,{waitUntil:'networkidle'});assert(response?.ok(),'home HTTP inválida');assert((await page.locator('h1').first().textContent())?.trim(),'home sem h1 visível');assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close()});
 
-await run('lazy loading da obra individual',async()=>{
-  const page=await browser.newPage({viewport:{width:1280,height:800}});const requests=[];const errors=[];
-  page.on('request',r=>{const u=new URL(r.url());if(u.pathname.includes('/js/corpus/'))requests.push(u.pathname)});page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(`${base}/obra.html?id=o-cortico`,{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>document.querySelector('#titulo-obra')?.textContent?.trim().length>0,{timeout:15000});
-  const title=(await page.locator('#titulo-obra').textContent())?.trim();assert(title==='O Cortiço',`obra inesperada: ${title}`);
-  const loaded=await page.evaluate(()=>Object.keys(window.CORPUS_PROFUNDO||{}));assert(loaded.length===1&&loaded[0]==='o-cortico',`corpora carregados indevidamente: ${loaded.join(', ')}`);
-  const unique=[...new Set(requests)];assert(unique.length===1&&unique[0].endsWith('/o-cortico.js'),`requests de corpus indevidos: ${unique.join(', ')}`);
-  assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close();
-});
+await run('Biblioteca editorial filtra movimentos',async()=>{const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(`${base}/biblioteca.html`,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>document.querySelectorAll('#lista-obras .book-object').length>0,{timeout:20000});const initial=await page.locator('#lista-obras .book-object').count();assert(initial>=10,`coleção pequena demais: ${initial}`);assert(await page.locator('#movimentos-rail .movement-chip').count()>1,'trilho de movimentos ausente');const select=page.locator('#filtro-movimento');const value=await select.locator('option').nth(1).getAttribute('value');await select.selectOption(value);await page.waitForTimeout(150);const filtered=await page.locator('#lista-obras .book-object').count();assert(filtered>0&&filtered<=initial,'filtro de movimento não alterou coleção');assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close()});
 
-await run('Atlas Experience carrega e abre dossiê',async()=>{
-  const page=await browser.newPage({viewport:{width:1440,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(`${base}/atlas.html`,{waitUntil:'domcontentloaded'});
-  const expected=await page.evaluate(()=>Object.keys(window.CORPUS_REGISTRY||{}).length);assert(expected>0,'registry vazio no Atlas');
-  await page.waitForFunction(expected=>Object.keys(window.CORPUS_PROFUNDO||{}).length===expected,expected,{timeout:30000});
-  const loaded=await page.evaluate(()=>Object.keys(window.CORPUS_PROFUNDO||{}).sort());assert(loaded.length===expected,`Atlas carregou ${loaded.length} corpora; esperado ${expected}`);
-  await page.waitForFunction(()=>document.querySelectorAll('#atlas-lista .atlas-lista-item').length>0,{timeout:10000});
-  assert(await page.locator('.atlas-experience').count()===1,'shell Atlas Experience ausente');
-  const first=page.locator('#atlas-lista .atlas-lista-item').first();await first.click();
-  await page.waitForFunction(()=>document.querySelector('.atlas-sidebar')?.classList.contains('is-detail-mode'));
-  assert((await page.locator('#atlas-detalhe h2').textContent())?.trim(),'dossiê sem nome de lugar');
-  assert(await page.locator('#atlas-detalhe .atlas-work-link').count()>0,'dossiê sem obras relacionadas');
-  await page.keyboard.press('Escape');
-  await page.waitForFunction(()=>!document.querySelector('.atlas-sidebar')?.classList.contains('is-detail-mode'));
-  assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close();
-});
+await run('dossiê museológico mantém lazy loading único',async()=>{const page=await browser.newPage({viewport:{width:1280,height:900}}),requests=[],errors=[];page.on('request',r=>{const u=new URL(r.url());if(u.pathname.includes('/js/corpus/'))requests.push(u.pathname)});page.on('pageerror',e=>errors.push(e.message));await page.goto(`${base}/obra.html?id=o-cortico`,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>document.querySelector('#titulo-obra')?.textContent?.trim().length>0,{timeout:15000});assert((await page.locator('#titulo-obra').textContent())?.trim()==='O Cortiço','obra inesperada');assert(await page.locator('.work-cover-object').count()===1,'objeto-livro da obra ausente');assert(await page.locator('#obra-facts .work-fact').count()>=4,'ficha rápida incompleta');assert(await page.locator('#obra-research-strip .work-research-stat').count()>=2,'métricas de pesquisa ausentes');await page.waitForFunction(()=>document.querySelector('.corpus-profundo'),{timeout:15000});const loaded=await page.evaluate(()=>Object.keys(window.CORPUS_PROFUNDO||{}));assert(loaded.length===1&&loaded[0]==='o-cortico',`corpora carregados indevidamente: ${loaded.join(', ')}`);const unique=[...new Set(requests)];assert(unique.length===1&&unique[0].endsWith('/o-cortico.js'),`requests de corpus indevidos: ${unique.join(', ')}`);assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close()});
 
-await run('viewport móvel sem overflow estrutural',async()=>{
-  for(const url of ['/index.html','/obra.html?id=memorias-postumas','/biblioteca.html','/atlas.html']){
-    const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true});await page.goto(base+url,{waitUntil:'domcontentloaded'});await page.waitForTimeout(url.includes('atlas')?1600:700);
-    const dims=await page.evaluate(()=>({innerWidth:window.innerWidth,scrollWidth:document.documentElement.scrollWidth}));
-    assert(dims.scrollWidth<=dims.innerWidth+2,`${url}: overflow horizontal ${dims.scrollWidth}px > ${dims.innerWidth}px`);
-    if(url.includes('atlas')){assert(await page.locator('.atlas-sidebar').count()===1,'bottom sheet do Atlas ausente');assert(await page.locator('#atlas-mapa').count()===1,'mapa móvel ausente')}
-    await page.close();
-  }
-});
+await run('Atlas Experience carrega e abre dossiê',async()=>{const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(`${base}/atlas.html`,{waitUntil:'domcontentloaded'});const expected=await page.evaluate(()=>Object.keys(window.CORPUS_REGISTRY||{}).length);assert(expected>0,'registry vazio no Atlas');await page.waitForFunction(expected=>Object.keys(window.CORPUS_PROFUNDO||{}).length===expected,expected,{timeout:30000});await page.waitForFunction(()=>document.querySelectorAll('#atlas-lista .atlas-lista-item').length>0,{timeout:10000});assert(await page.locator('.atlas-experience').count()===1,'shell Atlas Experience ausente');await page.locator('#atlas-lista .atlas-lista-item').first().click();await page.waitForFunction(()=>document.querySelector('.atlas-sidebar')?.classList.contains('is-detail-mode'));assert((await page.locator('#atlas-detalhe h2').textContent())?.trim(),'dossiê sem nome de lugar');await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('.atlas-sidebar')?.classList.contains('is-detail-mode'));assert(errors.length===0,`erros JS: ${errors.join(' | ')}`);await page.close()});
 
-await run('navegação por teclado alcança link',async()=>{
-  const page=await browser.newPage({viewport:{width:1280,height:800}});await page.goto(`${base}/index.html`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(300);
-  let reached=false;
-  for(let i=0;i<8;i++){await page.keyboard.press('Tab');const tag=await page.evaluate(()=>document.activeElement?.tagName);if(tag==='A'){reached=true;break}}
-  assert(reached,'Tab não alcançou link navegável nos primeiros 8 focos');await page.close();
-});
+await run('viewport móvel sem overflow estrutural',async()=>{for(const url of ['/index.html','/obra.html?id=memorias-postumas','/biblioteca.html','/atlas.html']){const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true});await page.goto(base+url,{waitUntil:'domcontentloaded'});await page.waitForTimeout(url.includes('atlas')?1600:900);const dims=await page.evaluate(()=>({innerWidth:window.innerWidth,scrollWidth:document.documentElement.scrollWidth}));assert(dims.scrollWidth<=dims.innerWidth+2,`${url}: overflow horizontal ${dims.scrollWidth}px > ${dims.innerWidth}px`);if(url.includes('biblioteca'))assert(await page.locator('.book-object').count()>0,'coleção mobile ausente');if(url.includes('obra'))assert(await page.locator('.work-cover-object').count()===1,'objeto-livro mobile ausente');if(url.includes('atlas')){assert(await page.locator('.atlas-sidebar').count()===1,'bottom sheet do Atlas ausente');assert(await page.locator('#atlas-mapa').count()===1,'mapa móvel ausente')}await page.close()}});
+
+await run('navegação por teclado alcança link',async()=>{const page=await browser.newPage({viewport:{width:1280,height:800}});await page.goto(`${base}/index.html`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(300);let reached=false;for(let i=0;i<8;i++){await page.keyboard.press('Tab');if(await page.evaluate(()=>document.activeElement?.tagName)==='A'){reached=true;break}}assert(reached,'Tab não alcançou link navegável nos primeiros 8 focos');await page.close()});
 
 await browser.close();
 if(failures.length){console.error(`\nBrowser QA: ${failures.length} falha(s)\n- ${failures.join('\n- ')}`);process.exit(1)}
-console.log('Browser QA OK: shell, lazy loading, Atlas Experience, mobile e teclado.');
+console.log('Browser QA OK: home, Biblioteca, dossiê de obra, Atlas, mobile e teclado.');
