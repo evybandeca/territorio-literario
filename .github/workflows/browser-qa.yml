@@ -51,6 +51,8 @@ jobs:
           test -n "$CHROME_PATH"
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
           "$CHROME_PATH" --version
+      - name: Preparar textos do leitor
+        run: node scripts/vendor-reader-content.mjs
       - name: Iniciar servidor estático
         shell: bash
         run: |
