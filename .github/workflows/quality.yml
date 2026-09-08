@@ -38,6 +38,8 @@ jobs:
         run: node scripts/validate-vidas-secas-deepening.mjs
       - name: Gerar fila de aprofundamento
         run: node scripts/generate-deepening-queue.mjs
+      - name: Validar invariantes do release v1
+        run: node scripts/validate-release-v1.mjs
       - name: Auditar identidade transversal de lugares
         run: node scripts/audit-place-identity.mjs
       - name: Validar proveniência de geocodificação
