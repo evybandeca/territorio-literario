@@ -75,6 +75,36 @@
       },
       localPath:'reader-content/triste-fim-policarpo-quaresma.txt',
       sourceReference:'https://pt.wikisource.org/wiki/Triste_Fim_de_Policarpo_Quaresma'
+    },
+    'o-guarani':{
+      id:'o-guarani',
+      titulo:'O Guarani',
+      tituloEdicao:'O Guarany',
+      autor:'José de Alencar',
+      ano:1883,
+      edicao:'Rio de Janeiro: B.-L. Garnier, 5ª ed., 1883',
+      chapterFormat:'part-roman-heading',
+      source:{
+        provider:'Project Gutenberg',
+        ebook:'67724 + 67725',
+        expectedUpdate:'October 18, 2024',
+        parts:[
+          {
+            ebook:67724,
+            url:'https://www.gutenberg.org/cache/epub/67724/pg67724.txt',
+            sha256:'DISCOVER',
+            requiredMarkers:['J. DE ALENCAR','PRIMEIRA PARTE','SEGUNDA PARTE','SCENARIO']
+          },
+          {
+            ebook:67725,
+            url:'https://www.gutenberg.org/cache/epub/67725/pg67725.txt',
+            sha256:'DISCOVER',
+            requiredMarkers:['J. DE ALENCAR','TERCEIRA PARTE','QUARTA PARTE','A CATASTROPHE']
+          }
+        ]
+      },
+      localPath:'reader-content/o-guarani.txt',
+      sourceReference:'https://pt.wikisource.org/wiki/O_Guarani'
     }
   };
   root.READER_REGISTRY=registry;
