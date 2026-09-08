@@ -6,14 +6,16 @@
   const announce=msg=>{live.textContent='';requestAnimationFrame(()=>live.textContent=msg)};
   const scriptPath=src=>new URL(src,location.href).pathname;
   const injectScript=src=>new Promise((resolve,reject)=>{const wanted=scriptPath(src),existing=[...document.scripts].find(s=>s.src&&new URL(s.src,location.href).pathname===wanted);if(existing){if(existing.dataset.tlLoaded==='true'||existing.readyState==='complete')return resolve();existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});setTimeout(resolve,0);return}const s=document.createElement('script');s.src=src;s.async=false;s.onload=()=>{s.dataset.tlLoaded='true';resolve()};s.onerror=reject;document.body.appendChild(s)});
-  let dataPromise=null;async function ensureData(){
-    if(!dataPromise)dataPromise=(async()=>{
-      if(typeof OBRAS==='undefined')await injectScript('js/data.js');
+  let catalogPromise=null,searchDataPromise=null;
+  async function ensureCatalog(){if(!catalogPromise)catalogPromise=(async()=>{if(typeof OBRAS==='undefined')await injectScript('js/data.js')})();await catalogPromise}
+  async function ensureSearchData(){
+    if(!searchDataPromise)searchDataPromise=(async()=>{
+      await ensureCatalog();
       if(typeof CORPUS_REGISTRY==='undefined'||typeof loadAllCorpora!=='function')await injectScript('js/corpus-registry.js');
       if(typeof loadAllCorpora==='function')await loadAllCorpora();
       if(typeof construirIndiceLugares!=='function')await injectScript('js/lugares.js');
     })();
-    await dataPromise;
+    await searchDataPromise;
   }
   function searchEntries(){const entries=[
     {type:'Página',label:'Atlas',meta:'Cartografia literária',href:'atlas.html',text:'atlas mapa lugares territorio cartografia'},
@@ -35,7 +37,7 @@
   const input=dialog.querySelector('.global-search__input'),results=dialog.querySelector('.global-search__results');let active=-1,current=[];
   function renderSearch(){const q=norm(input.value);const all=searchEntries();current=(q?all.filter(e=>norm(e.text+' '+e.label+' '+e.meta).includes(q)):all.filter(e=>e.type==='Página')).slice(0,18);active=current.length?0:-1;const grouped=new Map();current.forEach((e,i)=>{const arr=grouped.get(e.type)||[];arr.push({...e,index:i});grouped.set(e.type,arr)});results.innerHTML=current.length?[...grouped.entries()].map(([type,arr])=>`<section class="global-search__group"><div class="global-search__group-title">${esc(type)}</div>${arr.map(e=>`<a class="global-search__item" role="option" aria-selected="${e.index===active}" data-index="${e.index}" href="${esc(e.href)}"><span><strong>${esc(e.label)}</strong><span>${esc(e.meta)}</span></span><span class="global-search__type">${esc(type)}</span></a>`).join('')}</section>`).join(''):`<div class="global-search__empty">Nenhum resultado para “${esc(input.value)}”.</div>`;announce(`${current.length} resultado${current.length===1?'':'s'} encontrado${current.length===1?'':'s'}.`)}
   function syncActive(){results.querySelectorAll('.global-search__item').forEach((el,i)=>el.setAttribute('aria-selected',String(i===active)));results.querySelector(`.global-search__item[data-index="${active}"]`)?.scrollIntoView({block:'nearest'})}
-  async function openSearch(){await ensureData().catch(()=>{});if(!dialog.open)dialog.showModal();renderSearch();requestAnimationFrame(()=>input.focus())}
+  async function openSearch(){await ensureSearchData().catch(()=>{});if(!dialog.open)dialog.showModal();renderSearch();requestAnimationFrame(()=>input.focus())}
   function closeSearch(){if(dialog.open)dialog.close()}
   document.querySelectorAll('.site-search-trigger').forEach(b=>b.addEventListener('click',openSearch));
   dialog.querySelector('.global-search__close').addEventListener('click',closeSearch);dialog.addEventListener('click',e=>{if(e.target===dialog)closeSearch()});
@@ -49,6 +51,6 @@
     else{const busca=new URLSearchParams(location.search).get('busca');content=`<a href="atlas.html">Atlas</a>${busca?`<span class="context-rail__sep">/</span><span class="context-rail__current">Busca: ${esc(busca)}</span>`:''}`}
     if(!content)return;rail.innerHTML=`<div class="container context-rail__inner">${content}</div>`;root.appendChild(rail)
   }
-  window.addEventListener('load',async()=>{await ensureData().catch(()=>{});contextualRail();document.querySelector('#conteudo')?.classList.add('page-ready-fade')},{once:true});
+  window.addEventListener('load',async()=>{await ensureCatalog().catch(()=>{});contextualRail();document.querySelector('#conteudo')?.classList.add('page-ready-fade')},{once:true});
   document.addEventListener('tl:page-ready',()=>{document.querySelector('#conteudo')?.classList.add('page-ready-fade');announce('Conteúdo atualizado e pronto.')});
 })();
