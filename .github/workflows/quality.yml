@@ -34,6 +34,8 @@ jobs:
         run: node scripts/validate-o-ateneu-deepening.mjs
       - name: Validar aprofundamento de Úrsula
         run: node scripts/validate-ursula-deepening.mjs
+      - name: Validar aprofundamento de Vidas Secas
+        run: node scripts/validate-vidas-secas-deepening.mjs
       - name: Gerar fila de aprofundamento
         run: node scripts/generate-deepening-queue.mjs
       - name: Auditar identidade transversal de lugares

@@ -1,7 +1,5 @@
 {
   "schema_version":"1.0.0",
   "updated_at":"2026-09-08",
-  "strategy":[
-    {"work_id":"vidas-secas","priority":1,"mode":"intentional_indeterminacy","target":"Aprofundar função espacial e recorrência, não quantidade de topônimos.","constraint":"A baixa densidade toponímica é característica literária; não preencher lacunas com geografia externa."}
-  ]
+  "strategy":[]
 }
