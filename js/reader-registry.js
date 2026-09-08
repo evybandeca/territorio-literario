@@ -28,13 +28,10 @@
     },
     'o-guarani':{
       id:'o-guarani',titulo:'O Guarani',tituloEdicao:'O Guarany',autor:'José de Alencar',ano:1883,edicao:'Rio de Janeiro: B.-L. Garnier, 5ª ed., 1883',chapterFormat:'part-roman-heading',
-      source:{
-        provider:'Project Gutenberg',ebook:'67724 + 67725',expectedUpdate:'October 18, 2024',
-        parts:[
-          {ebook:67724,url:'https://www.gutenberg.org/cache/epub/67724/pg67724.txt',sha256:'22713b6e92435496a5f865cf040acbc044c610759cb355c31ec00215dd2c72ab',requiredMarkers:['J. DE ALENCAR','PRIMEIRA PARTE','SEGUNDA PARTE','SCENARIO']},
-          {ebook:67725,url:'https://www.gutenberg.org/cache/epub/67725/pg67725.txt',sha256:'b03cc5c553b7f5e061fd06cddb1f7bf7011ba3880e962a68b202f1b170aaa9a9',requiredMarkers:['J. DE ALENCAR','TERCEIRA PARTE','QUARTA PARTE','A CATASTROPHE']}
-        ]
-      },
+      source:{provider:'Project Gutenberg',ebook:'67724 + 67725',expectedUpdate:'October 18, 2024',parts:[
+        {ebook:67724,url:'https://www.gutenberg.org/cache/epub/67724/pg67724.txt',sha256:'22713b6e92435496a5f865cf040acbc044c610759cb355c31ec00215dd2c72ab',requiredMarkers:['J. DE ALENCAR','PRIMEIRA PARTE','SEGUNDA PARTE','SCENARIO']},
+        {ebook:67725,url:'https://www.gutenberg.org/cache/epub/67725/pg67725.txt',sha256:'b03cc5c553b7f5e061fd06cddb1f7bf7011ba3880e962a68b202f1b170aaa9a9',requiredMarkers:['J. DE ALENCAR','TERCEIRA PARTE','QUARTA PARTE','A CATASTROPHE']}
+      ]},
       localPath:'reader-content/o-guarani.txt',sourceReference:'https://pt.wikisource.org/wiki/O_Guarani'
     },
     'iracema':{
@@ -43,6 +40,10 @@
       localPath:'reader-content/iracema.txt',sourceReference:'https://pt.wikisource.org/wiki/Iracema'
     }
   };
+  const aliases={
+    'policarpo-quaresma':'triste-fim-policarpo-quaresma'
+  };
   root.READER_REGISTRY=registry;
-  root.readerConfig=function(id){return registry[id]||null};
+  root.READER_ALIASES=aliases;
+  root.readerConfig=function(id){const canonical=aliases[id]||id;return registry[canonical]||null};
 })(typeof window!=='undefined'?window:globalThis);
