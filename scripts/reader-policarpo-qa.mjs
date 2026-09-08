@@ -25,17 +25,23 @@ try{
   assert(contentRequests[0].origin===new URL(base).origin,'Policarpo: texto integral foi buscado fora do domínio do portal');
   assert((await page.locator('#reader-book-title').textContent())?.includes('Policarpo Quaresma'),'Policarpo: título da obra ausente');
   assert((await page.locator('#reader-chapter-number').textContent())?.includes('I'),'Policarpo: capítulo inicial não foi reconhecido');
+  assert(await page.locator('#reader-index a').count()===15,'Policarpo: índice não contém os 15 capítulos das três partes');
   const firstText=(await page.locator('#reader-text').textContent())||'';
   assert(firstText.includes('Polycarpo Quaresma'),'Policarpo: capítulo inicial não contém o texto esperado');
 
   await page.goto(`${base}/leitura.html?obra=triste-fim-policarpo-quaresma&capitulo=6`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
+  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 2'),'Policarpo: capítulo 6 não foi associado à segunda parte');
   const secondPartText=(await page.locator('#reader-text').textContent())||'';
   assert(secondPartText.includes('Sossego'),'Policarpo: capítulo 6 não corresponde à abertura da segunda parte');
   const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
   assert(canonical?.includes('leitura.html?obra=triste-fim-policarpo-quaresma&capitulo=6'),'Policarpo: canonical do capítulo 6 incorreto');
   const atlasText=(await page.locator('#reader-atlas-link').textContent())||'';
   assert(atlasText.includes('lugar'),'Policarpo: integração contextual com Atlas ausente no capítulo 6');
+
+  await page.goto(`${base}/leitura.html?obra=triste-fim-policarpo-quaresma&capitulo=11`,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:20000});
+  assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 3'),'Policarpo: capítulo 11 não foi associado à terceira parte');
 
   await page.locator('#reader-search').fill('Bertoleza');
   await page.waitForTimeout(150);
