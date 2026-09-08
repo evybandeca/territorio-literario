@@ -36,6 +36,11 @@
         ]
       },
       localPath:'reader-content/o-guarani.txt',sourceReference:'https://pt.wikisource.org/wiki/O_Guarani'
+    },
+    'iracema':{
+      id:'iracema',titulo:'Iracema',tituloEdicao:'Iracema',autor:'José de Alencar',ano:1865,edicao:'Lisboa: Companhia Nacional Editora, 1890',chapterFormat:'roman-untitled',
+      source:{provider:'Project Gutenberg',ebook:67740,url:'https://www.gutenberg.org/cache/epub/67740/pg67740.txt',expectedUpdate:'October 18, 2024',sha256:'e19bbd57aa2fff7715832b52e1c28562d8bdc4a908515609a6f638799d916bac',requiredMarkers:['JOSÉ DE ALENCAR','IRACEMA','Verdes mares bravios']},
+      localPath:'reader-content/iracema.txt',sourceReference:'https://pt.wikisource.org/wiki/Iracema'
     }
   };
   root.READER_REGISTRY=registry;

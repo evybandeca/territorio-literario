@@ -62,7 +62,8 @@ await run('leitores integrais estão hospedados e navegáveis',async()=>{
     {id:'dom-casmurro',file:'dom-casmurro.txt',marker:'Do titulo.',body:'Engenho Novo'},
     {id:'o-cortico',file:'o-cortico.txt',marker:'João Romão',body:'João Romão'},
     {id:'triste-fim-policarpo-quaresma',file:'triste-fim-policarpo-quaresma.txt',marker:'PRIMEIRA PARTE',body:'Polycarpo Quaresma'},
-    {id:'o-guarani',file:'o-guarani.txt',marker:'PRIMEIRA PARTE',body:'Paquequer'}
+    {id:'o-guarani',file:'o-guarani.txt',marker:'PRIMEIRA PARTE',body:'Paquequer'},
+    {id:'iracema',file:'iracema.txt',marker:'Verdes mares bravios',body:'Verdes mares bravios'}
   ];
   for(const work of works){
     const page=await browser.newPage();
@@ -87,6 +88,14 @@ await run('leitores integrais estão hospedados e navegáveis',async()=>{
   await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:30000});
   assert(((await page.locator('#reader-chapter-number').textContent())||'').includes('Parte 4'),'O Guarani: capítulo 44 não entrou na quarta parte em produção');
   assert(await page.locator('#reader-index a').count()===54,'O Guarani: índice não contém 54 capítulos em produção');
+  await page.goto(`${base}/leitura.html?obra=iracema&capitulo=3`,{waitUntil:'domcontentloaded',timeout:30000});
+  await page.waitForFunction(()=>document.body.dataset.readerReady==='true',{timeout:30000});
+  assert(await page.locator('#reader-index a').count()===33,'Iracema: índice não contém 33 capítulos em produção');
+  await page.waitForFunction(()=>{
+    const link=document.getElementById('reader-atlas-link');
+    return Boolean(link&&!link.hidden&&(link.getAttribute('href')||'').startsWith('atlas.html?busca='));
+  },{timeout:30000});
+  assert(((await page.locator('#reader-atlas-link').getAttribute('href'))||'').includes('Vale%20e%20taba%20dos%20Tabajaras'),'Iracema: capítulo 3 sem integração contextual com Atlas em produção');
   await page.close();
 });
 
