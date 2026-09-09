@@ -3,6 +3,7 @@
   const current=(location.pathname.split('/').pop()||'index.html').split('?')[0],params=new URLSearchParams(location.search),SITE='https://evybandeca.github.io/territorio-literario/';
   if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='assets/favicon.svg';document.head.appendChild(l)}
   if(!document.querySelector('link[href="css/production-polish.css"]')){const l=document.createElement('link');l.rel='stylesheet';l.href='css/production-polish.css';document.head.appendChild(l)}
+  if(!document.querySelector('link[href="css/motion-ux.css"]')){const l=document.createElement('link');l.rel='stylesheet';l.href='css/motion-ux.css';document.head.appendChild(l)}
   const canonicalPath=()=>{if(current==='index.html')return '';if(current==='obra.html'&&params.get('id'))return `obra.html?id=${encodeURIComponent(params.get('id'))}`;if(current==='autor.html'&&params.get('nome'))return `autor.html?nome=${encodeURIComponent(params.get('nome'))}`;return current};
   const canonicalUrl=SITE+canonicalPath();
   let canonical=document.querySelector('link[rel="canonical"]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical)}canonical.href=canonicalUrl;
@@ -44,4 +45,5 @@
   hydrateContinueReading();
   window.addEventListener('load',()=>{baseMeta();structuredData();hydrateContinueReading()},{once:true});document.addEventListener('tl:page-ready',()=>{baseMeta();structuredData();hydrateContinueReading()});
   if(!document.querySelector('script[src="js/production-polish.js"]')){const s=document.createElement('script');s.src='js/production-polish.js';document.body.appendChild(s)}
+  if(!document.querySelector('script[src="js/motion-ux.js"]')){const s=document.createElement('script');s.src='js/motion-ux.js';s.async=true;document.body.appendChild(s)}
 })();
