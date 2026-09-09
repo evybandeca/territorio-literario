@@ -7,6 +7,7 @@
 <meta name="description" content="Explore clássicos brasileiros pelo território, pelos autores e pela história em um atlas literário digital de obras em domínio público.">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/ux-v1-1.css">
+<link rel="stylesheet" href="css/bookshelf-home.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -37,13 +38,35 @@
   </div>
 </section>
 
+<section class="bookshelf-home" id="biblioteca-estante" role="region" aria-label="Estante interativa de obras">
+  <div class="container">
+    <div class="bookshelf-heading">
+      <div class="eyebrow">Obras que atravessam o tempo</div>
+      <h2>Uma biblioteca para mentes curiosas.</h2>
+      <p>Percorra a prateleira, escolha um título e entre na obra. Use as setas, arraste com o mouse ou deslize no celular.</p>
+    </div>
+    <div class="bookshelf-tools">
+      <div class="bookshelf-filters" id="bookshelf-filters" aria-label="Filtrar a estante por movimento literário"></div>
+      <label class="bookshelf-search-wrap"><span class="sr-only">Buscar obras na estante</span><input class="bookshelf-search" id="bookshelf-search" type="search" autocomplete="off" placeholder="Buscar obra, autor ou movimento"></label>
+    </div>
+    <div class="bookshelf-stage">
+      <button class="shelf-nav shelf-nav--prev" type="button" data-bookshelf-prev aria-label="Obra anterior">‹</button>
+      <div class="shelf-track" id="bookshelf-track" role="listbox" aria-label="Obras disponíveis na prateleira" tabindex="0"></div>
+      <button class="shelf-nav shelf-nav--next" type="button" data-bookshelf-next aria-label="Próxima obra">›</button>
+    </div>
+    <div class="bookshelf-status-row"><span id="bookshelf-status" aria-live="polite"></span><div class="bookshelf-dots" id="bookshelf-dots" aria-label="Posição na estante"></div></div>
+    <div class="bookshelf-detail" id="bookshelf-detail" aria-live="polite"></div>
+    <p style="margin-top:1.2rem;text-align:center"><a class="button button--ghost" href="biblioteca.html">Explorar biblioteca completa</a></p>
+  </div>
+</section>
+
 <section class="section discover-strip">
   <div class="container">
     <div class="eyebrow">Escolha como entrar</div>
-    <h2 class="section-title">Comece por um livro, um lugar ou um período.</h2>
-    <p class="section-intro">A mesma coleção pode ser atravessada por diferentes caminhos. Você pode escolher uma obra para ler, explorar a geografia literária ou percorrer a história do acervo.</p>
+    <h2 class="section-title">Continue por um lugar ou um período.</h2>
+    <p class="section-intro">Depois de escolher uma obra, você também pode atravessar a mesma coleção pela geografia literária ou pela história do acervo.</p>
     <div class="entry-grid">
-      <a class="entry-card" href="biblioteca.html"><span class="entry-index">01 · OBRA</span><h3>Escolha um livro para começar.</h3><p>Veja autores, períodos, leitura integral disponível e a dimensão territorial de cada obra.</p><span class="entry-arrow">Abrir Biblioteca →</span></a>
+      <a class="entry-card" href="biblioteca.html"><span class="entry-index">01 · OBRA</span><h3>Abra a biblioteca completa.</h3><p>Busque e filtre todo o acervo, com leitura integral disponível e contexto territorial.</p><span class="entry-arrow">Abrir Biblioteca →</span></a>
       <a class="entry-card" href="atlas.html"><span class="entry-index">02 · TERRITÓRIO</span><h3>Descubra quais livros atravessam um lugar.</h3><p>Explore cidades, bairros, rios, serras e paisagens associados às obras do acervo.</p><span class="entry-arrow">Abrir Atlas →</span></a>
       <a class="entry-card" href="linha-do-tempo.html"><span class="entry-index">03 · TEMPO</span><h3>Veja como o Brasil foi sendo escrito.</h3><p>Observe publicações, movimentos e mudanças históricas em sequência cronológica.</p><span class="entry-arrow">Percorrer Linha do Tempo →</span></a>
     </div>
@@ -94,7 +117,9 @@
 <script src="js/navigation.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/data.js"></script>
+<script src="js/reader-registry.js"></script>
 <script src="js/globo-loader.js"></script>
+<script src="js/bookshelf-home.js"></script>
 <script src="js/catalogo.js"></script>
 </body>
 </html>

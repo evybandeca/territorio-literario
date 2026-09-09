@@ -28,6 +28,8 @@ jobs:
         run: node scripts/validate-premium-motion-ux.mjs
       - name: Validar UX Optimization v2
         run: node scripts/validate-ux-optimization-v2.mjs
+      - name: Validar estante interativa da Home
+        run: node scripts/validate-interactive-bookshelf.mjs
       - name: Auditar orçamento de performance
         run: node scripts/audit-performance-budget.mjs
       - name: Testar corpus registry
