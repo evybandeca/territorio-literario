@@ -4,8 +4,11 @@
 
   const root=document.documentElement;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const coarse=matchMedia('(pointer: coarse)').matches||matchMedia('(hover: none)').matches;
+  const saveData=Boolean(navigator.connection?.saveData);
   const readerPage=(location.pathname.split('/').pop()||'index.html')==='leitura.html';
-  const canSmooth=matchMedia('(min-width: 768px)').matches&&!readerPage;
+  const canSmooth=matchMedia('(min-width: 768px)').matches&&!readerPage&&!coarse&&!saveData;
+  const canAnimate=!saveData;
   const CDN={
     lenis:'https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js',
     gsap:'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js',
@@ -23,6 +26,8 @@
     markReady('reduced');
     return;
   }
+  if(saveData)root.classList.add('motion-data-saver');
+  if(coarse)root.classList.add('motion-coarse');
 
   function loadScript(src,test){
     if(test())return Promise.resolve();
@@ -44,7 +49,7 @@
   }
 
   function setupCardSpotlight(){
-    if(!matchMedia('(hover: hover) and (pointer: fine)').matches)return;
+    if(coarse||saveData||!matchMedia('(hover: hover) and (pointer: fine)').matches)return;
     const cards=document.querySelectorAll('.entry-card,.collection-card,.book-object,.author-catalog-card,.timeline-card');
     cards.forEach(card=>{
       card.addEventListener('pointermove',event=>{
@@ -57,28 +62,28 @@
 
   function setupGsap(){
     const {gsap,ScrollTrigger}=window;
-    if(!gsap||!ScrollTrigger)return;
+    if(!gsap||!ScrollTrigger||!canAnimate)return;
     gsap.registerPlugin(ScrollTrigger);
 
     const mm=gsap.matchMedia();
     mm.add('(prefers-reduced-motion: no-preference)',()=>{
       const hero=document.querySelector('.globo-texto');
       if(hero){
-        gsap.from(hero.children,{opacity:0,y:18,duration:.72,stagger:.075,ease:'power2.out',clearProps:'opacity,transform'});
+        gsap.from(hero.children,{opacity:0,y:14,duration:.62,stagger:.065,ease:'power2.out',clearProps:'opacity,transform'});
       }else{
         const pageHead=document.querySelector('.page-hero,.obra-hero,.reader-header,.atlas-intro');
-        if(pageHead)gsap.from(pageHead,{opacity:0,y:12,duration:.55,ease:'power2.out',clearProps:'opacity,transform'});
+        if(pageHead)gsap.from(pageHead,{opacity:0,y:10,duration:.46,ease:'power2.out',clearProps:'opacity,transform'});
       }
 
       const revealGroups=document.querySelectorAll('.section,.content-section,.obra-section');
       revealGroups.forEach(section=>{
         const targets=section.querySelectorAll(':scope > .container > .eyebrow,:scope > .container > .section-title,:scope > .container > .section-intro,.entry-card,.collection-card,.book-object,.author-catalog-card,.timeline-card');
         if(!targets.length)return;
-        gsap.from(targets,{scrollTrigger:{trigger:section,start:'top 88%',once:true},opacity:0,y:14,duration:.5,stagger:.045,ease:'power2.out',clearProps:'opacity,transform'});
+        gsap.from(targets,{scrollTrigger:{trigger:section,start:'top 90%',once:true},opacity:0,y:10,duration:.42,stagger:.035,ease:'power2.out',clearProps:'opacity,transform'});
       });
 
       gsap.utils.toArray('.map-frame,.atlas-map-shell,.reader-surface').forEach(surface=>{
-        gsap.from(surface,{scrollTrigger:{trigger:surface,start:'top 92%',once:true},opacity:0,scale:.992,duration:.6,ease:'power2.out',clearProps:'opacity,transform'});
+        gsap.from(surface,{scrollTrigger:{trigger:surface,start:'top 94%',once:true},opacity:0,scale:.995,duration:.48,ease:'power2.out',clearProps:'opacity,transform'});
       });
 
       return()=>ScrollTrigger.getAll().forEach(trigger=>trigger.kill());
@@ -91,8 +96,9 @@
       autoRaf:false,
       smoothWheel:true,
       syncTouch:false,
-      duration:1.05,
-      anchors:{offset:-72},
+      duration:.85,
+      wheelMultiplier:.95,
+      anchors:{offset:-68},
       prevent:node=>Boolean(node?.closest?.('.leaflet-container,dialog,.global-search__results,.reader-shell,[data-lenis-prevent]'))
     });
     lenis.on('scroll',window.ScrollTrigger.update);
@@ -108,6 +114,7 @@
   }
 
   async function init(){
+    if(!canAnimate){setupCardSpotlight();markReady('native');return}
     try{
       await Promise.all([
         loadScript(CDN.gsap,()=>Boolean(window.gsap)),
