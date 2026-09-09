@@ -26,6 +26,8 @@ jobs:
         run: node scripts/validate-landing-globe-ux.mjs
       - name: Validar Premium Motion UX
         run: node scripts/validate-premium-motion-ux.mjs
+      - name: Validar UX Optimization v2
+        run: node scripts/validate-ux-optimization-v2.mjs
       - name: Auditar orçamento de performance
         run: node scripts/audit-performance-budget.mjs
       - name: Testar corpus registry
