@@ -51,6 +51,7 @@
     else{const busca=new URLSearchParams(location.search).get('busca');content=`<a href="atlas.html">Atlas</a>${busca?`<span class="context-rail__sep">/</span><span class="context-rail__current">Busca: ${esc(busca)}</span>`:''}`}
     if(!content)return;rail.innerHTML=`<div class="container context-rail__inner">${content}</div>`;root.appendChild(rail)
   }
-  window.addEventListener('load',async()=>{await ensureCatalog().catch(()=>{});contextualRail();document.querySelector('#conteudo')?.classList.add('page-ready-fade')},{once:true});
-  document.addEventListener('tl:page-ready',()=>{document.querySelector('#conteudo')?.classList.add('page-ready-fade');announce('Conteúdo atualizado e pronto.')});
+  async function initializeContext(){await ensureCatalog().catch(()=>{});contextualRail();document.querySelector('#conteudo')?.classList.add('page-ready-fade')}
+  if(document.readyState==='complete')initializeContext();else window.addEventListener('load',initializeContext,{once:true});
+  document.addEventListener('tl:page-ready',()=>{contextualRail();document.querySelector('#conteudo')?.classList.add('page-ready-fade');announce('Conteúdo atualizado e pronto.')});
 })();
