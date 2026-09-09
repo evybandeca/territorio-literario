@@ -39,24 +39,38 @@
 </section>
 
 <section class="bookshelf-home" id="biblioteca-estante" role="region" aria-label="Estante interativa de obras">
-  <div class="container">
-    <div class="bookshelf-heading">
-      <div class="eyebrow">Obras que atravessam o tempo</div>
-      <h2>Uma biblioteca para mentes curiosas.</h2>
-      <p>Percorra a prateleira, escolha um título e entre na obra. Use as setas, arraste com o mouse ou deslize no celular.</p>
+  <div class="bookshelf-scene">
+    <div class="bookshelf-canopy" aria-hidden="true">
+      <span class="bookshelf-canopy__left">Obras que atravessam o tempo</span>
+      <span class="bookshelf-canopy__right">Histórias · pessoas · lugares</span>
     </div>
-    <div class="bookshelf-tools">
-      <div class="bookshelf-filters" id="bookshelf-filters" aria-label="Filtrar a estante por movimento literário"></div>
-      <label class="bookshelf-search-wrap"><span class="sr-only">Buscar obras na estante</span><input class="bookshelf-search" id="bookshelf-search" type="search" autocomplete="off" placeholder="Buscar obra, autor ou movimento"></label>
+    <div class="container bookshelf-scene__inner">
+      <aside class="bookshelf-motto" aria-hidden="true"><span>Livros</span><span>Ideias</span><span>Pessoas</span><span>Mundos</span></aside>
+      <div class="bookshelf-main">
+        <header class="bookshelf-heading">
+          <div class="eyebrow">Sala de leitura</div>
+          <h2>Uma biblioteca para mentes curiosas.</h2>
+          <p>Percorra a estante como em uma livraria: escolha um título, aproxime a obra e continue pela leitura, pelo contexto ou pelo território.</p>
+        </header>
+        <div class="bookshelf-tools">
+          <div class="bookshelf-filters" id="bookshelf-filters" aria-label="Filtrar a estante por movimento literário"></div>
+          <label class="bookshelf-search-wrap"><span class="sr-only">Buscar obras na estante</span><input class="bookshelf-search" id="bookshelf-search" type="search" autocomplete="off" placeholder="Buscar obra, autor ou movimento"></label>
+        </div>
+        <div class="bookshelf-stage">
+          <button class="shelf-nav shelf-nav--prev" type="button" data-bookshelf-prev aria-label="Obra anterior">‹</button>
+          <div class="shelf-track" id="bookshelf-track" role="listbox" aria-label="Obras disponíveis na prateleira" tabindex="0"></div>
+          <button class="shelf-nav shelf-nav--next" type="button" data-bookshelf-next aria-label="Próxima obra">›</button>
+        </div>
+        <div class="bookshelf-detail" id="bookshelf-detail" aria-live="polite"></div>
+        <div class="bookshelf-status-row"><span id="bookshelf-status" aria-live="polite"></span><div class="bookshelf-dots" id="bookshelf-dots" aria-label="Posição na estante"></div></div>
+      </div>
+      <aside class="bookshelf-quote" aria-hidden="true"><p>Uma obra abre caminhos para outras épocas, outras paisagens e outras formas de ver.</p><span>Território Literário</span></aside>
     </div>
-    <div class="bookshelf-stage">
-      <button class="shelf-nav shelf-nav--prev" type="button" data-bookshelf-prev aria-label="Obra anterior">‹</button>
-      <div class="shelf-track" id="bookshelf-track" role="listbox" aria-label="Obras disponíveis na prateleira" tabindex="0"></div>
-      <button class="shelf-nav shelf-nav--next" type="button" data-bookshelf-next aria-label="Próxima obra">›</button>
+    <div class="bookshelf-lower-shelf" aria-hidden="true">
+      <div class="bookshelf-lower-shelf__motto">Grandes histórias sempre encontram novos leitores.</div>
+      <div class="bookshelf-lower-shelf__spines"><span>Arte</span><span>Viagens</span><span>Memórias</span><span>Política</span><span>Literatura</span><span>História</span><span>Território</span><span>Brasil</span></div>
+      <a class="bookshelf-lower-shelf__cta" href="biblioteca.html" aria-hidden="false" tabindex="0"><strong>Mais que livros,<br>novos horizontes.</strong><span>Explorar acervo →</span></a>
     </div>
-    <div class="bookshelf-status-row"><span id="bookshelf-status" aria-live="polite"></span><div class="bookshelf-dots" id="bookshelf-dots" aria-label="Posição na estante"></div></div>
-    <div class="bookshelf-detail" id="bookshelf-detail" aria-live="polite"></div>
-    <p style="margin-top:1.2rem;text-align:center"><a class="button button--ghost" href="biblioteca.html">Explorar biblioteca completa</a></p>
   </div>
 </section>
 
