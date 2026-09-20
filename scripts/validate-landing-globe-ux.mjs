@@ -13,13 +13,21 @@ const proibir=(fonte,regex,rotulo,motivo)=>{if(regex.test(fonte))falhas.push(`${
 // Composição da landing
 exigir(html,'hero-stats','Home');
 exigir(html,'globo-canvas','Home');
+exigir(html,'globo-poster','Home');          // globo visual existe no first paint
+exigir(html,'assets/globe-nautical-poster.svg','Home');
+exigir(css,'.globo-poster','UX CSS');
+exigir(css,'.globo-hero.globo-ativo .globo-poster','UX CSS');
+
 
 // Contrato visual do globo
 proibir(globe,/https?:\/\//,'Globo','a cartografia é local; nenhuma textura remota deve voltar ao hero');
 exigir(globe,'GLOBO_TERRA','Globo');       // litorais vetoriais (Natural Earth 110m)
 exigir(globe,'wireframe','Globo');
 exigir(globe,'group.position.x','Globo');
-exigir(globe,'CanvasTexture','Globo');      // planisfério desenhado em runtime
+proibir(globe,/CanvasTexture|texturaCartografica/,'Globo','a textura voltou a ser desenhada em runtime');
+exigir(globe,'TextureLoader','Globo');
+exigir(globe,'assets/globe-nautical-map.svg','Globo');
+
 exigir(globe,'ShaderMaterial','Globo');     // halo atmosférico
 exigir(globe,'TorusGeometry','Globo');       // aro de latão do globo físico
 exigir(globe,'rotasTour','Globo');           // rotas náuticas conectam as paradas do acervo
@@ -59,7 +67,11 @@ proibir(html,/<script[^>]+src=["'][^"']*three[^"']*["']/i,'Home','three.js carre
 proibir(html,/<script[^>]+src=["']js\/globo\.js["']/i,'Home','globo.js carregado direto no HTML');
 proibir(loader,/requestIdleCallback|\brequestAnimationFrame\s*\(\s*start|setTimeout\s*\(\s*start/,'Loader',
   'o globo voltou a subir sem interação e estoura o orçamento do Lighthouse');
+exigir(loader,'requestIdleCallback','Loader');
 exigir(loader,'pointerenter','Loader');
+proibir(loader,/globo-terra\.js/,'Loader','o dataset bruto voltou ao caminho do usuário');
+exigir(loader,'js/globo.js','Loader');
+
 exigir(loader,'touchstart','Loader');
 exigir(loader,'globo-terra.js','Loader');
 exigir(loader,'globo-ativo','Loader');
