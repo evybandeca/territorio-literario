@@ -12,12 +12,20 @@
     document.head.appendChild(s);
   });
 
-  function prefetchThree(){
-    if(document.querySelector('link[data-globo-prefetch]')||typeof THREE!=='undefined')return;
-    const l=document.createElement('link');
-    l.rel='prefetch';l.as='script';l.href=THREE_SRC;l.crossOrigin='anonymous';
-    l.dataset.globoPrefetch='1';
-    document.head.appendChild(l);
+  function prefetchAssets(){
+    if(document.querySelector('link[data-globo-prefetch]'))return;
+    const recursos=[
+      [THREE_SRC,'script',true],
+      ['js/globo.js','script',false],
+      ['assets/globe-nautical-map.svg','image',false]
+    ];
+    for(const [href,as,cross] of recursos){
+      const l=document.createElement('link');
+      l.rel='prefetch';l.as=as;l.href=href;
+      if(cross)l.crossOrigin='anonymous';
+      l.dataset.globoPrefetch='1';
+      document.head.appendChild(l);
+    }
   }
 
   async function start(){
@@ -43,12 +51,9 @@
   const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
   const economizar=!!conn?.saveData;
   if('requestIdleCallback' in window){
-    requestIdleCallback(()=>{
-      prefetchThree();
-      if(!economizar)start();
-    },{timeout:1400});
+    requestIdleCallback(()=>{if(!economizar)prefetchAssets()},{timeout:1400});
   }else{
-    window.addEventListener('load',prefetchThree,{once:true});
+    window.addEventListener('load',()=>{if(!economizar)prefetchAssets()},{once:true});
   }
 
   const once={once:true,passive:true};
