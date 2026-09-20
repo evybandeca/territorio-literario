@@ -20,3 +20,13 @@
 @media(max-width:600px){.library-search-row{position:sticky;top:64px;z-index:36;padding:.6rem 0 .2rem;background:var(--papel)}.library-mobile-controls{position:sticky;top:122px;z-index:35;padding:.35rem 0 .6rem;background:var(--papel)}.library-filter-toggle{display:inline-flex;align-items:center;justify-content:center}.collection-toolbar{display:none;position:static}.collection-toolbar.is-open{display:grid}.library-clear-filters{width:100%}.movement-rail{margin-top:.25rem}.book-actions{padding-top:.65rem}.book-actions a{flex:1}.globo-cta{display:grid;grid-template-columns:1fr}.globo-cta .button{width:100%;justify-content:center}.continue-reading{margin-top:1rem}.hero-stats{grid-template-columns:1fr}.globo-legenda{font-size:.72rem}.globo-texto{padding:1.25rem;max-width:none}.globo-texto h1{font-size:clamp(2.8rem,14vw,4rem)}#globo-canvas{opacity:.42}.globo-legenda{position:relative;right:auto;left:auto;bottom:auto;margin-top:1rem;text-align:left}}
 @media(min-width:601px){.library-search-row{max-width:720px}.collection-toolbar{display:grid!important;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr) auto}.library-mobile-controls .result-count{margin-left:auto}.library-filter-toggle{display:none!important}}
 @media(max-width:430px){.book-primary-link{grid-template-rows:minmax(250px,1fr) auto}.book-actions{flex-direction:column}.book-actions a{width:100%}}
+.globo-dica{display:flex;flex-direction:column;gap:.1rem;line-height:1.35;max-width:min(320px,70vw);text-align:right;align-items:flex-end}
+.globo-dica strong{font-weight:600;color:var(--papel)}
+.globo-dica span{font-size:.8rem;color:rgba(241,235,221,.68)}
+#globo-canvas{transition:opacity .7s ease}
+.globo-hero:not(.globo-ativo) #globo-canvas{opacity:0}
+.globo-hero.sem-globo #globo-canvas{display:none}
+.globo-hero.sem-globo{background:linear-gradient(112deg,rgba(6,17,14,.98) 0%,rgba(10,27,23,.93) 42%,rgba(33,43,38,.86) 100%),radial-gradient(circle at 74% 44%,rgba(198,165,116,.16),transparent 38%)}
+.globo-hero.sem-globo .globo-legenda{display:none}
+.globo-hero .container{pointer-events:none}
+.globo-texto{pointer-events:auto}
