@@ -228,7 +228,7 @@
       (obra.lugares||[]).forEach(lugar=>{
         if(typeof lugar.lat!=='number'||typeof lugar.lon!=='number')return;
         const z=(typeof CERTEZAS!=='undefined'&&CERTEZAS[lugar.certeza])||{tracejado:true};
-        const escala=z.tracejado?.017:.026;
+        const escala=z.tracejado?.028:.040;
         const m=new THREE.Mesh(marcadorGeometry,materialMarcador(lugar.tipo,z.tracejado));
         m.position.copy(latLon(lugar.lat,lugar.lon));
         m.scale.setScalar(escala);
@@ -251,15 +251,49 @@
     // antiga com lugar localizado. O texto da parada é a descrição já auditada
     // do lugar em data.js.
     function construirParadas(){
-      const porMovimento=new Map();
+      const unicos=new Map();
       for(const obra of OBRAS){
-        const lugar=(obra.lugares||[]).find(l=>typeof l.lat==='number'&&typeof l.lon==='number');
-        if(!lugar)continue;
-        const atual=porMovimento.get(obra.movimento);
-        if(!atual||obra.ano<atual.obra.ano)porMovimento.set(obra.movimento,{obra,lugar});
+        for(const lugar of obra.lugares||[]){
+          if(typeof lugar.lat!=='number'||typeof lugar.lon!=='number')continue;
+          const chave=lugar.entity_id||`${lugar.nome}|${lugar.lat.toFixed(3)}|${lugar.lon.toFixed(3)}`;
+          const atual=unicos.get(chave);
+          if(!atual)unicos.set(chave,{obra,lugar,peso:1});
+          else{
+            atual.peso+=1;
+            if(obra.ano<atual.obra.ano)atual.obra=obra;
+          }
+        }
       }
-      const ordem=typeof MOVIMENTOS!=='undefined'?MOVIMENTOS:[...porMovimento.keys()];
-      return ordem.map(m=>porMovimento.get(m)).filter(Boolean);
+      const todos=[...unicos.values()];
+      if(todos.length<=9)return todos.sort((a,b)=>a.obra.ano-b.obra.ano);
+      const rad=x=>x*Math.PI/180;
+      const distancia=(a,b)=>{
+        const p1=rad(a.lugar.lat),p2=rad(b.lugar.lat),dp=p2-p1,dl=rad(b.lugar.lon-a.lugar.lon);
+        const h=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
+        return 2*6371*Math.asin(Math.min(1,Math.sqrt(h)));
+      };
+      const rio=todos.find(x=>/rio de janeiro/i.test(x.lugar.nome));
+      const inicio=rio||todos.slice().sort((a,b)=>b.peso-a.peso||a.obra.ano-b.obra.ano)[0];
+      const escolhidas=[inicio],restantes=todos.filter(x=>x!==inicio);
+      while(escolhidas.length<9&&restantes.length){
+        let melhor=0,melhorScore=-1;
+        for(let i=0;i<restantes.length;i++){
+          const minimo=Math.min(...escolhidas.map(s=>distancia(restantes[i],s)));
+          const score=minimo*(1+Math.min(.28,(restantes[i].peso-1)*.055));
+          if(score>melhorScore){melhor=i;melhorScore=score}
+        }
+        escolhidas.push(restantes.splice(melhor,1)[0]);
+      }
+      // Depois de escolher pontos espacialmente diversos, organiza a viagem por
+      // vizinhança para que o tour pareça um percurso e não saltos aleatórios.
+      const rota=[escolhidas[0]],faltam=escolhidas.slice(1);
+      while(faltam.length){
+        const ultimo=rota.at(-1);
+        let idx=0,menor=Infinity;
+        for(let i=0;i<faltam.length;i++){const d=distancia(ultimo,faltam[i]);if(d<menor){menor=d;idx=i}}
+        rota.push(faltam.splice(idx,1)[0]);
+      }
+      return rota;
     }
     const paradas=construirParadas();
 
@@ -284,6 +318,7 @@
     const orientacao=new THREE.Quaternion()
       .setFromEuler(new THREE.Euler(CFG.inclinacaoInicial,CFG.rotacaoInicial,0,'XYZ'))
       .normalize();
+    const orientacaoPadrao=orientacao.clone(),zoomPadrao=camera.position.z;
     const eixoInercia=new THREE.Vector3(0,1,0),eixoAuto=new THREE.Vector3(0,1,0);
     const qPasso=new THREE.Quaternion(),qAuto=new THREE.Quaternion();
     let velocidadeAngular=0,arrastando=false,pausado=false;
@@ -476,6 +511,15 @@
     }
     for(const b of document.querySelectorAll('[data-globo-tour]'))
       b.addEventListener('click',()=>tourAtivo?fecharTour():abrirTour());
+
+    for(const b of document.querySelectorAll('[data-globo-reset]'))
+      b.addEventListener('click',()=>{
+        fecharTour();
+        velocidadeAngular=0;
+        camera.position.z=zoomPadrao;
+        viagem={t:0,duracao:650,q0:orientacao.clone(),q1:orientacaoPadrao.clone()};
+        sujo=true;
+      });
 
     const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
     function alvoEm(e){
