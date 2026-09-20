@@ -154,3 +154,8 @@
   }
   .globo-tour{margin-inline:0}
 }
+
+.globo-tools{position:absolute;right:clamp(1rem,4vw,4rem);top:clamp(1rem,3vw,2.2rem);z-index:7;pointer-events:auto}
+.globo-tools button{min-height:38px;padding:.42rem .72rem;border:1px solid rgba(216,180,122,.32);border-radius:999px;background:rgba(7,14,16,.58);color:#e7cfaa;font:700 .72rem/1 'Source Sans 3',sans-serif;letter-spacing:.045em;cursor:pointer;backdrop-filter:blur(8px)}
+.globo-tools button:hover,.globo-tools button:focus-visible{background:rgba(216,180,122,.14);border-color:rgba(216,180,122,.62);outline:0;box-shadow:0 0 0 2px rgba(216,180,122,.22)}
+@media(max-width:600px){.globo-tools{top:.75rem;right:.75rem}.globo-tools button{font-size:.68rem}}
