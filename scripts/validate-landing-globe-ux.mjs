@@ -55,6 +55,18 @@ exigir(loader,'touchstart','Loader');
 exigir(loader,'globo-terra.js','Loader');
 exigir(loader,'globo-ativo','Loader');
 
+// Tour guiado: paradas derivadas do acervo, nada de texto inventado
+exigir(globe,'construirParadas','Globo');
+exigir(globe,'anguloDe','Globo');
+exigir(globe,'lugar.descricao','Globo');   // o texto da parada vem de data.js
+proibir(globe,/paradas\s*=\s*\[\s*\{/,'Globo','as paradas do tour devem sair de OBRAS, não de uma lista fixa');
+exigir(html,'data-globo-tour','Home');
+exigir(html,'data-tour-pausa','Home');     // conteúdo que avança sozinho precisa de pausa
+exigir(html,'data-tour-anterior','Home');
+exigir(html,'data-tour-proximo','Home');
+exigir(html,'aria-live','Home');
+exigir(css,'.globo-tour','UX CSS');
+
 // CSS: estados do globo precisam existir de verdade, não só como classe solta
 exigir(css,'.globo-hero','UX CSS');
 exigir(css,'backdrop-filter','UX CSS');
