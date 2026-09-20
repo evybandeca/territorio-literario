@@ -24,8 +24,13 @@ proibir(globe,/https?:\/\//,'Globo','a cartografia é local; nenhuma textura rem
 proibir(globe,/GLOBO_TERRA/,'Globo','o dataset Natural Earth bruto voltou ao runtime; use a cartografia pré-computada');
 exigir(globe,'wireframe','Globo');
 exigir(globe,'group.position.x','Globo');
-proibir(globe,/CanvasTexture|texturaCartografica/,'Globo','a textura voltou a ser desenhada em runtime');
-exigir(globe,'TextureLoader','Globo');
+exigir(globe,'CanvasTexture','Globo');
+exigir(globe,'drawImage','Globo');
+proibir(globe,/texturaCartografica|GLOBO_TERRA/,'Globo','a cartografia voltou a ser reconstruída proceduralmente no runtime');
+exigir(globe,'const globeMaterial=registrar(new THREE.MeshBasicMaterial','Globo');
+exigir(globe,'globeShadeMaterial','Globo');
+proibir(globe,/const globeMaterial=registrar\(new THREE\.MeshPhongMaterial/,'Globo','a cartografia voltou a depender de Phong e pode escurecer até desaparecer');
+
 exigir(globe,'assets/globe-nautical-map.svg','Globo');
 
 exigir(globe,'ShaderMaterial','Globo');     // halo atmosférico
