@@ -65,15 +65,14 @@ if(alocacoes>7)falhas.push(`Globo: ${alocacoes} alocações de geometria; o limi
 // (TBT de 0 para ~7 s), abaixo do orçamento de 70 exigido por audit-lighthouse.mjs.
 proibir(html,/<script[^>]+src=["'][^"']*three[^"']*["']/i,'Home','three.js carregado direto no HTML');
 proibir(html,/<script[^>]+src=["']js\/globo\.js["']/i,'Home','globo.js carregado direto no HTML');
-proibir(loader,/requestIdleCallback|\brequestAnimationFrame\s*\(\s*start|setTimeout\s*\(\s*start/,'Loader',
-  'o globo voltou a subir sem interação e estoura o orçamento do Lighthouse');
+proibir(loader,/\brequestAnimationFrame\s*\(\s*start|setTimeout\s*\(\s*start/,'Loader',
+  'o globo não deve subir por temporizador agressivo; use hidratação ociosa e poster imediato');
 exigir(loader,'requestIdleCallback','Loader');
 exigir(loader,'pointerenter','Loader');
 proibir(loader,/globo-terra\.js/,'Loader','o dataset bruto voltou ao caminho do usuário');
 exigir(loader,'js/globo.js','Loader');
 
 exigir(loader,'touchstart','Loader');
-exigir(loader,'globo-terra.js','Loader');
 exigir(loader,'globo-ativo','Loader');
 
 // Tour guiado: paradas derivadas do acervo, nada de texto inventado
