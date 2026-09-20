@@ -12,7 +12,7 @@
 .hero-kicker{margin-top:2.2rem;color:#d9b58d;letter-spacing:.14em}
 .hero-stats{margin-top:.7rem;border-top:1px solid rgba(241,235,221,.14);border-bottom:1px solid rgba(241,235,221,.08);background:rgba(241,235,221,.025);backdrop-filter:blur(10px)}
 .hero-stat{padding:.95rem .85rem .95rem 0}.hero-stat strong{color:var(--papel)}.hero-stat span{color:rgba(241,235,221,.58)}
-#globo-canvas{inset:0;opacity:.94;filter:saturate(.72) contrast(1.06)}
+#globo-canvas{inset:0;opacity:.96;filter:contrast(1.03)}
 .globo-legenda{left:auto;right:clamp(1rem,4vw,4rem);bottom:1.65rem;max-width:440px;text-align:right;color:rgba(241,235,221,.52)}
 .globo-dica{left:auto;right:clamp(1rem,4vw,4rem);bottom:4.7rem;background:rgba(10,24,20,.62);backdrop-filter:blur(10px)}
 

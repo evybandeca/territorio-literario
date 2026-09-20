@@ -15,10 +15,11 @@ exigir(html,'hero-stats','Home');
 exigir(html,'globo-canvas','Home');
 
 // Contrato visual do globo
-exigir(globe,'earth_atmos_2048.jpg','Globo');
+proibir(globe,/https?:\/\//,'Globo','a cartografia é local; nenhuma textura remota deve voltar ao hero');
+exigir(globe,'GLOBO_TERRA','Globo');       // litorais vetoriais (Natural Earth 110m)
 exigir(globe,'wireframe','Globo');
 exigir(globe,'group.position.x','Globo');
-exigir(globe,'CanvasTexture','Globo');      // base procedural: nunca uma esfera cinza
+exigir(globe,'CanvasTexture','Globo');      // planisfério desenhado em runtime
 exigir(globe,'ShaderMaterial','Globo');     // halo atmosférico
 exigir(globe,'fresnel','Globo');
 exigir(globe,'THREE.BackSide','Globo');
@@ -51,6 +52,7 @@ proibir(loader,/requestIdleCallback|\brequestAnimationFrame\s*\(\s*start|setTime
   'o globo voltou a subir sem interação e estoura o orçamento do Lighthouse');
 exigir(loader,'pointerenter','Loader');
 exigir(loader,'touchstart','Loader');
+exigir(loader,'globo-terra.js','Loader');
 exigir(loader,'globo-ativo','Loader');
 
 // CSS: estados do globo precisam existir de verdade, não só como classe solta

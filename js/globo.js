@@ -8,11 +8,19 @@
   // Ajustes de cena concentrados num só lugar, alinhados à paleta editorial do portal.
   const CFG={
     raio:1,
-    textura:'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+    // Cartografia própria em vez de uma foto da Terra: nada de hotlink externo de
+    // ~1 MB, e o globo passa a falar a mesma língua visual do resto do portal.
+    oceano:['#2d5866','#1d3f4c','#16323c'],
+    terra:'#e3d9c0',
+    terraBorda:'#b9a57e',
+    graticuloTextura:'rgba(241,235,221,.16)',
     atmosferaCor:0x9fb9ad,
     atmosferaIntensidade:.5,
     atmosferaDifusao:1.5,   // maior = halo mais difuso; acima de ~2 vira névoa e transborda o hero
     rotacaoInicial:-.74,    // enquadra a América do Sul, onde está todo o acervo
+    inclinacaoInicial:.22,  // leve mergulho: o acervo fica no hemisfério sul
+    inclinacaoMax:1.15,     // ~66°, o bastante para alcançar os polos sem virar de cabeça para baixo
+    sensibilidade:.005,     // rad por px arrastado
     velocidadeAuto:.05,     // rad/s
     fpsMax:30,
     limiarFrente:.12,       // produto escalar mínimo para o marcador estar voltado à câmera
@@ -36,35 +44,58 @@
     const group=new THREE.Group();
     scene.add(group);
 
-    // Textura procedural de base: o globo nunca aparece como uma esfera cinza
-    // enquanto a imagem remota carrega, e continua legível se ela falhar.
-    function texturaBase(){
-      const c=document.createElement('canvas');c.width=512;c.height=256;
+    // Desenha um planisfério equirretangular: oceano em degradê, terras emersas
+    // preenchidas em tom de papel e grade de 30°/20°. Sem rede, sem espera.
+    function texturaCartografica(){
+      const L=2048,A=1024,c=document.createElement('canvas');
+      c.width=L;c.height=A;
       const g=c.getContext('2d');
-      const grad=g.createLinearGradient(0,0,0,256);
-      grad.addColorStop(0,'#d5dcd6');grad.addColorStop(.16,'#5b7f80');
-      grad.addColorStop(.5,'#274c59');grad.addColorStop(.84,'#5b7f80');grad.addColorStop(1,'#d5dcd6');
-      g.fillStyle=grad;g.fillRect(0,0,512,256);
-      g.globalAlpha=.05;g.fillStyle='#f1ebdd';
-      for(let y=4;y<256;y+=8)g.fillRect(0,y,512,1);
+      const oc=g.createLinearGradient(0,0,0,A);
+      oc.addColorStop(0,CFG.oceano[2]);oc.addColorStop(.5,CFG.oceano[0]);oc.addColorStop(1,CFG.oceano[2]);
+      g.fillStyle=oc;g.fillRect(0,0,L,A);
+
+      const px=(lon,lat)=>[(lon+180)/360*L,(90-lat)/180*A];
+      // Cada anel é desenhado deslocado em -360/0/+360 para que os que cruzam o
+      // antimeridiano fechem corretamente em vez de riscar o mapa.
+      g.fillStyle=CFG.terra;g.strokeStyle=CFG.terraBorda;g.lineWidth=1.1;g.lineJoin='round';
+      if(typeof GLOBO_TERRA!=='undefined'){
+        for(const desloc of [-360,0,360]){
+          for(const anel of GLOBO_TERRA){
+            g.beginPath();
+            for(let i=0;i<anel.length;i+=2){
+              const [x,y]=px(anel[i]+desloc,anel[i+1]);
+              if(i===0)g.moveTo(x,y);else g.lineTo(x,y);
+            }
+            g.closePath();g.fill();g.stroke();
+          }
+        }
+      }
+
+      g.strokeStyle=CFG.graticuloTextura;g.lineWidth=1;
+      for(let lon=-180;lon<=180;lon+=30){const[x]=px(lon,0);g.beginPath();g.moveTo(x,0);g.lineTo(x,A);g.stroke()}
+      for(let lat=-80;lat<=80;lat+=20){const[,y]=px(0,lat);g.beginPath();g.moveTo(0,y);g.lineTo(L,y);g.stroke()}
+      g.strokeStyle='rgba(241,235,221,.3)';g.lineWidth=1.6;
+      const[,eq]=px(0,0);g.beginPath();g.moveTo(0,eq);g.lineTo(L,eq);g.stroke();
+
       const t=new THREE.CanvasTexture(c);
       t.encoding=THREE.sRGBEncoding;
+      t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
       return registrar(t);
     }
 
     const geometry=registrar(new THREE.SphereGeometry(CFG.raio,48,32));
-    const globeMaterial=registrar(new THREE.MeshPhongMaterial({map:texturaBase(),color:0xa8b3a7,transparent:true,opacity:.82,shininess:3}));
+    const globeMaterial=registrar(new THREE.MeshPhongMaterial({map:texturaCartografica(),color:0xffffff,shininess:4,specular:0x1c3a44}));
     group.add(new THREE.Mesh(geometry,globeMaterial));
 
     const graticuleGeometry=registrar(new THREE.SphereGeometry(CFG.raio*1.006,24,16));
-    const graticuleMaterial=registrar(new THREE.MeshBasicMaterial({color:0xd7c6a5,wireframe:true,transparent:true,opacity:.075,depthWrite:false}));
+    const graticuleMaterial=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(0xd7c6a5).convertSRGBToLinear(),wireframe:true,transparent:true,opacity:.07,depthWrite:false}));
     group.add(new THREE.Mesh(graticuleGeometry,graticuleMaterial));
 
     // Halo atmosférico por Fresnel (BackSide): custo de um shader simples, sem textura adicional.
     const atmosferaGeometry=registrar(new THREE.SphereGeometry(CFG.raio*1.045,32,24));
     const atmosferaMaterial=registrar(new THREE.ShaderMaterial({
       uniforms:{
-        corAtmosfera:{value:new THREE.Color(CFG.atmosferaCor)},
+        corAtmosfera:{value:new THREE.Color(CFG.atmosferaCor).convertSRGBToLinear()},
         intensidade:{value:CFG.atmosferaIntensidade},
         expoente:{value:Math.max(.5,5-CFG.atmosferaDifusao)}
       },
@@ -73,23 +104,6 @@
       side:THREE.BackSide,transparent:true,depthWrite:false
     }));
     group.add(new THREE.Mesh(atmosferaGeometry,atmosferaMaterial));
-
-    const textureLoader=new THREE.TextureLoader();
-    textureLoader.setCrossOrigin('anonymous');
-    textureLoader.load(
-      CFG.textura,
-      texture=>{
-        texture.encoding=THREE.sRGBEncoding;
-        texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
-        registrar(texture);
-        globeMaterial.map=texture;
-        globeMaterial.opacity=.88;
-        globeMaterial.needsUpdate=true;
-        desenhar();
-      },
-      undefined,
-      ()=>hero.classList.add('globo-texture-fallback')
-    );
 
     scene.add(new THREE.AmbientLight(0xfff6e7,1.18));
     const light=new THREE.DirectionalLight(0xf6e8cf,.78);
@@ -103,7 +117,7 @@
       const compact=w<980;
       group.position.x=compact?.38:.72;
       group.position.y=compact?.05:.02;
-      group.scale.setScalar(compact?1.02:1.08);
+      group.scale.setScalar(compact?.86:.92);
     }
     layoutGlobe();
 
@@ -121,7 +135,7 @@
       let m=materiaisMarcador.get(chave);
       if(!m){
         const cor=(typeof TIPOS_LUGAR!=='undefined'&&TIPOS_LUGAR[tipo]?.cor)||'#a45535';
-        m=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(cor),transparent:true,opacity:certeza?.72:1}));
+        m=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(cor).convertSRGBToLinear(),transparent:true,opacity:certeza?.8:1}));
         materiaisMarcador.set(chave,m);
       }
       return m;
@@ -132,7 +146,7 @@
       (obra.lugares||[]).forEach(lugar=>{
         if(typeof lugar.lat!=='number'||typeof lugar.lon!=='number')return;
         const z=(typeof CERTEZAS!=='undefined'&&CERTEZAS[lugar.certeza])||{tracejado:true};
-        const escala=z.tracejado?.014:.022;
+        const escala=z.tracejado?.017:.026;
         const m=new THREE.Mesh(marcadorGeometry,materialMarcador(lugar.tipo,z.tracejado));
         m.position.copy(latLon(lugar.lat,lugar.lon));
         m.scale.setScalar(escala);
@@ -144,13 +158,13 @@
 
     // Realce reaproveitado: um único halo é reposicionado sobre o marcador sob o cursor.
     const haloGeometry=registrar(new THREE.SphereGeometry(1,10,8));
-    const haloMaterial=registrar(new THREE.MeshBasicMaterial({color:0xf1ebdd,transparent:true,opacity:.22,depthWrite:false}));
+    const haloMaterial=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(0xf1ebdd).convertSRGBToLinear(),transparent:true,opacity:.3,depthWrite:false}));
     const halo=new THREE.Mesh(haloGeometry,haloMaterial);
     halo.visible=false;
     group.add(halo);
 
-    let rot=CFG.rotacaoInicial,vel=0,arrastando=false,pausado=false;
-    let lastX=0,lastT=0,deslocamento=0,alvo=null;
+    let rot=CFG.rotacaoInicial,inc=CFG.inclinacaoInicial,vel=0,arrastando=false,pausado=false;
+    let lastX=0,lastY=0,lastT=0,deslocamento=0,alvo=null;
     let visivel=true,sujo=false,ultimo=0,raf=0;
     const reduzido=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const camLocal=new THREE.Vector3();
@@ -168,8 +182,16 @@
       if(alvo&&!alvo.visible)destacar(null);
     }
 
+    const qGiro=new THREE.Quaternion(),qInc=new THREE.Quaternion();
+    const EIXO_POLAR=new THREE.Vector3(0,1,0),EIXO_TELA=new THREE.Vector3(1,0,0);
+    function orientar(){
+      qGiro.setFromAxisAngle(EIXO_POLAR,rot);
+      qInc.setFromAxisAngle(EIXO_TELA,inc);
+      group.quaternion.copy(qInc).multiply(qGiro); // gira no próprio eixo, depois inclina
+    }
+
     function desenhar(){
-      group.rotation.y=rot;
+      orientar();
       group.updateMatrixWorld();
       atualizarFaces();
       renderer.render(scene,camera);
@@ -236,15 +258,19 @@
     }
 
     canvas.addEventListener('pointerdown',e=>{
-      arrastando=true;lastX=e.clientX;lastT=performance.now();deslocamento=0;vel=0;
+      arrastando=true;lastX=e.clientX;lastY=e.clientY;lastT=performance.now();deslocamento=0;vel=0;
       canvas.setPointerCapture?.(e.pointerId);canvas.style.cursor='grabbing';
     });
     canvas.addEventListener('pointermove',e=>{
       if(arrastando){
-        const dx=(e.clientX-lastX)*.005,agora=performance.now(),dt=(agora-lastT)/1000;
-        rot+=dx;deslocamento+=Math.abs(e.clientX-lastX);
+        const px=e.clientX-lastX,py=e.clientY-lastY;
+        const dx=px*CFG.sensibilidade,agora=performance.now(),dt=(agora-lastT)/1000;
+        rot+=dx;
+        // Arrastar para baixo traz o hemisfério sul à frente: o gesto segue o dedo.
+        inc=Math.max(-CFG.inclinacaoMax,Math.min(CFG.inclinacaoMax,inc+py*CFG.sensibilidade));
+        deslocamento+=Math.abs(px)+Math.abs(py);
         if(dt>0)vel=Math.max(-4,Math.min(4,dx/Math.max(dt,.008)));
-        lastX=e.clientX;lastT=agora;
+        lastX=e.clientX;lastY=e.clientY;lastT=agora;
         desenhar();
         return;
       }
@@ -263,7 +289,8 @@
     canvas.addEventListener('click',e=>{
       if(deslocamento>CFG.limiarArrasto)return; // arrastar o globo não deve navegar
       const m=alvoEm(e);
-      if(m)location.href=`obra.html?id=${encodeURIComponent(m.userData.obra.id)}`;
+      // O globo é a porta de entrada do território: o clique abre o lugar no Atlas.
+      if(m)location.href=`atlas.html?busca=${encodeURIComponent(m.userData.lugar.nome)}`;
     });
 
     const observer=new IntersectionObserver(entries=>{
