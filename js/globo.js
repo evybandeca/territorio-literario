@@ -41,30 +41,39 @@
     const group=new THREE.Group();
     scene.add(group);
 
-    // A cartografia é pré-computada como SVG versionado: o navegador não precisa
-    // reconstruir 2.048×1.024 px nem percorrer o dataset Natural Earth no first use.
-    const textureLoader=new THREE.TextureLoader();
+    // O SVG cartográfico é pré-computado, mas não é enviado diretamente ao WebGL:
+    // alguns pipelines de navegador rasterizam SVG→Texture como preto. Rasterizamos
+    // uma única vez em canvas 2D power-of-two e então criamos a textura GPU.
     const geometry=registrar(new THREE.SphereGeometry(CFG.raio,48,32));
-    const globeMaterial=registrar(new THREE.MeshBasicMaterial({
-      color:0xe7d5ae
-    }));
+    const globeMaterial=registrar(new THREE.MeshBasicMaterial({color:0xe7d5ae}));
     const globeMesh=new THREE.Mesh(geometry,globeMaterial);
     group.add(globeMesh);
 
-    // A cartografia precisa permanecer legível independentemente da iluminação.
-    // O volume vem de uma camada de sombra separada, suave e previsível.
+    // A cartografia permanece legível independentemente de luzes da cena.
+    // Uma camada separada adiciona apenas volume, sem apagar o mapa.
     const globeShadeMaterial=registrar(new THREE.ShaderMaterial({
       vertexShader:'varying vec3 vN;void main(){vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
-      fragmentShader:'varying vec3 vN;void main(){float luz=clamp(dot(normalize(vN),normalize(vec3(-0.35,0.18,0.92))),0.0,1.0);float a=(1.0-smoothstep(0.08,0.92,luz))*0.30;gl_FragColor=vec4(0.035,0.028,0.02,a);}',
+      fragmentShader:'varying vec3 vN;void main(){float luz=clamp(dot(normalize(vN),normalize(vec3(-0.35,0.18,0.92))),0.0,1.0);float a=(1.0-smoothstep(0.04,0.94,luz))*0.18;gl_FragColor=vec4(0.025,0.022,0.018,a);}',
       transparent:true,depthWrite:false
     }));
     const globeShade=new THREE.Mesh(registrar(new THREE.SphereGeometry(CFG.raio*1.002,48,32)),globeShadeMaterial);
     group.add(globeShade);
+
     let texturaPronta=false;
-    textureLoader.load('assets/globe-nautical-map.svg',texture=>{
+    const mapaImagem=new Image();
+    mapaImagem.decoding='async';
+    mapaImagem.onload=()=>{
+      const mapaCanvas=document.createElement('canvas');
+      mapaCanvas.width=1024;mapaCanvas.height=512;
+      const mapaCtx=mapaCanvas.getContext('2d',{alpha:false});
+      mapaCtx.fillStyle='#60736f';
+      mapaCtx.fillRect(0,0,mapaCanvas.width,mapaCanvas.height);
+      mapaCtx.drawImage(mapaImagem,0,0,mapaCanvas.width,mapaCanvas.height);
+      const texture=registrar(new THREE.CanvasTexture(mapaCanvas));
       texture.encoding=THREE.sRGBEncoding;
+      texture.wrapS=THREE.RepeatWrapping;
       texture.anisotropy=Math.min(6,renderer.capabilities.getMaxAnisotropy());
-      registrar(texture);
+      texture.needsUpdate=true;
       globeMaterial.map=texture;
       globeMaterial.color.set(0xffffff);
       globeMaterial.needsUpdate=true;
@@ -76,13 +85,15 @@
         hero.dataset.globoPronto='true';
         if(hero.dataset.globoTourPedido==='1'){delete hero.dataset.globoTourPedido;abrirTour()}
       });
-    },undefined,()=>{
+    };
+    mapaImagem.onerror=()=>{
       hero.classList.add('sem-globo');
-      console.warn('Falha ao carregar a cartografia do globo.');
-    });
+      console.warn('Falha ao rasterizar a cartografia do globo.');
+    };
+    mapaImagem.src='assets/globe-nautical-map.svg';
 
     const graticuleGeometry=registrar(new THREE.SphereGeometry(CFG.raio*1.006,24,16));
-    const graticuleMaterial=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(0xd7c6a5).convertSRGBToLinear(),wireframe:true,transparent:true,opacity:.018,depthWrite:false}));
+    const graticuleMaterial=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(0xd7c6a5).convertSRGBToLinear(),wireframe:true,transparent:true,opacity:.012,depthWrite:false}));
     group.add(new THREE.Mesh(graticuleGeometry,graticuleMaterial));
 
     // Halo atmosférico por Fresnel (BackSide): custo de um shader simples, sem textura adicional.
@@ -244,8 +255,9 @@
     //
     const FOCO_INICIAL={lat:-15,lon:-55};
     const direcaoFoco=latLon(FOCO_INICIAL.lat,FOCO_INICIAL.lon,1).normalize();
+    const direcaoVistaInicial=camera.position.clone().sub(group.position).normalize();
     const orientacao=new THREE.Quaternion()
-      .setFromUnitVectors(direcaoFoco,new THREE.Vector3(0,0,1))
+      .setFromUnitVectors(direcaoFoco,direcaoVistaInicial)
       .normalize();
     const orientacaoPadrao=orientacao.clone(),zoomPadrao=camera.position.z;
     const eixoInercia=new THREE.Vector3(0,1,0),eixoAuto=new THREE.Vector3(0,1,0);
@@ -287,6 +299,7 @@
       hero.dataset.globoZoom=camera.position.z.toFixed(3);
       const focoProjetado=latLon(FOCO_INICIAL.lat,FOCO_INICIAL.lon,1)
         .applyQuaternion(orientacao)
+        .multiply(group.scale)
         .add(group.position)
         .project(camera);
       hero.dataset.globoFocoProjetado=`${((focoProjetado.x+1)/2).toFixed(4)},${((1-focoProjetado.y)/2).toFixed(4)}`;
