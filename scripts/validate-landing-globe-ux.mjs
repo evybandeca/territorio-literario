@@ -21,6 +21,8 @@ exigir(globe,'wireframe','Globo');
 exigir(globe,'group.position.x','Globo');
 exigir(globe,'CanvasTexture','Globo');      // planisfério desenhado em runtime
 exigir(globe,'ShaderMaterial','Globo');     // halo atmosférico
+exigir(globe,'TorusGeometry','Globo');       // aro de latão do globo físico
+exigir(globe,'rotasTour','Globo');           // rotas náuticas conectam as paradas do acervo
 exigir(globe,'fresnel','Globo');
 exigir(globe,'THREE.BackSide','Globo');
 
@@ -29,6 +31,13 @@ exigir(globe,'limiarFrente','Globo');       // marcadores do lado oculto não re
 exigir(globe,'limiarArrasto','Globo');      // arrastar o globo não navega
 exigir(globe,'prefers-reduced-motion','Globo');
 exigir(globe,'encodeURIComponent','Globo');
+// Controle físico livre: quaternion/trackball substitui o antigo yaw+pitch limitado.
+exigir(globe,'THREE.Quaternion','Globo');
+exigir(globe,'setFromUnitVectors','Globo');
+exigir(globe,'mapearTrackball','Globo');
+exigir(globe,'slerp','Globo');
+exigir(globe,"addEventListener('wheel'",'Globo');
+proibir(globe,/inclinacaoMax|\binc\s*=|qInc|EIXO_TELA/,'Globo','o controle voltou ao modelo yaw+pitch limitado em vez de trackball livre');
 
 // Orçamento de recursos de GPU
 exigir(globe,'marcadorGeometry','Globo');   // geometria compartilhada entre marcadores
@@ -41,7 +50,7 @@ proibir(globe,/lugares\s*\|\|\s*\[\]\)\[0\]/,'Globo','voltou a mapear apenas o p
 proibir(globe,/powerPreference\s*:\s*'high-performance'/,'Globo','hero decorativo não deve pedir GPU dedicada');
 
 const alocacoes=(globe.match(/new THREE\.(Sphere|Ring|Cylinder|Cone|Box|Circle)Geometry/g)||[]).length;
-if(alocacoes>5)falhas.push(`Globo: ${alocacoes} alocações de geometria; o limite do hero é 5 (uma por malha compartilhada)`);
+if(alocacoes>7)falhas.push(`Globo: ${alocacoes} alocações de geometria; o limite do hero é 7 (malhas compartilhadas e aro físico)`);
 
 // Carregamento sob demanda: three.js jamais entra no caminho crítico da Home.
 // Medido: carregar o globo sem interação leva a Home de 96 para 68 no Lighthouse
@@ -57,7 +66,7 @@ exigir(loader,'globo-ativo','Loader');
 
 // Tour guiado: paradas derivadas do acervo, nada de texto inventado
 exigir(globe,'construirParadas','Globo');
-exigir(globe,'anguloDe','Globo');
+exigir(globe,'orientacaoParaLugar','Globo');
 exigir(globe,'lugar.descricao','Globo');   // o texto da parada vem de data.js
 proibir(globe,/paradas\s*=\s*\[\s*\{/,'Globo','as paradas do tour devem sair de OBRAS, não de uma lista fixa');
 exigir(html,'data-globo-tour','Home');
@@ -78,4 +87,4 @@ exigir(css,'.globo-hero:not(.globo-ativo)','UX CSS');
 exigir(css,'.globo-dica strong','UX CSS');
 
 if(falhas.length){console.error(falhas.map(x=>`- ${x}`).join('\n'));throw new Error(`Contrato do globo falhou com ${falhas.length} problema(s).`)}
-console.log(`Landing globe UX contract OK (${alocacoes} geometrias compartilhadas).`);
+console.log(`Landing globe UX contract OK (${alocacoes} geometrias compartilhadas, trackball quaternion).`);
