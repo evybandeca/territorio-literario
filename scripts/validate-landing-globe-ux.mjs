@@ -73,7 +73,7 @@ proibir(loader,/globo-terra\.js/,'Loader','o dataset bruto voltou ao caminho do 
 exigir(loader,'js/globo.js','Loader');
 
 exigir(loader,'touchstart','Loader');
-exigir(loader,'globo-ativo','Loader');
+exigir(globe,'globo-ativo','Globo');
 
 // Tour guiado: paradas derivadas do acervo, nada de texto inventado
 exigir(globe,'construirParadas','Globo');
