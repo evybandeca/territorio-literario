@@ -159,3 +159,47 @@
 .globo-tools button{min-height:38px;padding:.42rem .72rem;border:1px solid rgba(216,180,122,.32);border-radius:999px;background:rgba(7,14,16,.58);color:#e7cfaa;font:700 .72rem/1 'Source Sans 3',sans-serif;letter-spacing:.045em;cursor:pointer;backdrop-filter:blur(8px)}
 .globo-tools button:hover,.globo-tools button:focus-visible{background:rgba(216,180,122,.14);border-color:rgba(216,180,122,.62);outline:0;box-shadow:0 0 0 2px rgba(216,180,122,.22)}
 @media(max-width:600px){.globo-tools{top:.75rem;right:.75rem}.globo-tools button{font-size:.68rem}}
+
+
+/* Globe v4 — first paint imediato e handoff progressivo para WebGL */
+.globo-poster{
+  position:absolute;
+  z-index:1;
+  right:clamp(1rem,3.6vw,4.25rem);
+  top:50%;
+  width:min(49vw,690px);
+  aspect-ratio:1;
+  transform:translateY(-50%) scale(.985);
+  transform-origin:55% 50%;
+  opacity:1;
+  pointer-events:none;
+  filter:drop-shadow(0 34px 48px rgba(0,0,0,.24));
+  transition:opacity .42s ease,transform .62s cubic-bezier(.2,.75,.2,1),filter .42s ease;
+}
+.globo-poster img{display:block;width:100%;height:100%;object-fit:contain}
+#globo-canvas{opacity:0;transition:opacity .5s ease,filter .5s ease}
+.globo-hero.globo-ativo #globo-canvas{opacity:.98}
+.globo-hero.globo-ativo .globo-poster{
+  opacity:0;
+  transform:translateY(-50%) scale(1.018);
+  filter:drop-shadow(0 34px 48px rgba(0,0,0,0));
+}
+.globo-hero[data-globo-loading="true"] .globo-poster::after{
+  content:"";
+  position:absolute;
+  inset:13%;
+  border-radius:50%;
+  border:1px solid rgba(221,190,137,.16);
+  box-shadow:0 0 50px rgba(214,178,116,.08);
+}
+@media(max-width:980px){
+  .globo-poster{right:-8%;width:min(68vw,620px);opacity:.72}
+  .globo-hero.globo-ativo .globo-poster{opacity:0}
+}
+@media(max-width:600px){
+  .globo-poster{top:37%;right:-30%;width:112vw;opacity:.38}
+  .globo-hero:not(.globo-ativo) #globo-canvas{opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .globo-poster,#globo-canvas{transition:none!important}
+}

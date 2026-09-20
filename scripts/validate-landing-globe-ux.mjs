@@ -13,13 +13,21 @@ const proibir=(fonte,regex,rotulo,motivo)=>{if(regex.test(fonte))falhas.push(`${
 // Composição da landing
 exigir(html,'hero-stats','Home');
 exigir(html,'globo-canvas','Home');
+exigir(html,'globo-poster','Home');          // globo visual existe no first paint
+exigir(html,'assets/globe-nautical-poster.svg','Home');
+exigir(css,'.globo-poster','UX CSS');
+exigir(css,'.globo-hero.globo-ativo .globo-poster','UX CSS');
+
 
 // Contrato visual do globo
 proibir(globe,/https?:\/\//,'Globo','a cartografia é local; nenhuma textura remota deve voltar ao hero');
-exigir(globe,'GLOBO_TERRA','Globo');       // litorais vetoriais (Natural Earth 110m)
+proibir(globe,/GLOBO_TERRA/,'Globo','o dataset Natural Earth bruto voltou ao runtime; use a cartografia pré-computada');
 exigir(globe,'wireframe','Globo');
 exigir(globe,'group.position.x','Globo');
-exigir(globe,'CanvasTexture','Globo');      // planisfério desenhado em runtime
+proibir(globe,/CanvasTexture|texturaCartografica/,'Globo','a textura voltou a ser desenhada em runtime');
+exigir(globe,'TextureLoader','Globo');
+exigir(globe,'assets/globe-nautical-map.svg','Globo');
+
 exigir(globe,'ShaderMaterial','Globo');     // halo atmosférico
 exigir(globe,'TorusGeometry','Globo');       // aro de latão do globo físico
 exigir(globe,'rotasTour','Globo');           // rotas náuticas conectam as paradas do acervo
@@ -57,12 +65,19 @@ if(alocacoes>7)falhas.push(`Globo: ${alocacoes} alocações de geometria; o limi
 // (TBT de 0 para ~7 s), abaixo do orçamento de 70 exigido por audit-lighthouse.mjs.
 proibir(html,/<script[^>]+src=["'][^"']*three[^"']*["']/i,'Home','three.js carregado direto no HTML');
 proibir(html,/<script[^>]+src=["']js\/globo\.js["']/i,'Home','globo.js carregado direto no HTML');
-proibir(loader,/requestIdleCallback|\brequestAnimationFrame\s*\(\s*start|setTimeout\s*\(\s*start/,'Loader',
-  'o globo voltou a subir sem interação e estoura o orçamento do Lighthouse');
+proibir(loader,/\brequestAnimationFrame\s*\(\s*start|setTimeout\s*\(\s*start/,'Loader',
+  'o globo não deve subir por temporizador agressivo; use hidratação ociosa e poster imediato');
+exigir(loader,'requestIdleCallback','Loader');
+exigir(loader,"rel='prefetch'",'Loader');
+exigir(loader,'assets/globe-nautical-map.svg','Loader');
+proibir(loader,/if\(!economizar\)start\(\)/,'Loader','hidratação WebGL automática voltou ao idle e bloqueia o Lighthouse');
+
 exigir(loader,'pointerenter','Loader');
+proibir(loader,/globo-terra\.js/,'Loader','o dataset bruto voltou ao caminho do usuário');
+exigir(loader,'js/globo.js','Loader');
+
 exigir(loader,'touchstart','Loader');
-exigir(loader,'globo-terra.js','Loader');
-exigir(loader,'globo-ativo','Loader');
+exigir(globe,'globo-ativo','Globo');
 
 // Tour guiado: paradas derivadas do acervo, nada de texto inventado
 exigir(globe,'construirParadas','Globo');

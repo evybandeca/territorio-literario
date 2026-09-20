@@ -6,6 +6,7 @@
 <title>Território Literário — o Brasil através de sua literatura</title>
 <meta name="description" content="Explore clássicos brasileiros pelo território, pelos autores e pela história em um atlas literário digital de obras em domínio público.">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preload" as="image" href="assets/globe-nautical-poster.svg" fetchpriority="high">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/ux-v1-1.css">
 <link rel="stylesheet" href="css/bookshelf-home.css">
@@ -16,6 +17,7 @@
 
 <main id="conteudo">
 <section class="globo-hero" id="globo-hero" aria-labelledby="hero-title">
+  <div class="globo-poster" aria-hidden="true"><img src="assets/globe-nautical-poster.svg" alt="" width="760" height="760" decoding="async" fetchpriority="high"></div>
   <canvas id="globo-canvas" aria-hidden="true"></canvas>
   <div class="container">
     <div class="globo-texto">

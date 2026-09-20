@@ -8,14 +8,7 @@
   // Ajustes de cena concentrados num só lugar, alinhados à paleta editorial do portal.
   const CFG={
     raio:1,
-    // Carta náutica antiga desenhada em runtime: pergaminho, hachura de mar,
-    // linhas de rumo, rosa dos ventos e litoral gravado. Nenhuma imagem externa.
-    papel:'#c3a878',        // pergaminho do mar, tingido e mais fundo que a terra
-    papelClaro:'#f2e6c8',   // terra firme, o claro da folha
-    tinta:'#6b4a25',        // sépia da gravura
-    tintaFraca:'rgba(107,74,37,.30)',
-    rumo:'rgba(92,64,32,.26)',
-    foxing:'rgba(120,82,40,.055)',  // manchas de envelhecimento
+    // A carta náutica vem de um asset vetorial local pré-computado.
     atmosferaCor:0xd9bd8a,
     atmosferaIntensidade:.34,
     atmosferaDifusao:1.5,   // maior = halo mais difuso; acima de ~2 vira névoa e transborda o hero
@@ -50,109 +43,35 @@
     const group=new THREE.Group();
     scene.add(group);
 
-    // Desenha um planisfério equirretangular no idioma da cartografia de gabinete:
-    // mar em pergaminho hachurado, linhas de rumo saindo de rosas dos ventos,
-    // litoral gravado em sépia e manchas de envelhecimento. Tudo em <canvas>.
-    function texturaCartografica(){
-      const L=2048,A=1024,c=document.createElement('canvas');
-      c.width=L;c.height=A;
-      const g=c.getContext('2d');
-      const px=(lon,lat)=>[(lon+180)/360*L,(90-lat)/180*A];
-
-      // 1. Pergaminho do mar, com leve variação de banho
-      g.fillStyle=CFG.papel;g.fillRect(0,0,L,A);
-      const banho=g.createLinearGradient(0,0,L*.6,A);
-      banho.addColorStop(0,'rgba(150,110,60,.10)');
-      banho.addColorStop(.45,'rgba(150,110,60,0)');
-      banho.addColorStop(1,'rgba(120,88,46,.12)');
-      g.fillStyle=banho;g.fillRect(0,0,L,A);
-
-      // 2. Hachura fina do mar (a terra será pintada por cima e a apagará)
-      g.strokeStyle='rgba(88,60,28,.20)';g.lineWidth=1;
-      for(let y=0;y<A;y+=5){g.beginPath();g.moveTo(0,y+.5);g.lineTo(L,y+.5);g.stroke()}
-
-      // 3. Linhas de rumo a partir de rosas dos ventos, como nas cartas portulanas
-      const rosas=[[-30,8],[-150,-20],[60,25]];
-      g.strokeStyle=CFG.rumo;g.lineWidth=1;
-      for(const [lon,lat] of rosas){
-        const [cxr,cyr]=px(lon,lat);
-        for(let i=0;i<16;i++){
-          const a=i*Math.PI/8;
-          g.beginPath();g.moveTo(cxr,cyr);
-          g.lineTo(cxr+Math.cos(a)*L,cyr+Math.sin(a)*L);g.stroke();
-        }
-      }
-
-      // 4. Rosa dos ventos desenhada no Atlântico, à vista de quem chega no Brasil
-      (function rosaDosVentos(lon,lat,r){
-        const [rx,ry]=px(lon,lat);
-        g.save();g.translate(rx,ry);
-        g.strokeStyle='rgba(84,56,26,.72)';g.fillStyle='rgba(84,56,26,.6)';g.lineWidth=1.6;
-        for(const raio of [r,r*.62]){g.beginPath();g.arc(0,0,raio,0,Math.PI*2);g.stroke()}
-        for(let i=0;i<8;i++){       // oito pontas principais em losango
-          const a=i*Math.PI/4,pa=a+Math.PI/16,pb=a-Math.PI/16,p=i%2?r*.66:r;
-          g.beginPath();
-          g.moveTo(Math.cos(a)*p,Math.sin(a)*p);
-          g.lineTo(Math.cos(pa)*r*.17,Math.sin(pa)*r*.17);
-          g.lineTo(0,0);
-          g.lineTo(Math.cos(pb)*r*.17,Math.sin(pb)*r*.17);
-          g.closePath();
-          g.fillStyle=i%2?'rgba(84,56,26,.34)':'rgba(84,56,26,.62)';
-          g.fill();g.stroke();
-        }
-        g.restore();
-      })(-30,8,84);
-
-      // 5. Terra firme: pergaminho mais claro, litoral gravado em traço duplo
-      if(typeof GLOBO_TERRA!=='undefined'){
-        const caminho=desloc=>{
-          const cam=new Path2D();
-          for(const anel of GLOBO_TERRA){
-            for(let i=0;i<anel.length;i+=2){
-              const [x,y]=px(anel[i]+desloc,anel[i+1]);
-              if(i===0)cam.moveTo(x,y);else cam.lineTo(x,y);
-            }
-            cam.closePath();
-          }
-          return cam;
-        };
-        // -360/0/+360 fecha corretamente os anéis que cruzam o antimeridiano
-        for(const d of [-360,0,360]){
-          const cam=caminho(d);
-          g.fillStyle=CFG.papelClaro;g.fill(cam);
-          g.strokeStyle='rgba(107,74,37,.22)';g.lineWidth=7;g.lineJoin='round';g.stroke(cam);
-          g.strokeStyle=CFG.tinta;g.lineWidth=1.7;g.stroke(cam);
-        }
-      }
-
-      // 6. Gratículo discreto por cima de tudo, como na gravura
-      g.strokeStyle=CFG.tintaFraca;g.lineWidth=.9;
-      for(let lon=-180;lon<=180;lon+=30){const[x]=px(lon,0);g.beginPath();g.moveTo(x,0);g.lineTo(x,A);g.stroke()}
-      for(let lat=-80;lat<=80;lat+=20){const[,y]=px(0,lat);g.beginPath();g.moveTo(0,y);g.lineTo(L,y);g.stroke()}
-      g.strokeStyle='rgba(107,74,37,.5)';g.lineWidth=2.2;
-      const[,eq]=px(0,0);g.beginPath();g.moveTo(0,eq);g.lineTo(L,eq);g.stroke();
-      g.setLineDash([9,7]);g.lineWidth=1.3;g.strokeStyle='rgba(107,74,37,.34)';
-      for(const t of [23.4,-23.4]){const[,y]=px(0,t);g.beginPath();g.moveTo(0,y);g.lineTo(L,y);g.stroke()}
-      g.setLineDash([]);
-
-      // 7. Foxing: manchas de envelhecimento, determinísticas para não "piscar"
-      let semente=20260920;
-      const aleatorio=()=>(semente=(semente*1103515245+12345)&0x7fffffff)/0x7fffffff;
-      g.fillStyle=CFG.foxing;
-      for(let i=0;i<900;i++){
-        const x=aleatorio()*L,y=aleatorio()*A,r=1+aleatorio()*7;
-        g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();
-      }
-
-      const t=new THREE.CanvasTexture(c);
-      t.encoding=THREE.sRGBEncoding;
-      t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
-      return registrar(t);
-    }
-
+    // A cartografia é pré-computada como SVG versionado: o navegador não precisa
+    // reconstruir 2.048×1.024 px nem percorrer o dataset Natural Earth no first use.
+    const textureLoader=new THREE.TextureLoader();
     const geometry=registrar(new THREE.SphereGeometry(CFG.raio,48,32));
-    const globeMaterial=registrar(new THREE.MeshPhongMaterial({map:texturaCartografica(),color:0xffffff,shininess:0,specular:0x000000}));
-    group.add(new THREE.Mesh(geometry,globeMaterial));
+    const globeMaterial=registrar(new THREE.MeshPhongMaterial({
+      color:0xe7d5ae,shininess:2,specular:0x2a2117
+    }));
+    const globeMesh=new THREE.Mesh(geometry,globeMaterial);
+    group.add(globeMesh);
+    let texturaPronta=false;
+    textureLoader.load('assets/globe-nautical-map.svg',texture=>{
+      texture.encoding=THREE.sRGBEncoding;
+      texture.anisotropy=Math.min(6,renderer.capabilities.getMaxAnisotropy());
+      registrar(texture);
+      globeMaterial.map=texture;
+      globeMaterial.color.set(0xffffff);
+      globeMaterial.needsUpdate=true;
+      texturaPronta=true;
+      hero.dataset.globoTextura='ready';
+      desenhar();
+      requestAnimationFrame(()=>{
+        hero.classList.add('globo-ativo');
+        hero.dataset.globoPronto='true';
+        if(hero.dataset.globoTourPedido==='1'){delete hero.dataset.globoTourPedido;abrirTour()}
+      });
+    },undefined,()=>{
+      hero.classList.add('sem-globo');
+      console.warn('Falha ao carregar a cartografia do globo.');
+    });
 
     const graticuleGeometry=registrar(new THREE.SphereGeometry(CFG.raio*1.006,24,16));
     const graticuleMaterial=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(0xd7c6a5).convertSRGBToLinear(),wireframe:true,transparent:true,opacity:.07,depthWrite:false}));
@@ -662,7 +581,6 @@
     // Mesma convenção de diagnóstico usada pelo leitor (data-reader-ready): permite
     // que a QA de navegador afirme sobre o globo sem depender de inspeção de pixels.
     hero.dataset.globoMarcadores=String(marcadores.length);
-    hero.dataset.globoPronto='true';
-    if(hero.dataset.globoTourPedido==='1'){delete hero.dataset.globoTourPedido;abrirTour()}
+    hero.dataset.globoTextura=texturaPronta?'ready':'loading';
   }catch(e){hero.classList.add('sem-globo')}
 })();
