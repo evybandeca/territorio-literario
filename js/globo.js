@@ -12,8 +12,6 @@
     atmosferaCor:0xd9bd8a,
     atmosferaIntensidade:.34,
     atmosferaDifusao:1.5,   // maior = halo mais difuso; acima de ~2 vira névoa e transborda o hero
-    rotacaoInicial:-.74,    // enquadra a América do Sul, onde está todo o acervo
-    inclinacaoInicial:.22,  // leve mergulho inicial; depois o trackball é totalmente livre
     trackballRaio:.94,      // esfera virtual de manipulação sob o cursor
     zoomMin:2.72,
     zoomMax:4.20,
@@ -47,11 +45,21 @@
     // reconstruir 2.048×1.024 px nem percorrer o dataset Natural Earth no first use.
     const textureLoader=new THREE.TextureLoader();
     const geometry=registrar(new THREE.SphereGeometry(CFG.raio,48,32));
-    const globeMaterial=registrar(new THREE.MeshPhongMaterial({
-      color:0xe7d5ae,shininess:2,specular:0x2a2117
+    const globeMaterial=registrar(new THREE.MeshBasicMaterial({
+      color:0xe7d5ae
     }));
     const globeMesh=new THREE.Mesh(geometry,globeMaterial);
     group.add(globeMesh);
+
+    // A cartografia precisa permanecer legível independentemente da iluminação.
+    // O volume vem de uma camada de sombra separada, suave e previsível.
+    const globeShadeMaterial=registrar(new THREE.ShaderMaterial({
+      vertexShader:'varying vec3 vN;void main(){vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+      fragmentShader:'varying vec3 vN;void main(){float luz=clamp(dot(normalize(vN),normalize(vec3(-0.35,0.18,0.92))),0.0,1.0);float a=(1.0-smoothstep(0.08,0.92,luz))*0.30;gl_FragColor=vec4(0.035,0.028,0.02,a);}',
+      transparent:true,depthWrite:false
+    }));
+    const globeShade=new THREE.Mesh(registrar(new THREE.SphereGeometry(CFG.raio*1.002,48,32)),globeShadeMaterial);
+    group.add(globeShade);
     let texturaPronta=false;
     textureLoader.load('assets/globe-nautical-map.svg',texture=>{
       texture.encoding=THREE.sRGBEncoding;
@@ -74,7 +82,7 @@
     });
 
     const graticuleGeometry=registrar(new THREE.SphereGeometry(CFG.raio*1.006,24,16));
-    const graticuleMaterial=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(0xd7c6a5).convertSRGBToLinear(),wireframe:true,transparent:true,opacity:.07,depthWrite:false}));
+    const graticuleMaterial=registrar(new THREE.MeshBasicMaterial({color:new THREE.Color(0xd7c6a5).convertSRGBToLinear(),wireframe:true,transparent:true,opacity:.018,depthWrite:false}));
     group.add(new THREE.Mesh(graticuleGeometry,graticuleMaterial));
 
     // Halo atmosférico por Fresnel (BackSide): custo de um shader simples, sem textura adicional.
@@ -234,8 +242,10 @@
     // qualquer ponto da esfera pode atravessar o centro visível sem singularidade.
 
     //
+    const FOCO_INICIAL={lat:-15,lon:-55};
+    const direcaoFoco=latLon(FOCO_INICIAL.lat,FOCO_INICIAL.lon,1).normalize();
     const orientacao=new THREE.Quaternion()
-      .setFromEuler(new THREE.Euler(CFG.inclinacaoInicial,CFG.rotacaoInicial,0,'XYZ'))
+      .setFromUnitVectors(direcaoFoco,new THREE.Vector3(0,0,1))
       .normalize();
     const orientacaoPadrao=orientacao.clone(),zoomPadrao=camera.position.z;
     const eixoInercia=new THREE.Vector3(0,1,0),eixoAuto=new THREE.Vector3(0,1,0);
@@ -275,6 +285,11 @@
       hero.dataset.globoControle='trackball-quaternion';
       hero.dataset.globoQuaternion=[q.x,q.y,q.z,q.w].map(v=>v.toFixed(5)).join(',');
       hero.dataset.globoZoom=camera.position.z.toFixed(3);
+      const focoProjetado=latLon(FOCO_INICIAL.lat,FOCO_INICIAL.lon,1)
+        .applyQuaternion(orientacao)
+        .add(group.position)
+        .project(camera);
+      hero.dataset.globoFocoProjetado=`${((focoProjetado.x+1)/2).toFixed(4)},${((1-focoProjetado.y)/2).toFixed(4)}`;
     }
     function orientar(){
       group.quaternion.copy(orientacao);
