@@ -18,4 +18,12 @@
   hero.addEventListener('touchstart',start,once);
   hero.addEventListener('focusin',start,{once:true});
   canvas.style.cursor='grab';
+  // O globo só sobe sob interação; o CTA do tour registra o pedido para que
+  // globo.js abra o tour assim que terminar de inicializar.
+  for(const b of document.querySelectorAll('[data-globo-tour]'))
+    b.addEventListener('click',()=>{
+      // pointerdown no hero já pode ter chamado start(); o que importa é se globo.js
+      // ainda não inicializou — depois disso ele próprio trata o clique.
+      if(!hero.dataset.globoPronto){hero.dataset.globoTourPedido='1';start()}
+    });
 })();

@@ -24,6 +24,7 @@
       <div class="globo-cta">
         <a class="button button--light" href="biblioteca.html">Começar por uma obra</a>
         <a class="button button--ghost" href="atlas.html">Explorar o Atlas</a>
+        <button class="button button--ghost" type="button" data-globo-tour>Fazer o tour</button>
       </div>
       <a class="continue-reading" data-continue-reading hidden href="leitura.html">Continuar lendo</a>
       <div class="hero-kicker">Acervo fundador auditado</div>
@@ -34,6 +35,21 @@
       </div>
     </div>
     <div class="globo-dica" id="globo-dica" aria-hidden="true"></div>
+    <aside class="globo-tour" id="globo-tour" aria-label="Tour guiado pelo território" aria-live="polite" hidden>
+      <div class="globo-tour__topo">
+        <span class="globo-tour__contador" id="globo-tour-contador"></span>
+        <button class="globo-tour__sair" type="button" data-tour-sair>Encerrar</button>
+      </div>
+      <p class="globo-tour__lugar" id="globo-tour-lugar"></p>
+      <p class="globo-tour__obra" id="globo-tour-obra"></p>
+      <p class="globo-tour__nota" id="globo-tour-nota"></p>
+      <div class="globo-tour__links" id="globo-tour-links"></div>
+      <div class="globo-tour__controles">
+        <button type="button" data-tour-anterior aria-label="Parada anterior">‹</button>
+        <button type="button" data-tour-pausa aria-pressed="false">Pausar</button>
+        <button type="button" data-tour-proximo aria-label="Próxima parada">›</button>
+      </div>
+    </aside>
     <div class="globo-legenda">arraste para girar em qualquer direção · clique em um ponto para visitar o lugar no Atlas · geografia com proveniência editorial</div>
   </div>
 </section>
