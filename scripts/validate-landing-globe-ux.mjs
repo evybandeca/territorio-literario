@@ -21,7 +21,7 @@ exigir(css,'.globo-hero.globo-ativo .globo-poster','UX CSS');
 
 // Contrato visual do globo
 proibir(globe,/https?:\/\//,'Globo','a cartografia é local; nenhuma textura remota deve voltar ao hero');
-exigir(globe,'GLOBO_TERRA','Globo');       // litorais vetoriais (Natural Earth 110m)
+proibir(globe,/GLOBO_TERRA/,'Globo','o dataset Natural Earth bruto voltou ao runtime; use a cartografia pré-computada');
 exigir(globe,'wireframe','Globo');
 exigir(globe,'group.position.x','Globo');
 proibir(globe,/CanvasTexture|texturaCartografica/,'Globo','a textura voltou a ser desenhada em runtime');
