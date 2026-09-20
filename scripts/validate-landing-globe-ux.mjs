@@ -26,6 +26,10 @@ exigir(globe,'wireframe','Globo');
 exigir(globe,'group.position.x','Globo');
 proibir(globe,/CanvasTexture|texturaCartografica/,'Globo','a textura voltou a ser desenhada em runtime');
 exigir(globe,'TextureLoader','Globo');
+exigir(globe,'const globeMaterial=registrar(new THREE.MeshBasicMaterial','Globo');
+exigir(globe,'globeShadeMaterial','Globo');
+proibir(globe,/const globeMaterial=registrar\(new THREE\.MeshPhongMaterial/,'Globo','a cartografia voltou a depender de Phong e pode escurecer até desaparecer');
+
 exigir(globe,'assets/globe-nautical-map.svg','Globo');
 
 exigir(globe,'ShaderMaterial','Globo');     // halo atmosférico
