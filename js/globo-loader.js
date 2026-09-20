@@ -7,6 +7,7 @@
     if(started)return;started=true;
     try{
       if(typeof THREE==='undefined')await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
+      await loadScript('js/globo-terra.js');
       await loadScript('js/globo.js');
       hero.classList.add('globo-ativo');
     }catch(error){hero.classList.add('sem-globo');console.warn(error.message)}

@@ -23,6 +23,24 @@ Este documento define o controle editorial mínimo antes de uma obra entrar no c
 - A inclusão no registry exige `publication_status = published`, `edition_status = frozen_in_corpus` e `review_status = documented_for_beta`.
 - Obras futuras podem ter o prazo patrimonial do autor documentado antecipadamente, mas permanecem bloqueadas enquanto a edição exata estiver pendente.
 
+## Cartografia do globo da Home
+
+O item 5 acima exige proveniência própria para mapas. O planisfério desenhado no globo
+da página inicial não usa imagem de terceiros hospedada externamente:
+
+- **Fonte:** Natural Earth, escala 1:110m, camada de terras emersas (*land*). Natural Earth
+  é **domínio público** e dispensa atribuição, ainda que o projeto a registre por política.
+- **Intermediário:** pacote npm `world-atlas@2.0.2` (licença ISC), arquivo `land-110m.json`.
+- **Derivação:** `scripts/build-globe-land.mjs` converte o TopoJSON em anéis `[lon,lat]`
+  arredondados a 0,1° e descarta ilhas menores que 0,6 grau quadrado, produzindo
+  `js/globo-terra.js` (arquivo gerado, não editar à mão). O comando de reprodução está
+  no cabeçalho do script.
+- **Renderização:** o planisfério é desenhado em `<canvas>` em tempo de execução, com a
+  paleta editorial do portal. Nenhuma textura remota é requisitada.
+
+Como em qualquer camada do portal, coordenada cartográfica não equivale a lugar literário:
+os marcadores do globo carregam o mesmo grau de certeza registrado em `CERTEZAS`.
+
 ## Obras fundadoras: situação autoral
 
 O manifest cobre as 12 obras fundadoras. Na data de avaliação (07/09/2026), os prazos patrimoniais de autoria registrados para todos os 12 autores estão expirados segundo o cálculo operacional do art. 41. Isso **não equivale a liberar qualquer edição moderna, transcrição, tradução ou imagem**.
