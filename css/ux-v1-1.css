@@ -46,3 +46,111 @@
 .globo-tour__controles button:hover{background:rgba(241,235,221,.12);border-color:rgba(214,178,116,.6)}
 .globo-hero.tour-ativo .globo-legenda{display:none}
 @media(max-width:980px){.globo-tour{position:relative;right:auto;bottom:auto;width:100%;margin-top:1.25rem}}
+
+
+/* Globe v3 — gabinete cartográfico, interação física e tour em pergaminho */
+.globo-hero{
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 74% 45%,rgba(207,166,101,.16) 0,rgba(207,166,101,.07) 23%,transparent 44%),
+    radial-gradient(circle at 18% 35%,rgba(24,39,45,.58),transparent 40%),
+    linear-gradient(118deg,#071015 0%,#0c171b 48%,#17140f 100%);
+  border-bottom:1px solid rgba(191,145,79,.28);
+  box-shadow:inset 0 -40px 80px rgba(0,0,0,.2);
+}
+.globo-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:.22;
+  background:
+    repeating-linear-gradient(0deg,rgba(233,210,166,.018) 0 1px,transparent 1px 6px),
+    repeating-linear-gradient(90deg,rgba(233,210,166,.012) 0 1px,transparent 1px 9px),
+    radial-gradient(circle at 74% 46%,transparent 0 28%,rgba(5,8,8,.22) 58%,rgba(4,7,8,.46) 100%);
+}
+#globo-canvas{
+  z-index:1;
+  touch-action:none;
+  filter:saturate(.92) contrast(1.055) brightness(1.03);
+}
+.globo-hero .container{z-index:2}
+.globo-texto{
+  border:0;
+  border-left:1px solid rgba(215,172,108,.24);
+  border-radius:0;
+  background:linear-gradient(90deg,rgba(5,11,13,.78) 0%,rgba(5,11,13,.48) 72%,transparent 100%);
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  padding-left:clamp(1.1rem,2vw,1.8rem);
+}
+.globo-texto .marca{color:#ead8b3;letter-spacing:.15em}
+.globo-texto .marca span{color:#c99a58}
+.globo-texto h1{color:#f5ead2;text-shadow:0 4px 30px rgba(0,0,0,.34)}
+.globo-texto p{color:rgba(239,226,199,.76)}
+.globo-cta .button--light{
+  background:#d8b47a;
+  border-color:#d8b47a;
+  color:#25180e;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+.globo-cta .button--light:hover{background:#e3c38e;border-color:#e3c38e}
+.globo-cta .button--ghost{
+  color:#ead8b3;
+  border-color:rgba(216,180,122,.38);
+  background:rgba(216,180,122,.045);
+}
+.globo-cta .button--ghost:hover{background:rgba(216,180,122,.12);border-color:rgba(216,180,122,.62)}
+.hero-kicker{color:#cda56c}
+.hero-stats{border-color:rgba(216,180,122,.13);background:rgba(7,14,16,.18)}
+.hero-stat strong{color:#f4e8d0}.hero-stat span{color:rgba(234,216,179,.56)}
+.globo-legenda{
+  color:rgba(235,215,176,.58);
+  letter-spacing:.025em;
+  text-shadow:0 1px 12px rgba(0,0,0,.5);
+}
+.globo-dica{
+  color:#2b1c0e;
+  background:linear-gradient(145deg,rgba(236,216,177,.96),rgba(206,174,122,.94));
+  border-color:rgba(101,68,32,.36);
+  box-shadow:0 14px 36px rgba(0,0,0,.26);
+  backdrop-filter:none;
+}
+.globo-dica strong{color:#2b1c0e}
+.globo-dica span{color:rgba(43,28,14,.72)}
+.globo-tour{
+  color:#2b1c0e;
+  border:1px solid rgba(112,75,37,.5);
+  border-radius:3px;
+  background:
+    linear-gradient(rgba(239,221,185,.94),rgba(218,190,142,.95)),
+    repeating-linear-gradient(0deg,rgba(91,59,27,.025) 0 1px,transparent 1px 4px);
+  box-shadow:0 24px 70px rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,248,226,.34);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+.globo-tour__contador{color:#7d5429}
+.globo-tour__sair{color:rgba(52,34,17,.62)}
+.globo-tour__sair:hover{color:#2b1c0e}
+.globo-tour__lugar{color:#2b1c0e}
+.globo-tour__obra{color:#7d5429}
+.globo-tour__nota{color:rgba(43,28,14,.78)}
+.globo-tour__links a{color:#70461e;text-decoration-color:rgba(112,70,30,.32)}
+.globo-tour__controles{border-top-color:rgba(105,69,32,.23)}
+.globo-tour__controles button{
+  color:#2b1c0e;
+  border-color:rgba(105,69,32,.32);
+  background:rgba(255,250,236,.28);
+}
+.globo-tour__controles button:hover{background:rgba(255,250,236,.62);border-color:rgba(105,69,32,.55)}
+.globo-hero.globo-interagindo #globo-canvas{cursor:grabbing}
+@media(max-width:600px){
+  .globo-texto{
+    border-left:0;
+    border-top:1px solid rgba(215,172,108,.18);
+    background:linear-gradient(180deg,rgba(5,11,13,.72),rgba(5,11,13,.4));
+  }
+  .globo-tour{margin-inline:0}
+}
