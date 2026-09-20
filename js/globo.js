@@ -20,9 +20,11 @@
     atmosferaIntensidade:.34,
     atmosferaDifusao:1.5,   // maior = halo mais difuso; acima de ~2 vira névoa e transborda o hero
     rotacaoInicial:-.74,    // enquadra a América do Sul, onde está todo o acervo
-    inclinacaoInicial:.22,  // leve mergulho: o acervo fica no hemisfério sul
-    inclinacaoMax:1.15,     // ~66°, o bastante para alcançar os polos sem virar de cabeça para baixo
-    sensibilidade:.005,     // rad por px arrastado
+    inclinacaoInicial:.22,  // leve mergulho inicial; depois o trackball é totalmente livre
+    trackballRaio:.94,      // esfera virtual de manipulação sob o cursor
+    zoomMin:2.72,
+    zoomMax:4.20,
+    zoomSensibilidade:.0022,
     velocidadeAuto:.05,     // rad/s
     fpsMax:30,
     limiarFrente:.12,       // produto escalar mínimo para o marcador estar voltado à câmera
@@ -178,11 +180,21 @@
     rim.position.set(-4,1,-2);
     scene.add(rim);
 
+    // Aro de latão: o globo passa a ter presença de objeto cartográfico físico,
+    // em vez de parecer apenas uma esfera WebGL solta no fundo do hero.
+    const aroGeometry=registrar(new THREE.TorusGeometry(CFG.raio*1.09,.012,8,160));
+    const aroMaterial=registrar(new THREE.MeshPhongMaterial({color:0xb78a50,shininess:42,specular:0x5f3d1b,transparent:true,opacity:.88}));
+    const aro=new THREE.Mesh(aroGeometry,aroMaterial);
+    aro.rotation.y=-.18;
+    scene.add(aro);
+
     function layoutGlobe(){
       const compact=w<980;
       group.position.x=compact?.38:.72;
       group.position.y=compact?.05:.02;
       group.scale.setScalar(compact?.86:.92);
+      aro.position.copy(group.position);
+      aro.scale.copy(group.scale);
       // Convenção data-globo-*: permite que a QA afirme sobre o enquadramento
       // sem replicar a matemática de projeção.
       camera.updateMatrixWorld();
@@ -251,42 +263,45 @@
     }
     const paradas=construirParadas();
 
-    // Ângulos que colocam um ponto da esfera bem no meio do globo na tela.
-    //
-    // O globo é deslocado para a direita (layoutGlobe), então "virado para +Z" NÃO
-    // é o mesmo que "no centro visível": há paralaxe. O alvo correto é a direção da
-    // câmera vista do centro do globo. Com a orientação inclinação∘giro, isso é um
-    // sistema de duas incógnitas com solução fechada:
-    //   giro:       d.x·cos a + d.z·sin a = u.x
-    //   inclinação: rotação de (d.y, z') até (u.y, u.z)
-    function anguloDe(lat,lon){
-      const d=latLon(lat,lon,1).normalize();
-      const u=camera.position.clone().sub(group.position).normalize();
-      const r=Math.hypot(d.x,d.z);
-      const psi=Math.atan2(d.z,d.x);
-      const razao=r>1e-6?Math.max(-1,Math.min(1,u.x/r)):0;
-      const normalizar=x=>Math.atan2(Math.sin(x),Math.cos(x));
-      let melhor=null;
-      for(const sinal of [1,-1]){
-        const a=psi+sinal*Math.acos(razao);
-        const z=-r*Math.sin(a-psi);                                  // componente z após o giro
-        const i=normalizar(Math.atan2(u.z,u.y)-Math.atan2(z,d.y));
-        if(Math.abs(i)>CFG.inclinacaoMax)continue;
-        const frente=d.y*Math.sin(i)+z*Math.cos(i);                  // >0 = voltado à câmera
-        if(!melhor||frente>melhor.frente)melhor={rot:normalizar(a),inc:i,frente};
-      }
-      if(melhor)return melhor;
-      // Sem solução dentro do limite de inclinação: aproxima o máximo possível.
-      return {rot:Math.atan2(-d.x,d.z),
-        inc:Math.max(-CFG.inclinacaoMax,Math.min(CFG.inclinacaoMax,Math.atan2(d.y,r)))};
+    // Rotas náuticas discretas conectam as paradas do tour e giram junto com
+    // o mapa. Elas usam apenas os pontos já georreferenciados do acervo.
+    const rotasTour=new THREE.Group();
+    const rotaMaterial=registrar(new THREE.LineBasicMaterial({color:0xb8894d,transparent:true,opacity:.34,depthWrite:false}));
+    for(let i=0;i<paradas.length-1;i++){
+      const a=latLon(paradas[i].lugar.lat,paradas[i].lugar.lon,CFG.raio*1.018);
+      const b=latLon(paradas[i+1].lugar.lat,paradas[i+1].lugar.lon,CFG.raio*1.018);
+      const meio=a.clone().add(b).normalize().multiplyScalar(CFG.raio*1.10);
+      const curva=new THREE.QuadraticBezierCurve3(a,meio,b);
+      const geo=registrar(new THREE.BufferGeometry().setFromPoints(curva.getPoints(28)));
+      rotasTour.add(new THREE.Line(geo,rotaMaterial));
     }
+    group.add(rotasTour);
 
-    let rot=CFG.rotacaoInicial,inc=CFG.inclinacaoInicial,vel=0,arrastando=false,pausado=false;
+    // A orientação agora é um quaternion real. Não há teto artificial de latitude:
+    // qualquer ponto da esfera pode atravessar o centro visível sem singularidade.
+
+    //
+    const orientacao=new THREE.Quaternion()
+      .setFromEuler(new THREE.Euler(CFG.inclinacaoInicial,CFG.rotacaoInicial,0,'XYZ'))
+      .normalize();
+    const eixoInercia=new THREE.Vector3(0,1,0),eixoAuto=new THREE.Vector3(0,1,0);
+    const qPasso=new THREE.Quaternion(),qAuto=new THREE.Quaternion();
+    let velocidadeAngular=0,arrastando=false,pausado=false;
     let lastX=0,lastY=0,lastT=0,deslocamento=0,alvo=null;
     let visivel=true,sujo=false,ultimo=0,raf=0;
     let tourAtivo=false,tourIndice=-1,tourPausado=false,tourEspera=0,viagem=null;
     const reduzido=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const camLocal=new THREE.Vector3();
+    const ponteiros=new Map();
+    let distanciaPinch=0;
+
+    function orientacaoParaLugar(lat,lon){
+      const direcaoLocal=latLon(lat,lon,1).normalize();
+      const direcaoAtual=direcaoLocal.clone().applyQuaternion(orientacao).normalize();
+      const direcaoVista=camera.position.clone().sub(group.position).normalize();
+      const delta=new THREE.Quaternion().setFromUnitVectors(direcaoAtual,direcaoVista);
+      return delta.multiply(orientacao.clone()).normalize();
+    }
 
     function atualizarFaces(){
       camLocal.copy(camera.position);
@@ -301,12 +316,15 @@
       if(alvo&&!alvo.visible)destacar(null);
     }
 
-    const qGiro=new THREE.Quaternion(),qInc=new THREE.Quaternion();
-    const EIXO_POLAR=new THREE.Vector3(0,1,0),EIXO_TELA=new THREE.Vector3(1,0,0);
+    function atualizarDiagnostico(){
+      const q=orientacao;
+      hero.dataset.globoControle='trackball-quaternion';
+      hero.dataset.globoQuaternion=[q.x,q.y,q.z,q.w].map(v=>v.toFixed(5)).join(',');
+      hero.dataset.globoZoom=camera.position.z.toFixed(3);
+    }
     function orientar(){
-      qGiro.setFromAxisAngle(EIXO_POLAR,rot);
-      qInc.setFromAxisAngle(EIXO_TELA,inc);
-      group.quaternion.copy(qInc).multiply(qGiro); // gira no próprio eixo, depois inclina
+      group.quaternion.copy(orientacao);
+      atualizarDiagnostico();
     }
 
     function desenhar(){
@@ -316,14 +334,13 @@
       renderer.render(scene,camera);
     }
 
-    // Devolve true quando a rotação mudou: sem movimento não há motivo para redesenhar.
+    // Devolve true quando a orientação mudou: sem movimento não há motivo para redesenhar.
     function avancar(dt){
-      if(arrastando)return false;
+      if(arrastando||ponteiros.size>1)return false;
       if(viagem){
         viagem.t=Math.min(1,viagem.t+dt*1000/viagem.duracao);
-        const e=viagem.t<.5?4*viagem.t**3:1-Math.pow(-2*viagem.t+2,3)/2; // easeInOutCubic
-        rot=viagem.rot0+viagem.dRot*e;
-        inc=viagem.inc0+viagem.dInc*e;
+        const e=viagem.t<.5?4*viagem.t**3:1-Math.pow(-2*viagem.t+2,3)/2;
+        orientacao.copy(viagem.q0).slerp(viagem.q1,e).normalize();
         if(viagem.t>=1)viagem=null;
         return true;
       }
@@ -331,10 +348,16 @@
         if(!tourPausado&&(tourEspera-=dt*1000)<=0)irPara(tourIndice+1);
         return false;
       }
-      if(Math.abs(vel)>.0008){rot+=vel*dt;vel*=Math.pow(.05,dt);return true}
-      vel=0;
+      if(velocidadeAngular>.002){
+        qPasso.setFromAxisAngle(eixoInercia,velocidadeAngular*dt);
+        orientacao.premultiply(qPasso).normalize();
+        velocidadeAngular*=Math.pow(.045,dt);
+        return true;
+      }
+      velocidadeAngular=0;
       if(reduzido||pausado)return false;
-      rot+=CFG.velocidadeAuto*dt;
+      qAuto.setFromAxisAngle(eixoAuto,CFG.velocidadeAuto*dt);
+      orientacao.premultiply(qAuto).normalize();
       return true;
     }
 
@@ -360,7 +383,7 @@
       pausado=!!m;
       sujo=true;
       if(m){
-        vel=0; // pousar o cursor num marcador interrompe a deriva: o alvo não foge do clique
+        velocidadeAngular=0; // o alvo não foge do clique
         halo.position.copy(m.position);
         halo.scale.setScalar(m.userData.escala*2.4);
         halo.visible=true;
@@ -392,16 +415,13 @@
       if(!paradas.length)return;
       tourIndice=(indice+paradas.length)%paradas.length;
       const {obra,lugar}=paradas[tourIndice];
-      const alvo=anguloDe(lugar.lat,lugar.lon);
-      // Caminho curto: normaliza a diferença de giro para (-π, π]
-      let dRot=alvo.rot-rot;
-      dRot-=Math.round(dRot/(Math.PI*2))*Math.PI*2;
+      const destino=orientacaoParaLugar(lugar.lat,lugar.lon);
       if(animar&&!reduzido){
-        viagem={t:0,duracao:CFG.tourDuracao,rot0:rot,inc0:inc,dRot,dInc:alvo.inc-inc};
+        viagem={t:0,duracao:CFG.tourDuracao,q0:orientacao.clone(),q1:destino};
       }else{
-        rot=alvo.rot;inc=alvo.inc;viagem=null;sujo=true;
+        orientacao.copy(destino);viagem=null;sujo=true;
       }
-      vel=0;tourEspera=CFG.tourEspera;
+      velocidadeAngular=0;tourEspera=CFG.tourEspera;
       destacar(null);
       pintarParada(obra,lugar);
       hero.dataset.globoParada=String(tourIndice);
@@ -466,21 +486,73 @@
       return ray.intersectObjects(visiveis,false)[0]?.object||null;
     }
 
+    const centroProjetado=new THREE.Vector3(),bordaProjetada=new THREE.Vector3();
+    function metricasTrackball(){
+      const r=canvas.getBoundingClientRect();
+      centroProjetado.copy(group.position).project(camera);
+      bordaProjetada.copy(group.position).add(new THREE.Vector3(CFG.raio*group.scale.x,0,0)).project(camera);
+      const cx=r.left+(centroProjetado.x+1)*.5*r.width;
+      const cy=r.top+(1-centroProjetado.y)*.5*r.height;
+      const bx=r.left+(bordaProjetada.x+1)*.5*r.width;
+      return {cx,cy,raio:Math.max(72,Math.abs(bx-cx)*CFG.trackballRaio)};
+    }
+    function mapearTrackball(clientX,clientY){
+      const m=metricasTrackball();
+      let x=(clientX-m.cx)/m.raio,y=(m.cy-clientY)/m.raio;
+      const d=x*x+y*y;
+      let z;
+      if(d<=1)z=Math.sqrt(1-d);
+      else{const inv=1/Math.sqrt(d);x*=inv;y*=inv;z=0}
+      return new THREE.Vector3(x,y,z).normalize();
+    }
+    const trackAnterior=new THREE.Vector3(),trackAtual=new THREE.Vector3();
+    const limitar=(v,a,b)=>Math.max(a,Math.min(b,v));
+    function aplicarZoom(novoZ){
+      camera.position.z=limitar(novoZ,CFG.zoomMin,CFG.zoomMax);
+      sujo=true;desenhar();
+    }
+    function distanciaEntrePonteiros(){
+      const pts=[...ponteiros.values()];
+      return pts.length<2?0:Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+    }
+
     canvas.addEventListener('pointerdown',e=>{
-      arrastando=true;lastX=e.clientX;lastY=e.clientY;lastT=performance.now();deslocamento=0;vel=0;
-      viagem=null;                       // a mão do usuário tem prioridade sobre a viagem
+      ponteiros.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      deslocamento=0;velocidadeAngular=0;viagem=null;
       if(tourAtivo&&!tourPausado)definirPausa(true);
-      canvas.setPointerCapture?.(e.pointerId);canvas.style.cursor='grabbing';
+      canvas.setPointerCapture?.(e.pointerId);
+      if(ponteiros.size===1){
+        arrastando=true;lastX=e.clientX;lastY=e.clientY;lastT=performance.now();
+        trackAnterior.copy(mapearTrackball(e.clientX,e.clientY));
+        canvas.style.cursor='grabbing';
+      }else{
+        arrastando=false;distanciaPinch=distanciaEntrePonteiros();
+      }
+      hero.classList.add('globo-interagindo');
     });
     canvas.addEventListener('pointermove',e=>{
+      if(ponteiros.has(e.pointerId))ponteiros.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(ponteiros.size>=2){
+        const d=distanciaEntrePonteiros();
+        if(distanciaPinch>0&&d>0){
+          aplicarZoom(camera.position.z*(distanciaPinch/d));
+          deslocamento+=Math.abs(d-distanciaPinch);
+        }
+        distanciaPinch=d;
+        return;
+      }
       if(arrastando){
-        const px=e.clientX-lastX,py=e.clientY-lastY;
-        const dx=px*CFG.sensibilidade,agora=performance.now(),dt=(agora-lastT)/1000;
-        rot+=dx;
-        // Arrastar para baixo traz o hemisfério sul à frente: o gesto segue o dedo.
-        inc=Math.max(-CFG.inclinacaoMax,Math.min(CFG.inclinacaoMax,inc+py*CFG.sensibilidade));
-        deslocamento+=Math.abs(px)+Math.abs(py);
-        if(dt>0)vel=Math.max(-4,Math.min(4,dx/Math.max(dt,.008)));
+        const agora=performance.now(),dt=Math.max((agora-lastT)/1000,.008);
+        trackAtual.copy(mapearTrackball(e.clientX,e.clientY));
+        qPasso.setFromUnitVectors(trackAnterior,trackAtual);
+        orientacao.premultiply(qPasso).normalize();
+        const w=limitar(qPasso.w,-1,1),angulo=2*Math.acos(w),s=Math.sqrt(Math.max(0,1-w*w));
+        if(angulo>1e-5&&s>1e-5){
+          eixoInercia.set(qPasso.x/s,qPasso.y/s,qPasso.z/s).normalize();
+          velocidadeAngular=Math.min(5,angulo/dt);
+        }
+        deslocamento+=Math.abs(e.clientX-lastX)+Math.abs(e.clientY-lastY);
+        trackAnterior.copy(trackAtual);
         lastX=e.clientX;lastY=e.clientY;lastT=agora;
         desenhar();
         return;
@@ -488,19 +560,29 @@
       destacar(alvoEm(e));
     });
     const soltar=e=>{
-      if(!arrastando)return;
-      arrastando=false;
+      ponteiros.delete(e.pointerId);
       canvas.releasePointerCapture?.(e.pointerId);
-      canvas.style.cursor=alvo?'pointer':'grab';
+      if(ponteiros.size===1){
+        const p=[...ponteiros.values()][0];
+        arrastando=true;trackAnterior.copy(mapearTrackball(p.x,p.y));lastX=p.x;lastY=p.y;lastT=performance.now();
+      }else{
+        arrastando=false;distanciaPinch=0;
+        hero.classList.remove('globo-interagindo');
+        canvas.style.cursor=alvo?'pointer':'grab';
+      }
     };
     canvas.addEventListener('pointerup',soltar);
     canvas.addEventListener('pointercancel',soltar);
-    canvas.addEventListener('pointerleave',()=>{if(!arrastando)destacar(null)});
+    canvas.addEventListener('pointerleave',()=>{if(!arrastando&&!ponteiros.size)destacar(null)});
+    canvas.addEventListener('wheel',e=>{
+      e.preventDefault();
+      velocidadeAngular=0;
+      aplicarZoom(camera.position.z+e.deltaY*CFG.zoomSensibilidade);
+    },{passive:false});
 
     canvas.addEventListener('click',e=>{
-      if(deslocamento>CFG.limiarArrasto)return; // arrastar o globo não deve navegar
+      if(deslocamento>CFG.limiarArrasto)return;
       const m=alvoEm(e);
-      // O globo é a porta de entrada do território: o clique abre o lugar no Atlas.
       if(m)location.href=`atlas.html?busca=${encodeURIComponent(m.userData.lugar.nome)}`;
     });
 
