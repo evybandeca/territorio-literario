@@ -68,6 +68,10 @@ proibir(html,/<script[^>]+src=["']js\/globo\.js["']/i,'Home','globo.js carregado
 proibir(loader,/\brequestAnimationFrame\s*\(\s*start|setTimeout\s*\(\s*start/,'Loader',
   'o globo não deve subir por temporizador agressivo; use hidratação ociosa e poster imediato');
 exigir(loader,'requestIdleCallback','Loader');
+exigir(loader,"rel='prefetch'",'Loader');
+exigir(loader,'assets/globe-nautical-map.svg','Loader');
+proibir(loader,/if\(!economizar\)start\(\)/,'Loader','hidratação WebGL automática voltou ao idle e bloqueia o Lighthouse');
+
 exigir(loader,'pointerenter','Loader');
 proibir(loader,/globo-terra\.js/,'Loader','o dataset bruto voltou ao caminho do usuário');
 exigir(loader,'js/globo.js','Loader');
