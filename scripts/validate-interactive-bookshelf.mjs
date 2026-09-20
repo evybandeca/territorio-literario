@@ -29,7 +29,11 @@ const checks=[
   ['depth perspective',/perspective:/.test(css)],
   ['selected book forward motion',/translateZ\(/.test(css)],
   ['mobile snap shelf',/scroll-snap-type/.test(css)],
-  ['visible focus',/:focus-visible/.test(css)]
+  ['visible focus',/:focus-visible/.test(css)],
+  // A centralização da capa nunca pode rolar o documento: scrollIntoView age sobre
+  // todos os ancestrais roláveis e arrancava a Home do hero no primeiro render.
+  ['shelf centering never scrolls the document',!/scrollIntoView\(/.test(js)&&/track\.scrollLeft=|track\.scrollTo\(/.test(js)],
+  ['focus does not scroll the page',/preventScroll/.test(js)]
 ];
 
 const failed=checks.filter(([,ok])=>!ok);
