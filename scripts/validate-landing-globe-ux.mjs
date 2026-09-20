@@ -42,12 +42,15 @@ proibir(globe,/powerPreference\s*:\s*'high-performance'/,'Globo','hero decorativ
 const alocacoes=(globe.match(/new THREE\.(Sphere|Ring|Cylinder|Cone|Box|Circle)Geometry/g)||[]).length;
 if(alocacoes>5)falhas.push(`Globo: ${alocacoes} alocações de geometria; o limite do hero é 5 (uma por malha compartilhada)`);
 
-// Carregamento sob demanda: three.js jamais entra no caminho crítico da Home
+// Carregamento sob demanda: three.js jamais entra no caminho crítico da Home.
+// Medido: carregar o globo sem interação leva a Home de 96 para 68 no Lighthouse
+// (TBT de 0 para ~7 s), abaixo do orçamento de 70 exigido por audit-lighthouse.mjs.
 proibir(html,/<script[^>]+src=["'][^"']*three[^"']*["']/i,'Home','three.js carregado direto no HTML');
 proibir(html,/<script[^>]+src=["']js\/globo\.js["']/i,'Home','globo.js carregado direto no HTML');
-exigir(loader,'requestIdleCallback','Loader');
-exigir(loader,'saveData','Loader');
-exigir(loader,'deviceMemory','Loader');
+proibir(loader,/requestIdleCallback|\brequestAnimationFrame\s*\(\s*start|setTimeout\s*\(\s*start/,'Loader',
+  'o globo voltou a subir sem interação e estoura o orçamento do Lighthouse');
+exigir(loader,'pointerenter','Loader');
+exigir(loader,'touchstart','Loader');
 exigir(loader,'globo-ativo','Loader');
 
 // CSS: estados do globo precisam existir de verdade, não só como classe solta
